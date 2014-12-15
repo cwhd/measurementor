@@ -114,4 +114,46 @@ class UtilitiesService {
 
         return [ raw:result, result:result.toInteger() ]
     }
+
+    /**
+     * function to calculate Code Health Determination(CHD)
+     * @param cloc
+     * @param estimateHealth
+     * @param recidivism
+     * @param escapedDefects
+     * @return
+     */
+    static int calculateCHD(cloc, estimateHealth, recidivism, escapedDefects) {
+        def chd = 0
+
+        def a = ((int)(cloc/50))*2.5
+        def b = Math.abs(estimateHealth)
+        def c = recidivism*10
+        def d = escapedDefects*2.5
+        logger.debug("a: $a, b: $b, c: $c, d: $d")
+
+        chd = (minMax(a)+minMax(b)+(minMax(c))+minMax(d)) * 5
+        logger.info("chd: $chd")
+
+        return chd
+    }
+
+    /**
+     * private method used in calculateCHD to calculate the minimum of maximum value of the elements
+     * of our function
+     * @param val whatever we're going to get the min or max of
+     * @return normalized value
+     */
+    private static int minMax(val){
+        def mm = { v ->
+            if (v >= 5) {
+                return 5
+            } else if (v <= 0) {
+                return 0
+            } else {
+                return v
+            }
+        }
+        return 5 - mm(val)
+    }
 }

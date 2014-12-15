@@ -18,7 +18,7 @@ class BootStrap {
             //TODO i should only get data that's changed since the last time the job ran...i should be able to figure
             //that out from the jobHistory table
             stashDataService.getAll()
-            //jiraDataService.getData(0, 100, "ACOE")
+            jiraDataService.getData(0, 100, "ACOE")
             //jiraDataService.reIndexEC()
             def doneDateTime = new Date()
             def difference = doneDateTime.getTime() - startDateTime.getTime()

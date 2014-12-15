@@ -61,6 +61,7 @@ class JiraDataService {
         }
 
         //NOTE we need to set the map so we know what direction things are moving in; this relates to the moveForward & moveBackward stuff
+        //TODO this needs to be a parameter that gets passed in based on the project
         def taskStatusMap = ["In Definition": 1, "Dev Ready":2, "Dev":3, "QA Ready":4, "QA":5, "Deploy Ready":6, "Done":7]
 
         for(def i : json.issues) {

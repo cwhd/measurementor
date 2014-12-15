@@ -18,7 +18,7 @@ class UtilitiesServiceSpec extends Specification {
 
     def cleanup() {
     }
-
+/*
     void "Test time-estimate ratio for a fibonacci estimates"() {
         def estimateHealth = utilitiesService.estimateHealth(estimate, actualTime, 13, 9, fibonacciSeries)
         expect: estimateHealth == 0
@@ -36,9 +36,40 @@ class UtilitiesServiceSpec extends Specification {
         estimate <<     [1, 2, 2, 4, 4, 4, 8, 8, 8, 8, 16, 16, 16]
         actualTime <<   [1, 1, 2, 2, 3, 4, 4, 5, 6, 7, 8, 8, 9]
     }
+**/
+    void "Test CHD Calculation with perfect result"(){
+        def chd = utilitiesService.calculateCHD(cloc, estimateHealth, recidivism, escapedDefects)
+        expect: chd == 100
+        where:
+        cloc        <<      [49, 30]
+        estimateHealth <<   [0,  0]
+        recidivism     <<   [0, 0]
+        escapedDefects <<   [0, 0]
+    }
 
+    void "Test CHD with 75% result"() {
+        def chd = utilitiesService.calculateCHD(cloc, estimateHealth, recidivism, escapedDefects)
+        expect: chd == 75
+        where:
+        cloc        <<      [100, 49, 49, 1, 30]
+        estimateHealth <<   [0,  5, -5, 0, 0]
+        recidivism     <<   [0, 0, 0, 0.5, 0]
+        escapedDefects <<   [0, 0, 0, 0, 2]
+    }
+
+    void "Test a bunch of CHDs"() {
+        def chd = utilitiesService.calculateCHD(cloc, estimateHealth, recidivism, escapedDefects)
+        expect: chd == 100
+        where:
+        estimateHealth <<   [1,   0,  -2,  3,   -1,  0,  -1]
+        cloc        <<      [65,  33, 150, 350, 45,  53, 77]
+        recidivism     <<   [0.1, 1,  0,   0.5, 0.5, 0,  0.1]
+        escapedDefects <<   [0,   1,  0,   0,   2,   0,  0]
+
+    }
 
 }
+/*
 
 /**
  16 points		9 days		7-9 days		devTime:[7 TO 9] AND storyPoints:16

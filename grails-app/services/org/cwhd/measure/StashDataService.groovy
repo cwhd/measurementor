@@ -119,11 +119,7 @@ class StashDataService {
             int commentCount = 0
             logger.info("comment count: $i.attributes.commentCount")
             if(i.attributes.commentCount?.size() > 0) {
-                try {
-                    commentCount = Integer.parseInt(i.attributes.commentCount[0])
-                } catch (Exception e){
-                    logger.error(e)
-                }
+                commentCount = Integer.parseInt(i.attributes.commentCount[0])
             }
 
             def stashData = StashData.findByKey("$i.createdDate-$i.author.user.id")

@@ -11,5 +11,6 @@ Richer data around pull reuqests
 A service that sets up a project.  this should
 - create the kibana dashboards in ES
 - Tie together the JIRA & Stash projects
+I think i'll need a grails controler that combines data into metrics since Kibana can't do it.
 
 
