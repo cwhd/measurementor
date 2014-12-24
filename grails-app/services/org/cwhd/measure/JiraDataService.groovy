@@ -40,17 +40,22 @@ class JiraDataService {
      * @param maxResults
      * @return
      */
-    def getData(startAt, maxResults, project) {
+    def getData(startAt, maxResults, project, fromDate) {
         if(!startAt) {
             startAt = 0
         }
         if(!maxResults) {
             maxResults = 100
         }
+        if(!fromDate) {
+            fromDate = ""
+        } else {
+            fromDate = "%20AND%20updatedDate>\"2014-12-01\""
+        }
 
         def url = grailsApplication.config.jira.url
         def path = "/rest/api/2/search"
-        def jiraQuery = "project=$project"
+        def jiraQuery = "project=$project$fromDate" //TODO put the fromDate in here...like this:  %20AND%20updatedDate%20>%20"2014-12-01"
         def query = [jql: jiraQuery, expand:"changelog",startAt: startAt, maxResults: maxResults, fields:"*all"]
 
         def json = httpRequestService.callRestfulUrl(url, path, query, true)
@@ -181,7 +186,7 @@ class JiraDataService {
         if(keepGoing) {
             logger.info("NEXT PAGE starting at $startAt")
             logger.info("----------------------------------------------------------")
-            getData(startAt + maxResults, maxResults, project)
+            getData(startAt + maxResults, maxResults, project, fromDate)
         }
     }
 
