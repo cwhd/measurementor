@@ -1,3 +1,7 @@
 *.iml
 .idea
+.gradle
 /target
+/buildPlugins
+/build
+application.properties

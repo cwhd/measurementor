@@ -1,5 +1,6 @@
 # measurementor
 measurementor helps you visualize data from your development cycle to help you be a better team.
+TODO talk about it more here...
 
 # Getting Started
 First note the [vagrant file](https://www.vagrantup.com/).  That will call the [puppet](http://puppetlabs.com/) manifest
@@ -14,7 +15,10 @@ Run the measurementor grails app inside the vagrant box by updating the shared
 This is still a bit of a work in progress but feel free to let me know if there's anything that could be better.
 thanks!
 
+When jobs run by default they'll get the last month of activity.  Use the interface to get a full history of a project.  
+
 # Other Stuff
 
 logs get output to /tmp/log/measurementor.log.
+
 
