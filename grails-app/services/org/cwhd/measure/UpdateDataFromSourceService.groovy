@@ -12,6 +12,8 @@ class UpdateDataFromSourceService {
     def stashDataService
     def grailsApplication
 
+    //TODO there should be a seperate method to get data from everything and a single method that calls them in parallel
+
     def getAllData() {
 
         def result = "unknown"

@@ -35,6 +35,7 @@ class HttpRequestService {
             headers.'Content-Type' = 'application/json'
 
             response.success = { resp, json ->
+                logger.info(json)
                 return json
             }
 
@@ -42,6 +43,9 @@ class HttpRequestService {
             //TODO i should handle this failure better
             response.failure = { resp ->
                 logger.error("HTTP Fail! $resp")
+                logger.info(resp.getStatus())
+                logger.info(resp.getData())
+                logger.info(resp.getHeaders())
                 return null
             }
         }

@@ -1,7 +1,6 @@
 package org.cwhd.measure
 
 import grails.transaction.Transactional
-
 import java.util.concurrent.TimeUnit
 import org.apache.commons.logging.LogFactory
 

@@ -11,13 +11,13 @@ class PopulatorJob {
 
     static triggers = {
         //wait an hour to start, repeat every 8 hours
-        simple startDelay: 3600000, repeatInterval: 28800000, repeatCount:-1
+        //simple startDelay: 3600000, repeatInterval: 28800000, repeatCount:-1
     }
 
     def execute() {
         logger.info("----------------------------------")
         logger.info("STARTING TIMED JOB")
         logger.info("----------------------------------")
-        updateDataFromSourceService.getAllData()
+        //updateDataFromSourceService.getAllData()
     }
 }
