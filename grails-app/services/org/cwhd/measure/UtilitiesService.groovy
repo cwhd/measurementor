@@ -11,6 +11,19 @@ import java.text.SimpleDateFormat
 class UtilitiesService {
     private static final logger = LogFactory.getLog(this)
 
+    /***
+     * removes the base of the URL and returns the path
+     * @param url
+     * @return
+     */
+    static String getPathFromUrl(url) {
+        return url.replaceAll("http[s]*://[^/]+","")
+    }
+
+    static String cleanFullBuildName(fullBuildName) {
+        return fullBuildName.replaceAll(/\s#[0-9]+$/,"")
+    }
+
     /**
      * take the @ out of emails so elasticsearch doesn't index everyone's email domain
      * @param author string representing the original email
@@ -156,4 +169,6 @@ class UtilitiesService {
         }
         return 5 - mm(val)
     }
+
+
 }

@@ -7,7 +7,7 @@ class BootStrap {
     def init = { servletContext ->
         println("GO TIME!")
         //asgardDataService.getApplications()
-        //jenkinsDataService.getBuilds()
+        //jenkinsDataService.getJobs(null, "")
 
         if(grailsApplication.config.runOnStartup == "true") {
             updateDataFromSourceService.getAllData()

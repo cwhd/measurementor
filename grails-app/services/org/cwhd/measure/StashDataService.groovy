@@ -21,9 +21,9 @@ class StashDataService {
         def path = "/rest/api/1.0/projects" ///get all the projects in stash...
         def json = makeStashRequest(path, null)
         def projectList = []
-        for (def i : json.values) {
-            projectList.add(i.key) //add to the list to get off this thread
-        }
+        //for (def i : json.values) {
+        //    projectList.add(i.key) //add to the list to get off this thread
+        //}
         //TODO for now i should just hard code the projects i care about
         projectList = ["SQA"] //BP
         for(def project in projectList) {
@@ -122,14 +122,24 @@ class StashDataService {
                 commentCount = Integer.parseInt(i.attributes.commentCount[0])
             }
 
+            logger.info("HERE IS THE STASH KEY:")
+            logger.info("$i.createdDate-$i.author.user.id")
+
             def stashData = StashData.findByKey("$i.createdDate-$i.author.user.id")
             if(stashData) {
+                logger.info("FOUND PULL REQUEST!")
                 stashData.updated = new Date(i.updatedDate)
                 stashData.reviewers = reviewers
                 stashData.repo = UtilitiesService.makeNonTokenFriendly(repo)
                 stashData.stashProject = UtilitiesService.makeNonTokenFriendly(project)
                 stashData.commentCount = commentCount
+                stashData.created = new Date(i.createdDate)
+                stashData.author = UtilitiesService.cleanEmail(i.author.user.emailAddress)
+                stashData.scmAction = "pull-request"
+                stashData.dataType = "SCM"
+                stashData.stashProject = i.project
             } else {
+                logger.info("NO FOUND PULL REQUEST NOOOOOOOOOOOO!")
                 stashData = new StashData(
                         key: "$i.createdDate-$i.author.user.id",
                         created: new Date(i.createdDate),

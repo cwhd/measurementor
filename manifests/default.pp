@@ -6,6 +6,8 @@
    }
 }
 
+include apt
+
 package{'unzip': ensure => installed } 
 package{'rpm': ensure => installed } 
 package{'groovy': ensure => installed } 

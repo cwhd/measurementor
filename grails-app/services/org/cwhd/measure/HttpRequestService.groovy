@@ -35,7 +35,7 @@ class HttpRequestService {
             headers.'Content-Type' = 'application/json'
 
             response.success = { resp, json ->
-                logger.info(json)
+               // logger.debug(json)
                 return json
             }
 

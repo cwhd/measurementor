@@ -139,7 +139,9 @@ elasticSearch {
      * If the client mode is set to "transport" and no hosts are defined, ["localhost", 9300] will be used by default.
      */
     client.hosts = [
-            [host:'localhost', port:9200]
+            [host:'qmes.tools.nikecloud.com', port:8200]
+            //        [host:'localhost', port:9200]
+            //http://qmes.tools.nikecloud.com:8200/
     ]
 
     /**

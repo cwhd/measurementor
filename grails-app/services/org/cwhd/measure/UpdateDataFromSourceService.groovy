@@ -36,18 +36,11 @@ class UpdateDataFromSourceService {
 
             //TODO i should only get data that's changed since the last time the job ran...i should be able to figure
             //that out from the jobHistory table
-            //stashDataService.getAll()
-            /*
-        for(source in SourceType.findAll()) {
-            if(source.systemName == SourceType.SystemName.JIRA) {
-                jiraDataService.getData(0, 100, source.sourceName, null)
-            } else if(source.SystemName == SourceType.SystemName.STASH) {
-                //stashDataService.getAll()
-            }
-        }
-        */
+            stashDataService.getAll()
+
             def getDataFrom = wayBackDate.format("YYYY-MM-dd")
             logger.info("getDataFrom: $getDataFrom")
+            /*
             def jiraProjects = jiraDataService.getProjects()
             history.projectCount = jiraProjects.size()
             for (def p : jiraProjects) {
@@ -61,6 +54,7 @@ class UpdateDataFromSourceService {
                     jobNotes += "JIRA FAIL: $p : $e.message"
                 }
             }
+            */
             def doneDateTime = new Date()
             def minutesDiff = TimeUnit.MILLISECONDS.toMinutes(doneDateTime.getTime() - startDateTime.getTime())
             result = "done"

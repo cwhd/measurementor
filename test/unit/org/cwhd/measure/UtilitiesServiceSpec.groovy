@@ -18,6 +18,25 @@ class UtilitiesServiceSpec extends Specification {
 
     def cleanup() {
     }
+
+    void "Build Name From Jenkins Gets Clean"() {
+        def cleanBuildName = utilitiesService.cleanFullBuildName(fullBuildName)
+        println "build name result: $cleanBuildName"
+        expect: cleanBuildName == "Chris >> Builds"
+        where:
+            fullBuildName << ["Chris >> Builds #56", "Chris >> Builds #1"]
+    }
+
+
+    void "Test URL Cleaner"(){
+        def cleanURL = utilitiesService.getPathFromUrl(url)
+        println "AND THE URL IS: $cleanURL"
+        expect: cleanURL == "/job/HEYOO/"
+
+        where:
+            url << ["https://jenkins.tools.whatever.com/job/HEYOO/", "http://www.test-url.net:8080/job/HEYOO/"]
+
+    }
 /*
     void "Test time-estimate ratio for a fibonacci estimates"() {
         def estimateHealth = utilitiesService.estimateHealth(estimate, actualTime, 13, 9, fibonacciSeries)
@@ -36,7 +55,7 @@ class UtilitiesServiceSpec extends Specification {
         estimate <<     [1, 2, 2, 4, 4, 4, 8, 8, 8, 8, 16, 16, 16]
         actualTime <<   [1, 1, 2, 2, 3, 4, 4, 5, 6, 7, 8, 8, 9]
     }
-**/
+
     void "Test CHD Calculation with perfect result"(){
         def chd = utilitiesService.calculateCHD(cloc, estimateHealth, recidivism, escapedDefects)
         expect: chd == 100
@@ -67,6 +86,7 @@ class UtilitiesServiceSpec extends Specification {
         escapedDefects <<   [0,   1,  0,   0,   2,   0,  0]
 
     }
+**/
 
 }
 /*

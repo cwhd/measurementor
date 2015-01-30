@@ -4,4 +4,5 @@
 /target
 /buildPlugins
 /build
+/conf/qma/asgard/asgard-configuration.json
 application.properties
