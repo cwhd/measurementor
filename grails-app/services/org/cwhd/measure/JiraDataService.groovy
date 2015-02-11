@@ -13,6 +13,7 @@ class JiraDataService {
     def grailsApplication
     def httpRequestService
     def elasticSearchService
+    def couchConnectorService
 
     /**
      * this gets a list of JIRA projects that are available. I don't think i really need this anymore...
@@ -24,11 +25,13 @@ class JiraDataService {
         def json = httpRequestService.callRestfulUrl(url, path, null, true)
         def projects = []
 
+
         for(def i : json) {
             projects.add(i.key)
             logger.info("$i.key")
         }
 
+        //projects.add("ACOE")
         return projects
     }
 
@@ -60,13 +63,13 @@ class JiraDataService {
         def json = httpRequestService.callRestfulUrl(url, path, query, true)
         def keepGoing = false
         if(json.total) {
-            logger.info("----------------------------------")
-            logger.info("$json.total records in $project")
-            logger.info("----------------------------------")
+            if(startAt == 0) {
+                logger.info("-----")
+                logger.info("$json.total records in $project")
+            }
         } else {
-            logger.info("----------------------------------")
+            logger.info("-----")
             logger.info("no results for $project!")
-            logger.info("----------------------------------")
         }
 
         //NOTE we need to set the map so we know what direction things are moving in; this relates to the moveForward & moveBackward stuff
@@ -110,7 +113,7 @@ class JiraDataService {
                     //at this point we should know when this moved to dev
                     movedToDev = movedToDevList.min()
                 } else {
-                    logger.info("changelog is null!")
+                    logger.debug("changelog is null!")
                 }
 
                 commentCount = i.fields.comment?.total
@@ -186,13 +189,17 @@ class JiraDataService {
                             rawEstimateHealth: estimateHealth.raw)
                 }
 
+                def couchReturn = couchConnectorService.saveToCouch(jiraData)
+                logger.debug("RETURNED FROM COUCH: $couchReturn")
+                jiraData.couchId = couchReturn
                 jiraData.save(flush: true, failOnError: true)
             }
         }
 
         if(keepGoing) {
-            logger.info("NEXT PAGE starting at $startAt")
-            logger.info("----------------------------------")
+            logger.debug("-----")
+            logger.debug("NEXT PAGE starting at $startAt")
+            logger.info(".")
             getData(startAt + maxResults, maxResults, project, fromDate)
         }
     }

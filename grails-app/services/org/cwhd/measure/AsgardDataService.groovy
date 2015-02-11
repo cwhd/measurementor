@@ -18,6 +18,8 @@ class AsgardDataService implements SourceDataFetcher {
      http://groovy.codehaus.org/modules/http-builder/apidocs/groovyx/net/http/HttpResponseDecorator.html
      https://gist.github.com/SpOOnman/4452815
 
+     /task/list.json will get a list of tasks asgard has done, this can get filtered down to the deploy tasks
+
      */
 
     def getApplications() {

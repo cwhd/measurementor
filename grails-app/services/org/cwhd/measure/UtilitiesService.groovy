@@ -3,6 +3,7 @@ package org.cwhd.measure
 import grails.transaction.Transactional
 import org.apache.commons.logging.LogFactory
 import java.text.SimpleDateFormat
+import java.util.concurrent.TimeUnit
 
 /**
  * general utilities as static helper methods
@@ -10,6 +11,19 @@ import java.text.SimpleDateFormat
 @Transactional
 class UtilitiesService {
     private static final logger = LogFactory.getLog(this)
+
+    /***
+     * removes the base of the URL and returns the path
+     * @param url
+     * @return
+     */
+    static String getPathFromUrl(url) {
+        return url.replaceAll("http[s]*://[^/]+","")
+    }
+
+    static String cleanFullBuildName(fullBuildName) {
+        return fullBuildName.replaceAll(/\s#[0-9]+$/,"")
+    }
 
     /**
      * take the @ out of emails so elasticsearch doesn't index everyone's email domain
@@ -108,9 +122,9 @@ class UtilitiesService {
             result = 0
         }
 
-        logger.debug("*************************************")
+        logger.debug("*******")
         logger.debug("result = $result")
-        logger.debug("*************************************")
+        logger.debug("*******")
 
         return [ raw:result, result:result.toInteger() ]
     }
@@ -156,4 +170,28 @@ class UtilitiesService {
         }
         return 5 - mm(val)
     }
+
+    /**
+     * this will return the different between 2 dates in unix timestamp format in hours
+     * @param firstDate whichever of the 2 dates happened first
+     * @param secondDate  whichever of the 2 dates happend last
+     * @return a double representing the difference in hours.
+     * For example If the difference is 55 minutes return would be 0.9166666667
+     * Check out the unit tests to see some test data
+     */
+    private static double getDifferenceBetweenDatesInHours(firstDate, secondDate) {
+        def val
+
+        if(!secondDate) { //if there is no second date, make it today
+            secondDate = new Date()
+        }
+        def second = new Date(secondDate)
+        def first = new Date(firstDate)
+        def diffInMinutes = TimeUnit.MILLISECONDS.toMinutes(second.getTime() - first.getTime())
+        val = diffInMinutes / 60
+
+        return val
+    }
+
+
 }

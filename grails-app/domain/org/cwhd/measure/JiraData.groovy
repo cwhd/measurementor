@@ -4,6 +4,7 @@ class JiraData {
     static mapWith = "mongo"
     static searchable = true
 
+    String couchId
     String key
     Date created
     String createdBy
@@ -23,6 +24,7 @@ class JiraData {
     long rawEstimateHealth
 
     static constraints = {
+        couchId nullable: true
         finished nullable: true
         created nullable: true
         createdBy nullable: true
