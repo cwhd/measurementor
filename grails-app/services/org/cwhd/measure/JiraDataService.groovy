@@ -63,10 +63,8 @@ class JiraDataService {
         def json = httpRequestService.callRestfulUrl(url, path, query, true)
         def keepGoing = false
         if(json.total) {
-            if(startAt == 0) {
-                logger.info("-----")
-                logger.info("$json.total records in $project")
-            }
+            logger.info("-----")
+            logger.info("$json.total records in $project")
         } else {
             logger.info("-----")
             logger.info("no results for $project!")
@@ -197,9 +195,8 @@ class JiraDataService {
         }
 
         if(keepGoing) {
-            logger.debug("-----")
+            logger.info("-----")
             logger.debug("NEXT PAGE starting at $startAt")
-            logger.info(".")
             getData(startAt + maxResults, maxResults, project, fromDate)
         }
     }
