@@ -42,20 +42,18 @@ class UpdateDataFromSourceService {
             def getDataFrom = wayBackDate.format("YYYY-MM-dd")
             logger.info("getDataFrom: $getDataFrom")
 
-//            try {
-//                stashDataService.getAll(wayBackDate)
-//            } catch (Exception e) {
-//                logger.error("CRAP, STASH DATA SERVICE FAILED" + e.message)
-//            }
-//            //TODO stashDataService should also get data from the way back date
-//            //TODO need to finish this guy up...
-//            try {
-//                jenkinsDataService.getJobs(null, "")
-//            } catch (Exception e) {
-//                logger.error("CRAP, JENKINS DATA SERVICE FAILED" + e.message)
-//            }
-
-
+            try {
+                stashDataService.getAll(wayBackDate)
+            } catch (Exception e) {
+                logger.error("CRAP, STASH DATA SERVICE FAILED" + e.message)
+            }
+            //TODO stashDataService should also get data from the way back date
+            //TODO need to finish this guy up...
+            try {
+                jenkinsDataService.getJobs(null, "")
+            } catch (Exception e) {
+                logger.error("CRAP, JENKINS DATA SERVICE FAILED" + e.message)
+            }
 
             def jiraProjects = jiraDataService.getProjects()
             history.projectCount = jiraProjects.size()
@@ -70,13 +68,11 @@ class UpdateDataFromSourceService {
                 }
             }
 
-            //jiraDataService.getData(0, 250, "ACOE", getDataFrom)
-
             def doneDateTime = new Date()
             def minutesDiff = TimeUnit.MILLISECONDS.toMinutes(doneDateTime.getTime() - startDateTime.getTime())
             result = "done"
             history.completionTime = minutesDiff
-            
+
             logger.info("---------------------------------------------------")
             logger.info("ALL DONE IN ~$minutesDiff minutes")
             logger.info("---------------------------------------------------")
