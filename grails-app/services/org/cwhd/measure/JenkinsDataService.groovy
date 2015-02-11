@@ -10,6 +10,7 @@ class JenkinsDataService {
     private static final logger = LogFactory.getLog(this)
     def grailsApplication
     def httpRequestService
+    def couchConnectorService
 
     /**
      * TODO Notes - this is a WIP
@@ -103,44 +104,20 @@ class JenkinsDataService {
                 jenkinsData.causedBy = causedBy
                 jenkinsData.remoteUrl = remoteUrl
                 jenkinsData.lastBuiltRevision = lastBuiltRevision
+                jenkinsData.dataType = "CI"
             } else {
                 jenkinsData = new JenkinsData(buildId: json.id, timestamp: cleanTimestamp, url: json.url,
                         buildName: cleanDisplayName, result: json.result, buildNumber: json.number,
                         duration: json.duration, causedBy: causedBy, remoteUrl: remoteUrl,
-                        lastBuiltRevision: lastBuiltRevision)
+                        lastBuiltRevision: lastBuiltRevision, dataType: "CI")
             }
+            def couchReturn = couchConnectorService.saveToCouch(jenkinsData)
+            logger.info("RETURNED FROM COUCH: $couchReturn")
+            jenkinsData.couchId = couchReturn
+
             jenkinsData.save(flush: true, failOnError: true)
         } else {
             logger.error("ERROR: NOTHING RETURNED FOR BUILD")
         }
-    }
-
-    def getData(startAt, maxResults, project, fromDate) {
-        if(!startAt) {
-            startAt = 0
-        }
-        if(!maxResults) {
-            maxResults = 100
-        }
-        def fromQuery = ""
-        if(fromDate) {
-            fromQuery = " AND updatedDate>$fromDate"
-        }
-
-        def url = grailsApplication.config.asgard.url
-        def path = "/rest/api/2/search"
-
-        def json = httpRequestService.callRestfulUrl(url, path, query, true)
-        def keepGoing = false
-        if(json.total) {
-            logger.info("----------------------------------")
-            logger.info("$json.total records in $project")
-            logger.info("----------------------------------")
-        } else {
-            logger.info("----------------------------------")
-            logger.info("no results for $project!")
-            logger.info("----------------------------------")
-        }
-
     }
 }

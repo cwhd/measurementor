@@ -3,6 +3,8 @@ package org.cwhd.measure
 import grails.transaction.Transactional
 import org.apache.commons.logging.LogFactory
 
+import java.util.concurrent.TimeUnit
+
 /**
  * this gets data out of stash and scrubs it a bit
  */
@@ -13,21 +15,27 @@ class StashDataService {
     private static final logger = LogFactory.getLog(this)
     def grailsApplication
     def httpRequestService
+    def couchConnectorService
 
     /***
      * 1) get all the projects in Stash
      */
-    def getAll() {
+    def getAll(fromDate) {
+        def start = 0
+        def limit = 200
         def path = "/rest/api/1.0/projects" ///get all the projects in stash...
-        def json = makeStashRequest(path, null)
+        def json = makeStashRequest(path, [start: start, limit: limit])
+        if(!json.isLastPage) {
+            getAll(path, [start: start+limit, limit: limit])
+        }
         def projectList = []
-        //for (def i : json.values) {
-        //    projectList.add(i.key) //add to the list to get off this thread
-        //}
-        //TODO for now i should just hard code the projects i care about
-        projectList = ["SQA"] //BP
+        for (def i : json.values) {
+            projectList.add(i.key) //add to the list to get off this thread
+            logger.info("STASH PROJECT: $i.key")
+        }
+//        projectList = ["BEP"] //BP
         for(def project in projectList) {
-            getProjectData(project)
+            getProjectData(project, fromDate)
         }
     }
 
@@ -35,7 +43,7 @@ class StashDataService {
      * 2) get all the repos in a project
      * @param projectKey
      */
-    def getProjectData(projectKey) {
+    def getProjectData(projectKey, fromDate) {
         def path = "/rest/api/1.0/projects/$projectKey/repos" ///get all the projects in stash...
         def json = makeStashRequest(path, null)
         def repoList = []
@@ -44,8 +52,8 @@ class StashDataService {
         }
         for(def repo in repoList){
             logger.info("GETTING DATA FOR $repo.projectKey : $repo.repo")
-            getPullRequests(repo.projectKey, repo.repo, repo.start, repo.limit) //for each one of these, get pull requests & commits
-            getCommits(repo.projectKey, repo.repo, 0, 100)
+            getPullRequests(repo.projectKey, repo.repo, repo.start, repo.limit, fromDate) //for each one of these, get pull requests & commits
+            getCommits(repo.projectKey, repo.repo, repo.start, repo.limit, fromDate)
         }
         //TODO i should probably save some data on the repo...i can aggregate those into project stats
     }
@@ -55,14 +63,22 @@ class StashDataService {
      * @param project
      * @param repo
      */
-    def getCommits(project, repo, start, limit) {
+    def getCommits(project, repo, start, limit, fromDate) {
         def path = "/rest/api/1.0/projects/$project/repos/$repo/commits"
-        def json = makeStashRequest(path, null)
+        def json = makeStashRequest(path, [start: start, limit: limit])
+
         if (json) {
+            if(!json.isLastPage) { //if there are more than 100 records then recurse
+                def newLimit = start + limit
+                logger.info("GETTING COMMITS: $start : and : $newLimit")
+                getCommits(project, repo, start+limit, limit)
+            }
             for (def i : json.values) {
-                //if(!json.isLastPage) { //if there are more than 100 records then recurse
-                //    getCommits(project, repo, start+limit, limit)
-                //}
+                //TODO this should also check if we hit the fromDate
+//            if(i.updatedDate >= fromDate) {
+//                return
+//            }
+
                 def locDelta = getCLOC(project, repo, i.id)
                 def stashData = StashData.findByKey(i.id)
                 if(!stashData) { //if we have a commit already i guess it would never change, no need to update it
@@ -75,14 +91,19 @@ class StashDataService {
                             scmAction: "commit",
                             dataType: "SCM",
                             linesAdded: locDelta.addedLOC,
-                            linesRemoved: locDelta.removedLOC
+                            linesRemoved: locDelta.removedLOC,
+                            commitCount: 1
                     )
                 } else {
                     stashData.linesRemoved = locDelta.removedLOC
                     stashData.linesAdded = locDelta.addedLOC
                     stashData.repo = UtilitiesService.makeNonTokenFriendly(repo)
                     stashData.stashProject = UtilitiesService.makeNonTokenFriendly(project)
+                    stashData.commitCount = 1
                 }
+                def couchReturn = couchConnectorService.saveToCouch(stashData)
+                logger.debug("RETURNED FROM COUCH: $couchReturn")
+                stashData.couchId = couchReturn
                 stashData.save(flush: true, failOnError: true)
             }
         }
@@ -98,15 +119,23 @@ class StashDataService {
      * @param limit
      * @return
      */
-    def getPullRequests(project, repo, start, limit) {
+    def getPullRequests(project, repo, start, limit, fromDate) {
         def path = "/rest/api/1.0/projects/$project/repos/$repo/pull-requests" ///pull-requests
         def json = makeStashRequest(path, [state: "all", start: start, limit: limit])
+        if(!json.isLastPage) { //if there are more than 100 records then recurse
+            def newLimit = start + limit
+            logger.info("GETTING PULL REQUEST: $start : and : $newLimit")
+            getPullRequests(project, repo, start+limit, limit)
+
+        }
 
         for (def i : json.values) {
+            //TODO this should also check if we hit the fromDate
+//            if(i.updatedDate >= fromDate) {
+//                return
+//            }
+
             def reviewers = []
-            if(!json.isLastPage) { //if there are more than 100 records then recurse
-                getPullRequests(project, repo, start+limit, limit)
-            }
 
             for(def r in i.reviewers) {
                 if(r.user.emailAddress){
@@ -117,17 +146,19 @@ class StashDataService {
             }
 
             int commentCount = 0
-            logger.info("comment count: $i.attributes.commentCount")
             if(i.attributes.commentCount?.size() > 0) {
                 commentCount = Integer.parseInt(i.attributes.commentCount[0])
             }
 
-            logger.info("HERE IS THE STASH KEY:")
-            logger.info("$i.createdDate-$i.author.user.id")
+            def timeOpen = UtilitiesService.getDifferenceBetweenDatesInHours(i.createdDate, i.updatedDate)
+            def commitCount = getCommitCount(path, i.id)
+
+            logger.debug("HERE IS THE STASH KEY:")
+            logger.debug("$i.createdDate-$i.author.user.id")
 
             def stashData = StashData.findByKey("$i.createdDate-$i.author.user.id")
             if(stashData) {
-                logger.info("FOUND PULL REQUEST!")
+                logger.debug("FOUND PULL REQUEST!")
                 stashData.updated = new Date(i.updatedDate)
                 stashData.reviewers = reviewers
                 stashData.repo = UtilitiesService.makeNonTokenFriendly(repo)
@@ -138,8 +169,11 @@ class StashDataService {
                 stashData.scmAction = "pull-request"
                 stashData.dataType = "SCM"
                 stashData.stashProject = i.project
+                stashData.state = i.state
+                stashData.timeOpen = timeOpen
+                stashData.commitCount = commitCount
             } else {
-                logger.info("NO FOUND PULL REQUEST NOOOOOOOOOOOO!")
+                logger.debug("NO FOUND PULL REQUEST NOOOOOOOOOOOO!")
                 stashData = new StashData(
                         key: "$i.createdDate-$i.author.user.id",
                         created: new Date(i.createdDate),
@@ -150,16 +184,37 @@ class StashDataService {
                         repo: UtilitiesService.makeNonTokenFriendly(repo),
                         scmAction: "pull-request",
                         commentCount: commentCount,
-                        dataType: "SCM"
+                        dataType: "SCM",
+                        state: i.state,
+                        timeOpen: timeOpen,
+                        commitCount: commitCount
                 )
             }
+            def couchReturn = couchConnectorService.saveToCouch(stashData)
+            logger.debug("RETURNED FROM COUCH: $couchReturn")
+            stashData.couchId = couchReturn
             stashData.save(flush: true, failOnError: true)
+        }
+    }
+
+    /**
+     * this will return the number of commits for this PR.  the way the stash API works you have to make another
+     * call to get it
+     * @param prNumber the ID from the request to the PR
+     * @return the count of commits on this PR
+     */
+    def getCommitCount(currentPath, prNumber){
+        def json = makeStashRequest("$currentPath/$prNumber/commits", null)
+        if(json) {
+            logger.debug("PR HAD " + json.size + " COMMITS!")
+            return json.size
+        } else {
+            return 0
         }
     }
 
     //TODO need richer pull request review data
     /**
-     //TODO to get the CLOC it looks like i'll have to get to a commit/{sha}/diff and count the
      //number of changed lines
      here is a good example:
      http://stash.nikedev.com/rest/api/1.0/projects/SQA/repos/humulo/commits/d333c1e0e1ee050f68a46f15cf8c78456a2c01b0/diff
@@ -197,7 +252,7 @@ class StashDataService {
             return httpRequestService.callRestfulUrl(url, path, query, false)
         } catch (Exception ex) {
             //TODO handle this!!!
-            logger.info("FAIL: $ex.message")
+            logger.error("FAIL: $ex.message")
         }
     }
 }

@@ -37,6 +37,15 @@ class UtilitiesServiceSpec extends Specification {
             url << ["https://jenkins.tools.whatever.com/job/HEYOO/", "http://www.test-url.net:8080/job/HEYOO/"]
 
     }
+
+    void "Test Time Difference"() {
+        def dateDiff =  utilitiesService.getDifferenceBetweenDatesInHours(firstDate, secondDate)
+        println "ACTUAL VALUE IS: $dateDiff"
+        expect: dateDiff == 0.9166666667
+        where:
+            firstDate << [1422639305990]
+            secondDate << [1422642656258]
+    }
 /*
     void "Test time-estimate ratio for a fibonacci estimates"() {
         def estimateHealth = utilitiesService.estimateHealth(estimate, actualTime, 13, 9, fibonacciSeries)

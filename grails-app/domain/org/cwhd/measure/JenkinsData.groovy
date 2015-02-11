@@ -9,7 +9,9 @@ class JenkinsData {
     static searchable = true
 
     //TODO what ties this back to a PTS or SCM project?
+    String dataType
     String buildId
+    String couchId
     String buildName
     String result
     Date timestamp
@@ -35,5 +37,7 @@ class JenkinsData {
         buildNumber nullable: true
         remoteUrl nullable: true
         causedBy nullable: true
+        couchId nullable: true
+        dataType nullable: true
     }
 }

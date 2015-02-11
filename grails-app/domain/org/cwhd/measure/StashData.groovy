@@ -17,6 +17,12 @@ class StashData {
     int linesAdded
     int linesRemoved
     int commentCount
+    String couchId
+    //TODO need to get these up and running
+    double timeOpen //how long something is open.  if this is closed, it's the difference between the createdDate and updatedDate.  If
+    //it's not closed it's the length of time between createdDate and today
+    String state //this would be MERGED for example
+    int commitCount
 
     static constraints = {
         created nullable: true
@@ -31,5 +37,9 @@ class StashData {
         linesAdded nullable: true
         linesRemoved nullable: true
         commentCount nullable: true
+        couchId nullable: true
+        timeOpen nullable: true
+        state nullable: true
+        commitCount nullable: true
     }
 }

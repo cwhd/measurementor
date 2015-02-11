@@ -139,3 +139,9 @@ gvm::package { 'groovy':
   ensure     => present,
   require    => Class['java']
 } 
+
+#TODO
+# on start up we need to use java 7 JAVA_HOME=/usr/lib/jvm/java-7-openjdk-amd64
+# start the following services
+# sudo service start elasticsearch
+# sudo service restart nginx
