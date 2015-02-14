@@ -28,7 +28,10 @@ class UpdateDataFromSourceService {
             logger.info("---------------------------------------------------")
             logger.info("last job started: $lastJob.startDate : and took: $lastJob.completionTime : and was: $lastJob.jobResult")
             logger.info("---------------------------------------------------")
-            def wayBackDiff = 32 //if we don't know when the last job ran, get data from yesterday
+            def wayBackDiff = 300 //grailsApplication.config.wayBackDiff //if we don't know when the last job ran, get data from yesterday
+//            if(wayBackDiff < 0) {
+//                wayBackDiff = 40
+//            }
             //TODO fix this...
             //TODO getting the waybackdate should be a function and i should have a unit test...
             if(lastJob.jobResult == "done") {
@@ -42,19 +45,6 @@ class UpdateDataFromSourceService {
             def getDataFrom = wayBackDate.format("YYYY-MM-dd")
             logger.info("getDataFrom: $getDataFrom")
 
-            try {
-                stashDataService.getAll(wayBackDate)
-            } catch (Exception e) {
-                logger.error("CRAP, STASH DATA SERVICE FAILED" + e.message)
-            }
-            //TODO stashDataService should also get data from the way back date
-            //TODO need to finish this guy up...
-            try {
-                jenkinsDataService.getJobs(null, "")
-            } catch (Exception e) {
-                logger.error("CRAP, JENKINS DATA SERVICE FAILED" + e.message)
-            }
-
             def jiraProjects = jiraDataService.getProjects()
             history.projectCount = jiraProjects.size()
             for (def p : jiraProjects) {
@@ -66,6 +56,18 @@ class UpdateDataFromSourceService {
                     logger.info("JIRA FAIL: $e.stackTrace")
                     jobNotes += "JIRA FAIL: $p : $e.message"
                 }
+            }
+
+            try {
+                stashDataService.getAll(wayBackDate)
+            } catch (Exception e) {
+                logger.error("CRAP, STASH DATA SERVICE FAILED" + e.getStackTrace())
+            }
+            //TODO need to finish this guy up...
+            try {
+                jenkinsDataService.getJobs(null, "", getDataFrom)
+            } catch (Exception e) {
+                logger.error("CRAP, JENKINS DATA SERVICE FAILED" + e.message)
             }
 
             def doneDateTime = new Date()

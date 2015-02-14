@@ -48,10 +48,10 @@ class StashDataService {
         def json = makeStashRequest(path, null)
         def repoList = []
         for (def i : json.values) {
-            repoList.add(new Expando(projectKey:projectKey, repo: i.slug, start:0, limit:100))
+            repoList.add(new Expando(projectKey:projectKey, repo: i.slug, start:0, limit:300))
         }
         for(def repo in repoList){
-            logger.info("GETTING DATA FOR $repo.projectKey : $repo.repo")
+            logger.info("GETTING DATA FOR $repo.projectKey : $repo.repo : since: $fromDate")
             getPullRequests(repo.projectKey, repo.repo, repo.start, repo.limit, fromDate) //for each one of these, get pull requests & commits
             getCommits(repo.projectKey, repo.repo, repo.start, repo.limit, fromDate)
         }
@@ -68,43 +68,43 @@ class StashDataService {
         def json = makeStashRequest(path, [start: start, limit: limit])
 
         if (json) {
+            for (def i : json.values) {
+                def updatedDate = new Date(i.authorTimestamp)
+                if(updatedDate >= fromDate) {   //we only need to do stuff if this was modified on or after the fromDate
+                    logger.debug("HIT THE WAY BACK DATE; author timestamp: $updatedDate fromDate: $fromDate")
+
+                    def locDelta = getCLOC(project, repo, i.id)
+                    def stashData = StashData.findByKey(i.id)
+                    if (!stashData) { //if we have a commit already i guess it would never change, no need to update it
+                        stashData = new StashData(
+                                key: i.id,
+                                created: new Date(i.authorTimestamp), //comes back as epoch time, which sucks
+                                author: UtilitiesService.cleanEmail(i.author.emailAddress),
+                                stashProject: UtilitiesService.makeNonTokenFriendly(project),
+                                repo: UtilitiesService.makeNonTokenFriendly(repo),
+                                scmAction: "commit",
+                                dataType: "SCM",
+                                linesAdded: locDelta.addedLOC,
+                                linesRemoved: locDelta.removedLOC,
+                                commitCount: 1
+                        )
+                    } else {
+                        stashData.linesRemoved = locDelta.removedLOC
+                        stashData.linesAdded = locDelta.addedLOC
+                        stashData.repo = UtilitiesService.makeNonTokenFriendly(repo)
+                        stashData.stashProject = UtilitiesService.makeNonTokenFriendly(project)
+                        stashData.commitCount = 1
+                    }
+                    def couchReturn = couchConnectorService.saveToCouch(stashData)
+                    logger.debug("RETURNED FROM COUCH: $couchReturn")
+                    stashData.couchId = couchReturn
+                    stashData.save(flush: true, failOnError: true)
+                }
+            }
             if(!json.isLastPage) { //if there are more than 100 records then recurse
                 def newLimit = start + limit
                 logger.info("GETTING COMMITS: $start : and : $newLimit")
-                getCommits(project, repo, start+limit, limit)
-            }
-            for (def i : json.values) {
-                //TODO this should also check if we hit the fromDate
-//            if(i.updatedDate >= fromDate) {
-//                return
-//            }
-
-                def locDelta = getCLOC(project, repo, i.id)
-                def stashData = StashData.findByKey(i.id)
-                if(!stashData) { //if we have a commit already i guess it would never change, no need to update it
-                    stashData = new StashData(
-                            key: i.id,
-                            created: new Date(i.authorTimestamp), //comes back as epoch time, which sucks
-                            author: UtilitiesService.cleanEmail(i.author.emailAddress),
-                            stashProject: UtilitiesService.makeNonTokenFriendly(project),
-                            repo: UtilitiesService.makeNonTokenFriendly(repo),
-                            scmAction: "commit",
-                            dataType: "SCM",
-                            linesAdded: locDelta.addedLOC,
-                            linesRemoved: locDelta.removedLOC,
-                            commitCount: 1
-                    )
-                } else {
-                    stashData.linesRemoved = locDelta.removedLOC
-                    stashData.linesAdded = locDelta.addedLOC
-                    stashData.repo = UtilitiesService.makeNonTokenFriendly(repo)
-                    stashData.stashProject = UtilitiesService.makeNonTokenFriendly(project)
-                    stashData.commitCount = 1
-                }
-                def couchReturn = couchConnectorService.saveToCouch(stashData)
-                logger.debug("RETURNED FROM COUCH: $couchReturn")
-                stashData.couchId = couchReturn
-                stashData.save(flush: true, failOnError: true)
+                getCommits(project, repo, start+limit, limit, fromDate)
             }
         }
     }
@@ -122,79 +122,78 @@ class StashDataService {
     def getPullRequests(project, repo, start, limit, fromDate) {
         def path = "/rest/api/1.0/projects/$project/repos/$repo/pull-requests" ///pull-requests
         def json = makeStashRequest(path, [state: "all", start: start, limit: limit])
+
+        for (def i : json.values) {
+            def updatedDate = new Date(i.updatedDate)
+            if(updatedDate >= fromDate) {
+                logger.debug("HIT THE WAY BACK DATE; updated: $updatedDate fromDate: $fromDate")
+
+                def reviewers = []
+                for (def r in i.reviewers) {
+                    if (r.user.emailAddress) {
+                        //TODO would be great to get WHAT they did here...
+                        reviewers.add(UtilitiesService.cleanEmail(r.user.emailAddress))
+                    }
+                }
+
+                int commentCount = 0
+                if (i.attributes.commentCount?.size() > 0) {
+                    commentCount = Integer.parseInt(i.attributes.commentCount[0])
+                }
+
+                def timeOpen = UtilitiesService.getDifferenceBetweenDatesInHours(i.createdDate, i.updatedDate)
+                def commitCount = getCommitCount(path, i.id)
+
+                logger.debug("HERE IS THE STASH KEY:")
+                logger.debug("$i.createdDate-$i.author.user.id")
+
+                def stashData = StashData.findByKey("$i.createdDate-$i.author.user.id")
+                if (stashData) {
+                    logger.debug("FOUND PULL REQUEST!")
+                    stashData.updated = new Date(i.updatedDate)
+                    stashData.reviewers = reviewers
+                    stashData.repo = UtilitiesService.makeNonTokenFriendly(repo)
+                    stashData.stashProject = UtilitiesService.makeNonTokenFriendly(project)
+                    stashData.commentCount = commentCount
+                    stashData.created = new Date(i.createdDate)
+                    stashData.author = UtilitiesService.cleanEmail(i.author.user.emailAddress)
+                    stashData.scmAction = "pull-request"
+                    stashData.dataType = "SCM"
+                    stashData.stashProject = i.project
+                    stashData.state = i.state
+                    stashData.timeOpen = timeOpen
+                    stashData.commitCount = commitCount
+                } else {
+                    logger.debug("NO FOUND PULL REQUEST NOOOOOOOOOOOO!")
+                    stashData = new StashData(
+                            key: "$i.createdDate-$i.author.user.id",
+                            created: new Date(i.createdDate),
+                            updated: new Date(i.updatedDate),
+                            author: UtilitiesService.cleanEmail(i.author.user.emailAddress),
+                            reviewers: reviewers,
+                            stashProject: project,
+                            repo: UtilitiesService.makeNonTokenFriendly(repo),
+                            scmAction: "pull-request",
+                            commentCount: commentCount,
+                            dataType: "SCM",
+                            state: i.state,
+                            timeOpen: timeOpen,
+                            commitCount: commitCount
+                    )
+                }
+                def couchReturn = couchConnectorService.saveToCouch(stashData)
+                logger.debug("RETURNED FROM COUCH: $couchReturn")
+                stashData.couchId = couchReturn
+                stashData.save(flush: true, failOnError: true)
+            }
+        }
         if(!json.isLastPage) { //if there are more than 100 records then recurse
             def newLimit = start + limit
             logger.info("GETTING PULL REQUEST: $start : and : $newLimit")
-            getPullRequests(project, repo, start+limit, limit)
+            getPullRequests(project, repo, start+limit, limit, fromDate)
 
         }
 
-        for (def i : json.values) {
-            //TODO this should also check if we hit the fromDate
-//            if(i.updatedDate >= fromDate) {
-//                return
-//            }
-
-            def reviewers = []
-
-            for(def r in i.reviewers) {
-                if(r.user.emailAddress){
-                    //TODO would be great to get WHAT they did here...
-                    //reviewers.add(name: r.user.emailAddress.replace("@nike.com",""), approved: r.approved)
-                    reviewers.add(UtilitiesService.cleanEmail(r.user.emailAddress))
-                }
-            }
-
-            int commentCount = 0
-            if(i.attributes.commentCount?.size() > 0) {
-                commentCount = Integer.parseInt(i.attributes.commentCount[0])
-            }
-
-            def timeOpen = UtilitiesService.getDifferenceBetweenDatesInHours(i.createdDate, i.updatedDate)
-            def commitCount = getCommitCount(path, i.id)
-
-            logger.debug("HERE IS THE STASH KEY:")
-            logger.debug("$i.createdDate-$i.author.user.id")
-
-            def stashData = StashData.findByKey("$i.createdDate-$i.author.user.id")
-            if(stashData) {
-                logger.debug("FOUND PULL REQUEST!")
-                stashData.updated = new Date(i.updatedDate)
-                stashData.reviewers = reviewers
-                stashData.repo = UtilitiesService.makeNonTokenFriendly(repo)
-                stashData.stashProject = UtilitiesService.makeNonTokenFriendly(project)
-                stashData.commentCount = commentCount
-                stashData.created = new Date(i.createdDate)
-                stashData.author = UtilitiesService.cleanEmail(i.author.user.emailAddress)
-                stashData.scmAction = "pull-request"
-                stashData.dataType = "SCM"
-                stashData.stashProject = i.project
-                stashData.state = i.state
-                stashData.timeOpen = timeOpen
-                stashData.commitCount = commitCount
-            } else {
-                logger.debug("NO FOUND PULL REQUEST NOOOOOOOOOOOO!")
-                stashData = new StashData(
-                        key: "$i.createdDate-$i.author.user.id",
-                        created: new Date(i.createdDate),
-                        updated: new Date(i.updatedDate),
-                        author: UtilitiesService.cleanEmail(i.author.user.emailAddress),
-                        reviewers: reviewers,
-                        stashProject: project,
-                        repo: UtilitiesService.makeNonTokenFriendly(repo),
-                        scmAction: "pull-request",
-                        commentCount: commentCount,
-                        dataType: "SCM",
-                        state: i.state,
-                        timeOpen: timeOpen,
-                        commitCount: commitCount
-                )
-            }
-            def couchReturn = couchConnectorService.saveToCouch(stashData)
-            logger.debug("RETURNED FROM COUCH: $couchReturn")
-            stashData.couchId = couchReturn
-            stashData.save(flush: true, failOnError: true)
-        }
     }
 
     /**
@@ -250,6 +249,7 @@ class StashDataService {
         def url = grailsApplication.config.stash.url //this is defined in application.properties
         try {
             return httpRequestService.callRestfulUrl(url, path, query, false)
+            logger.info("GOT DATA BACK FROM STASH")
         } catch (Exception ex) {
             //TODO handle this!!!
             logger.error("FAIL: $ex.message")
