@@ -2,6 +2,8 @@ package org.cwhd.measure
 
 import grails.transaction.Transactional
 import groovyx.net.http.HTTPBuilder
+
+import static groovyx.net.http.ContentType.HTML
 import static groovyx.net.http.ContentType.JSON
 import static groovyx.net.http.Method.GET
 import org.apache.commons.logging.LogFactory
@@ -17,7 +19,7 @@ class HttpRequestService {
     private static final logger = LogFactory.getLog(this)
     def grailsApplication
 
-    def callRestfulUrl(url, path, query, setProxy) {
+    def callRestfulUrl(url, path, query, setProxy, authCookies, credentials) {
 
         def http = new HTTPBuilder( url )
         if(setProxy) {
@@ -33,9 +35,13 @@ class HttpRequestService {
             logger.debug("getting data from $uri")
 
             headers.'User-Agent' = 'Mozilla/5.0 Ubuntu/8.10 Firefox/3.0.4'
-            headers.'Authorization' = 'Basic ' + grailsApplication.config.stash.credentials
+            headers.'Authorization' = 'Basic ' + credentials
             headers.'Accept' = 'application/json'
             headers.'Content-Type' = 'application/json'
+            if(authCookies) {
+                logger.info("GOT COOKIES $authCookies")
+                headers.'Cookie' = authCookies.join(';')
+            }
 
             response.success = { resp, json ->
                // logger.debug(json)
@@ -47,8 +53,8 @@ class HttpRequestService {
             response.failure = { resp ->
                 logger.error("HTTP Fail! $resp")
                 logger.info(resp.getStatus())
-                logger.info(resp.getData())
-                logger.info(resp.getHeaders())
+                logger.debug(resp.getData())
+                logger.debug(resp.getHeaders())
                 return null
             }
         }
@@ -121,14 +127,76 @@ class HttpRequestService {
             // handler for any failure status code:
             //TODO i should handle this failure better
             response.failure = { resp ->
-                logger.error("HTTP Fail! $resp")
+                logger.error("Couch HTTP Fail! $resp")
                 logger.info(resp.getStatus())
-                logger.info(resp.getData())
-                logger.info(resp.getHeaders())
+                logger.debug(resp.getData())
+                logger.debug(resp.getHeaders())
                 couchId = null
             }
         }
         logger.debug("THE ID IS: $couchId")
         return couchId
+    }
+
+    /**
+     * Some applications need auth cookies to log in.  This will get the cookies returned from an
+     * authentication service and return them.
+     * @param url
+     * @param path
+     * @param setProxy
+     * @return
+     */
+    def getAuthCookies(url, path, setProxy) {
+        def http = new HTTPBuilder( url )
+        if(setProxy) {
+            http.setProxy('connsvr.nike.com',8080,null)
+        }
+        def cookies = []
+
+        http.request( GET, HTML ) {
+            uri.path = path
+
+            logger.info("getting data from $uri")
+
+            headers.'User-Agent' = 'Mozilla/5.0 Ubuntu/8.10 Firefox/3.0.4'
+            headers.'Authorization' = 'Basic ' + grailsApplication.config.stash.credentials
+            headers.'Accept' = 'application/json'
+            headers.'Content-Type' = 'application/json'
+
+            response.success = { resp, json ->
+                logger.info("YAY IT WORKED!")
+                resp.getHeaders('Set-Cookie').each {
+                    def cookie = it.value.split(';')[0]
+                    logger.info("COOKIE: $cookie")
+                    cookies.add(cookie)
+                }
+                //cookies.add("JSESSIONID=F43C0B6D1F87969299EA7949887F1923")
+                resp.properties.each { k, v ->
+                    logger.info("\"$k\":\"$v\"")
+                }
+                for (def h in resp.getAllHeaders()) {
+                    logger.info("HEADER NAME:" + h.getName())
+                    logger.info("HEADER VAL:" + h.getValue())
+                }
+                logger.info(json)
+
+                return cookies
+            }
+
+            // handler for any failure status code:
+            //TODO i should handle this failure better
+            response.failure = { resp ->
+                logger.info("FAIL")
+                resp.properties.each { k, v ->
+                    logger.info("\"$k\":\"$v\"")
+                }
+
+                logger.error("HTTP Fail! $resp")
+                logger.info(resp.getStatus())
+                logger.info(resp.getData())
+                logger.info(resp.getHeaders())
+                return null
+            }
+        }
     }
 }

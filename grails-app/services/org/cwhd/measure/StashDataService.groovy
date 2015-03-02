@@ -21,21 +21,26 @@ class StashDataService {
      * 1) get all the projects in Stash
      */
     def getAll(fromDate) {
+        logger.info("----")
+        logger.info("GETTING STASH DATA")
+        logger.info("----")
         def start = 0
-        def limit = 200
+        def limit = 300
         def path = "/rest/api/1.0/projects" ///get all the projects in stash...
         def json = makeStashRequest(path, [start: start, limit: limit])
         if(!json.isLastPage) {
+            logger.info("PAGING PROJECTS...")
             getAll(path, [start: start+limit, limit: limit])
         }
         def projectList = []
         for (def i : json.values) {
             projectList.add(i.key) //add to the list to get off this thread
-            logger.info("STASH PROJECT: $i.key")
+            logger.debug("STASH PROJECT: $i.key")
         }
-//        projectList = ["BEP"] //BP
+//        projectList.remove("BEP")
+        //projectList = ["SQA"]
         for(def project in projectList) {
-            getProjectData(project, fromDate)
+            getProjectData(project, fromDate, start, limit)
         }
     }
 
@@ -43,9 +48,14 @@ class StashDataService {
      * 2) get all the repos in a project
      * @param projectKey
      */
-    def getProjectData(projectKey, fromDate) {
+    def getProjectData(projectKey, fromDate, start, limit) {
         def path = "/rest/api/1.0/projects/$projectKey/repos" ///get all the projects in stash...
-        def json = makeStashRequest(path, null)
+        def json = makeStashRequest(path, [start: start, limit: limit])
+        if(!json.isLastPage) {
+            logger.info("PAGING REPOS...")
+            getProjectData(projectKey, fromDate, [start: start+limit, limit: limit])
+        }
+
         def repoList = []
         for (def i : json.values) {
             repoList.add(new Expando(projectKey:projectKey, repo: i.slug, start:0, limit:300))
@@ -66,16 +76,22 @@ class StashDataService {
     def getCommits(project, repo, start, limit, fromDate) {
         def path = "/rest/api/1.0/projects/$project/repos/$repo/commits"
         def json = makeStashRequest(path, [start: start, limit: limit])
+        def hitFromDate = false
+        logger.debug("GOT JSON")
 
         if (json) {
+            logger.debug("JSON IS NOT FALSE")
             for (def i : json.values) {
+                logger.debug("JSON VALUE...")
                 def updatedDate = new Date(i.authorTimestamp)
+                logger.debug("COMMITS: HERE ARE THE DATES updated: $updatedDate fromDate: $fromDate")
                 if(updatedDate >= fromDate) {   //we only need to do stuff if this was modified on or after the fromDate
                     logger.debug("HIT THE WAY BACK DATE; author timestamp: $updatedDate fromDate: $fromDate")
 
                     def locDelta = getCLOC(project, repo, i.id)
                     def stashData = StashData.findByKey(i.id)
                     if (!stashData) { //if we have a commit already i guess it would never change, no need to update it
+                        logger.debug("INSERT COMMIT")
                         stashData = new StashData(
                                 key: i.id,
                                 created: new Date(i.authorTimestamp), //comes back as epoch time, which sucks
@@ -89,6 +105,7 @@ class StashDataService {
                                 commitCount: 1
                         )
                     } else {
+                        logger.debug("UPDATE COMMIT")
                         stashData.linesRemoved = locDelta.removedLOC
                         stashData.linesAdded = locDelta.addedLOC
                         stashData.repo = UtilitiesService.makeNonTokenFriendly(repo)
@@ -99,11 +116,13 @@ class StashDataService {
                     logger.debug("RETURNED FROM COUCH: $couchReturn")
                     stashData.couchId = couchReturn
                     stashData.save(flush: true, failOnError: true)
+                } else {
+                    hitFromDate = true
                 }
             }
-            if(!json.isLastPage) { //if there are more than 100 records then recurse
+            if(!json.isLastPage && !hitFromDate) { //if there are more than 100 records then recurse
                 def newLimit = start + limit
-                logger.info("GETTING COMMITS: $start : and : $newLimit")
+                logger.debug("GETTING COMMITS: $start : and : $newLimit")
                 getCommits(project, repo, start+limit, limit, fromDate)
             }
         }
@@ -122,11 +141,13 @@ class StashDataService {
     def getPullRequests(project, repo, start, limit, fromDate) {
         def path = "/rest/api/1.0/projects/$project/repos/$repo/pull-requests" ///pull-requests
         def json = makeStashRequest(path, [state: "all", start: start, limit: limit])
+        def hitFromDate = false
 
         for (def i : json.values) {
             def updatedDate = new Date(i.updatedDate)
+            logger.debug("PRS: HERE ARE THE DATES updated: $updatedDate fromDate: $fromDate")
             if(updatedDate >= fromDate) {
-                logger.debug("HIT THE WAY BACK DATE; updated: $updatedDate fromDate: $fromDate")
+                logger.debug("DID NOT HIT THE WAY BACK DATE; updated: $updatedDate fromDate: $fromDate")
 
                 def reviewers = []
                 for (def r in i.reviewers) {
@@ -149,29 +170,28 @@ class StashDataService {
 
                 def stashData = StashData.findByKey("$i.createdDate-$i.author.user.id")
                 if (stashData) {
-                    logger.debug("FOUND PULL REQUEST!")
-                    stashData.updated = new Date(i.updatedDate)
-                    stashData.reviewers = reviewers
-                    stashData.repo = UtilitiesService.makeNonTokenFriendly(repo)
-                    stashData.stashProject = UtilitiesService.makeNonTokenFriendly(project)
-                    stashData.commentCount = commentCount
+                    logger.debug("UPDATING...")
                     stashData.created = new Date(i.createdDate)
+                    stashData.updated = new Date(i.updatedDate)
                     stashData.author = UtilitiesService.cleanEmail(i.author.user.emailAddress)
+                    stashData.reviewers = reviewers
+                    stashData.stashProject = UtilitiesService.makeNonTokenFriendly(project)
+                    stashData.repo = UtilitiesService.makeNonTokenFriendly(repo)
+                    stashData.commentCount = commentCount
                     stashData.scmAction = "pull-request"
                     stashData.dataType = "SCM"
-                    stashData.stashProject = i.project
                     stashData.state = i.state
                     stashData.timeOpen = timeOpen
                     stashData.commitCount = commitCount
                 } else {
-                    logger.debug("NO FOUND PULL REQUEST NOOOOOOOOOOOO!")
+                    logger.debug("INSERTING...")
                     stashData = new StashData(
                             key: "$i.createdDate-$i.author.user.id",
                             created: new Date(i.createdDate),
                             updated: new Date(i.updatedDate),
                             author: UtilitiesService.cleanEmail(i.author.user.emailAddress),
                             reviewers: reviewers,
-                            stashProject: project,
+                            stashProject: UtilitiesService.makeNonTokenFriendly(project),
                             repo: UtilitiesService.makeNonTokenFriendly(repo),
                             scmAction: "pull-request",
                             commentCount: commentCount,
@@ -182,18 +202,19 @@ class StashDataService {
                     )
                 }
                 def couchReturn = couchConnectorService.saveToCouch(stashData)
-                logger.debug("RETURNED FROM COUCH: $couchReturn")
+                logger.debug("ID RETURNED FROM COUCH: $couchReturn")
                 stashData.couchId = couchReturn
                 stashData.save(flush: true, failOnError: true)
+            } else {
+                hitFromDate = true
             }
         }
-        if(!json.isLastPage) { //if there are more than 100 records then recurse
+        //TODO need to not call another page if i hit the waybackdate
+        if(!json.isLastPage && !hitFromDate) { //if there are more than 100 records then recurse
             def newLimit = start + limit
-            logger.info("GETTING PULL REQUEST: $start : and : $newLimit")
+            logger.debug("GETTING PULL REQUEST: $start : and : $newLimit")
             getPullRequests(project, repo, start+limit, limit, fromDate)
-
         }
-
     }
 
     /**
@@ -203,11 +224,16 @@ class StashDataService {
      * @return the count of commits on this PR
      */
     def getCommitCount(currentPath, prNumber){
-        def json = makeStashRequest("$currentPath/$prNumber/commits", null)
-        if(json) {
-            logger.debug("PR HAD " + json.size + " COMMITS!")
-            return json.size
-        } else {
+        try {
+            def json = makeStashRequest("$currentPath/$prNumber/commits", null)
+            if(json) {
+                logger.debug("PR HAD " + json.size + " COMMITS!")
+                return json.size
+            } else {
+                return 0
+            }
+        } catch (Exception e) {
+            logger.error("FAIL GETTING COMMIT COUNT! :" + e.getStackTrace())
             return 0
         }
     }
@@ -219,23 +245,28 @@ class StashDataService {
      http://stash.nikedev.com/rest/api/1.0/projects/SQA/repos/humulo/commits/d333c1e0e1ee050f68a46f15cf8c78456a2c01b0/diff
      **/
     def getCLOC(project, repo, sha) {
-        def path = "/rest/api/1.0/projects/$project/repos/$repo/commits/$sha/diff"
-        def json = makeStashRequest(path, null)
-        def addedLOC = 0
-        def removedLOC = 0
-        for(def d in json.diffs) {
-            for(def h in d.hunks) {
-                for(def s in h.segments) {
-                    if(s.type == "ADDED") {
-                        addedLOC += s.lines.size()
-                    } else if (s.type == "REMOVED") {
-                        removedLOC += s.lines.size()
+        try {
+            def path = "/rest/api/1.0/projects/$project/repos/$repo/commits/$sha/diff"
+            def json = makeStashRequest(path, null)
+            def addedLOC = 0
+            def removedLOC = 0
+            for(def d in json.diffs) {
+                for(def h in d.hunks) {
+                    for(def s in h.segments) {
+                        if(s.type == "ADDED") {
+                            addedLOC += s.lines.size()
+                        } else if (s.type == "REMOVED") {
+                            removedLOC += s.lines.size()
+                        }
                     }
                 }
             }
+            logger.debug([addedLOC: addedLOC, removedLOC: removedLOC])
+            return [addedLOC: addedLOC, removedLOC: removedLOC]
+        } catch (Exception e) {
+            logger.error("FAIL CLOC! " + e.getStackTrace())
+            return [addedLOC: 0, removedLOC: 0]
         }
-        logger.debug([addedLOC: addedLOC, removedLOC: removedLOC])
-        return [addedLOC: addedLOC, removedLOC: removedLOC]
     }
 
 
@@ -246,10 +277,11 @@ class StashDataService {
      * @return
      */
     def makeStashRequest(path, query) {
+        def credentials = grailsApplication.config.stash.credentials
         def url = grailsApplication.config.stash.url //this is defined in application.properties
         try {
-            return httpRequestService.callRestfulUrl(url, path, query, false)
-            logger.info("GOT DATA BACK FROM STASH")
+            return httpRequestService.callRestfulUrl(url, path, query, false, null, credentials)
+            logger.debug("GOT DATA BACK FROM STASH")
         } catch (Exception ex) {
             //TODO handle this!!!
             logger.error("FAIL: $ex.message")

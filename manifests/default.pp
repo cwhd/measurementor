@@ -11,7 +11,7 @@ include apt
 package{'unzip': ensure => installed } 
 package{'rpm': ensure => installed } 
 package{'groovy': ensure => installed } 
-package{'mongodb-org': ensure => latest } 
+#package{'mongodb-org': ensure => latest }
 
 # Update APT Cache
 class { 'apt':

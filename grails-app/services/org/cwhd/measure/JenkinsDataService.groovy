@@ -21,56 +21,57 @@ class JenkinsDataService {
      */
 
     def getJobs(url, path, fromDate) {
+        logger.info("----")
         logger.info("CALLING JENKINS")
-        if(!url) {                  //the default URL is set in the application.properties
-            url = grailsApplication.config.jenkins.url
-        }
+        logger.info("----")
         path += "api/json"      //add this to the end of everything to get a JSON response
-        logger.info("ABOUT TO CALL $url AND $path")
-        def json = httpRequestService.callRestfulUrl(url, path, null, false)
+        //logger.info("ABOUT TO CALL $url AND $path")
+        def json = makeJenkinsRequest(path, null)
+//        def json = httpRequestService.callRestfulUrl(url, path, null, false, null, credentials)
         def jobs = []
         if(json) {
             def newPath = ""
             for (def i : json.jobs) {
-
-                logger.info("----------------------------------")
-                logger.info("$i.name")
-                logger.info("$i.url")
-                logger.info("----------------------------------")
+                logger.debug("----")
+                logger.debug("$i.name")
+                logger.debug("$i.url")
+                logger.debug("----")
                 newPath = UtilitiesService.getPathFromUrl(i.url)
-                getJobs(i.url, newPath)
+                getJobs(i.url, newPath, fromDate)
                 jobs.add(i.name)
             }
             for (def b in json.builds) {
-                logger.info("----------------------------------")
+                logger.info("----")
                 logger.info("GETTING BUILDS FOR $b.url")
-                logger.info("----------------------------------")
+                logger.debug("----")
                 newPath = UtilitiesService.getPathFromUrl(b.url)
                 getBuild(b.url, newPath, fromDate)
             }
-
         }
         return jobs
     }
 
     def getBuild(url, path, fromDate) {
-        def json = httpRequestService.callRestfulUrl(url, path + "/api/json", null, false)
+        def json = makeJenkinsRequest(path + "/api/json", null)
+//        def json = httpRequestService.callRestfulUrl(url, path + "/api/json", null, false, null, credentials)
         if(json) {
-            def updatedDate = new Date(json.timestamp)  //only get data from after the fromDate
-            if(updatedDate >= fromDate) {   //we only need to do stuff if this was modified on or after the fromDate
-                logger.info("AFTER THE WAY BACK JENKINS DATE: $updatedDate is >= then $fromDate")
+            def cleanTimestamp = UtilitiesService.convertTimestampFromString(json.timestamp)
+            logger.info("CLEAN TIMESTAMP: $cleanTimestamp : " + cleanTimestamp.getClass().toString())
+            logger.info("FROM DATE:: $fromDate : " + fromDate.getClass().toString())
+            if(cleanTimestamp >= fromDate) {   //we only need to do stuff if this was modified on or after the fromDate
+                logger.info("AFTER THE WAY BACK JENKINS DATE: $cleanTimestamp is >= then $fromDate")
 
                 def causedBy = ""
                 def remoteUrl = ""
                 def lastBuiltRevision = ""
-                logger.info("----------------------------------")
-                logger.info("buildName: $json.fullDisplayName")
-                logger.info("buildId: $json.id")
-                logger.info("result: $json.result")
-                logger.info("buildNumber: $json.number")
-                logger.info("timstamp: $json.timestamp") //TODO it would be better to make this a real date
-                logger.info("URL: $json.url")
-                logger.info(json.changeset)
+                logger.debug("----")
+                logger.debug("buildName: $json.fullDisplayName")
+                logger.debug("buildId: $json.id")
+                logger.debug("result: $json.result")
+                logger.debug("buildNumber: $json.number")
+                logger.debug("timstamp: $cleanTimestamp")
+                logger.debug("URL: $json.url")
+                //logger.info(json.changeset)
                 for (def a in json.actions) {
                     if (a.causes) {
                         for (def c in a.causes) {
@@ -89,11 +90,7 @@ class JenkinsDataService {
                         lastBuiltRevision = a.lastBuiltRevision.SHA1
                     }
                 }
-                logger.info("----------------------------------")
-                def cleanTimestamp = null
-                if (json.timestamp) {
-                    cleanTimestamp = new Date((long) json.timestamp)
-                }
+                logger.info("----")
                 def cleanDisplayName = ""
                 if (json.fullDisplayName) {
                     cleanDisplayName = UtilitiesService.cleanFullBuildName(json.fullDisplayName)
@@ -109,20 +106,33 @@ class JenkinsDataService {
                     jenkinsData.remoteUrl = remoteUrl
                     jenkinsData.lastBuiltRevision = lastBuiltRevision
                     jenkinsData.dataType = "CI"
+                    jenkinsData.buildNumber = json.number
                 } else {
-                    jenkinsData = new JenkinsData(buildId: json.id, timestamp: cleanTimestamp, url: json.url,
+                    jenkinsData = new JenkinsData(buildId: json.id, timestamp: cleanTimestamp, jenkinsUrl: json.url,
                             buildName: cleanDisplayName, result: json.result, buildNumber: json.number,
                             duration: json.duration, causedBy: causedBy, remoteUrl: remoteUrl,
                             lastBuiltRevision: lastBuiltRevision, dataType: "CI")
                 }
                 def couchReturn = couchConnectorService.saveToCouch(jenkinsData)
-                logger.info("RETURNED FROM COUCH: $couchReturn")
+                logger.debug("RETURNED FROM COUCH: $couchReturn")
                 jenkinsData.couchId = couchReturn
 
                 jenkinsData.save(flush: true, failOnError: true)
             }
         } else {
             logger.error("ERROR: NOTHING RETURNED FOR BUILD")
+        }
+    }
+
+    def makeJenkinsRequest(path, query) {
+        def credentials = grailsApplication.config.jenkins.credentials
+        def url = grailsApplication.config.jenkins.url //this is defined in application.properties
+        try {
+            return httpRequestService.callRestfulUrl(url, path, query, false, null, credentials)
+            logger.debug("GOT DATA BACK FROM JIRA")
+        } catch (Exception ex) {
+            //TODO handle this!!!
+            logger.error("JIRA FAIL: $ex.message")
         }
     }
 }

@@ -9,3 +9,4 @@ application.properties
 /data/elasticsearch
 /out
 application.properties
+.vagrant/

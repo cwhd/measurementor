@@ -20,18 +20,17 @@ class JiraDataService {
      * @return
      */
     def getProjects() {
-        def url = grailsApplication.config.jira.url
         def path = "/rest/api/2/project"
-        def json = httpRequestService.callRestfulUrl(url, path, null, true)
+        def json = makeJiraRequest(path, null)
+//        def json = httpRequestService.callRestfulUrl(url, path, null, true, null)
         def projects = []
 
-
+        logger.info("GETTING JIRA PROJECTS...")
         for(def i : json) {
             projects.add(i.key)
-            logger.info("$i.key")
+            logger.debug("$i.key")
         }
 
-        //projects.add("ACOE")
         return projects
     }
 
@@ -55,16 +54,20 @@ class JiraDataService {
             fromQuery = " AND updatedDate>$fromDate"
         }
 
-        def url = grailsApplication.config.jira.url
         def path = "/rest/api/2/search"
         def jiraQuery = "project=$project$fromQuery"
         def query = [jql: jiraQuery, expand:"changelog",startAt: startAt, maxResults: maxResults, fields:"*all"]
 
-        def json = httpRequestService.callRestfulUrl(url, path, query, true)
+//        def json = httpRequestService.callRestfulUrl(url, path, query, true, null)
+        def json = makeJiraRequest(path, query)
         def keepGoing = false
         if(json.total) {
-            logger.info("-----")
-            logger.info("$json.total records in $project")
+            if(startAt > 0) {
+                logger.info("Paging $maxResults records...")
+            } else {
+                logger.info("-----")
+                logger.info("$json.total records in $project")
+            }
         } else {
             logger.info("-----")
             logger.info("no results for $project!")
@@ -86,6 +89,8 @@ class JiraDataService {
                 def movedToDev
                 def commentCount = 0
                 def movedToDevList = []
+                def product
+                def components = []
 
                 //NOTE the changelog gets us great historical information
                 if (i.changelog) {
@@ -124,6 +129,20 @@ class JiraDataService {
                     storyPoints = i.fields.customfield_10013.toInteger()
                 }
 
+                //NOTE this gets what we call "product"
+                if(i.fields.customfield_12040) {
+                    product = i.fields.customfield_12040.value
+                    if(i.fields.customfield_12040.child) {
+                        product += " " + i.fields.customfield_12040.child.value
+                    }
+                    logger.debug("PRODUCT: $product")
+                }
+
+                for(def c : i.fields.components) {
+                    logger.debug("COMPONENT: $c.name")
+                    components.add(c.name)
+                }
+
                 def issueType = i.fields.issuetype?.name
                 if (issueType) {
                     issueType = i.fields.issuetype.name.replace(" ", "_")
@@ -135,16 +154,21 @@ class JiraDataService {
                 //figure out how many days this took to get done
                 def leadTime = 0
                 def devTime = 0
-                if (createdDate && fin) {
-                    long duration = fin.getTime() - createdDate.getTime()
+                if (createdDate) {
+                    def endLeadTime = new Date()
+                    if(fin) {
+                        endLeadTime = fin
+                    }
+                    long duration = endLeadTime.getTime() - createdDate.getTime()
                     leadTime = TimeUnit.MILLISECONDS.toDays(duration)
                 }
 
-                if (movedToDev && fin) {
-                    long duration = fin.getTime() - movedToDev.getTime()
-                    devTime = TimeUnit.MILLISECONDS.toDays(duration)
-                } else if (movedToDev && !fin) {
-                    long duration = new Date().getTime() - movedToDev.getTime()
+                if (movedToDev) {
+                    def endLeadTime = new Date()
+                    if(fin) {
+                        endLeadTime = fin
+                    }
+                    long duration = endLeadTime.getTime() - movedToDev.getTime()
                     devTime = TimeUnit.MILLISECONDS.toDays(duration)
                 }
 
@@ -167,6 +191,8 @@ class JiraDataService {
                     jiraData.jiraProject = project
                     jiraData.rawEstimateHealth = estimateHealth.raw
                     jiraData.estimateHealth = estimateHealth.result
+                    jiraData.components = components
+                    jiraData.product = product
                 } else {
                     jiraData = new JiraData(key: i.key,
                             created: createdDate,
@@ -184,7 +210,9 @@ class JiraDataService {
                             commentCount: commentCount,
                             jiraProject: project,
                             estimateHealth: estimateHealth.result,
-                            rawEstimateHealth: estimateHealth.raw)
+                            rawEstimateHealth: estimateHealth.raw,
+                            components: components,
+                            product: product)
                 }
 
                 def couchReturn = couchConnectorService.saveToCouch(jiraData)
@@ -195,7 +223,7 @@ class JiraDataService {
         }
 
         if(keepGoing) {
-            logger.info("-----")
+            logger.debug("-----")
             logger.debug("NEXT PAGE starting at $startAt")
             getData(startAt + maxResults, maxResults, project, fromDate)
         }
@@ -208,5 +236,17 @@ class JiraDataService {
      */
     def reIndexEC() {
         elasticSearchService.index(JiraData)
+    }
+
+    def makeJiraRequest(path, query) {
+        def credentials = grailsApplication.config.jira.credentials
+        def url = grailsApplication.config.jira.url //this is defined in application.properties
+        try {
+            return httpRequestService.callRestfulUrl(url, path, query, true, null, credentials)
+            logger.debug("GOT DATA BACK FROM JIRA")
+        } catch (Exception ex) {
+            //TODO handle this!!!
+            logger.error("JIRA FAIL: $ex.message")
+        }
     }
 }

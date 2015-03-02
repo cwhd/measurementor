@@ -193,5 +193,18 @@ class UtilitiesService {
         return val
     }
 
+    /**
+     * Some systems use timestamps in epoch time, this will convert that to a real date
+     * @param timestamp
+     * @return null if you don't pass anything in, the actual date when we can convert it
+     */
+    public static Date convertTimestampFromString(timestamp) {
+        if(timestamp) {
+            return new Date((long)timestamp)
+        } else {
+            return null
+        }
+    }
+
 
 }

@@ -28,7 +28,7 @@ class UpdateDataFromSourceService {
             logger.info("---------------------------------------------------")
             logger.info("last job started: $lastJob.startDate : and took: $lastJob.completionTime : and was: $lastJob.jobResult")
             logger.info("---------------------------------------------------")
-            def wayBackDiff = 300 //grailsApplication.config.wayBackDiff //if we don't know when the last job ran, get data from yesterday
+            def wayBackDiff = 5 //grailsApplication.config.wayBackDiff //if we don't know when the last job ran, get data from yesterday
 //            if(wayBackDiff < 0) {
 //                wayBackDiff = 40
 //            }
@@ -57,17 +57,15 @@ class UpdateDataFromSourceService {
                     jobNotes += "JIRA FAIL: $p : $e.message"
                 }
             }
-
+            try {
+                jenkinsDataService.getJobs(null, "", wayBackDate)
+            } catch (Exception e) {
+                logger.error("CRAP, JENKINS DATA SERVICE FAILED" + e.message)
+            }
             try {
                 stashDataService.getAll(wayBackDate)
             } catch (Exception e) {
                 logger.error("CRAP, STASH DATA SERVICE FAILED" + e.getStackTrace())
-            }
-            //TODO need to finish this guy up...
-            try {
-                jenkinsDataService.getJobs(null, "", getDataFrom)
-            } catch (Exception e) {
-                logger.error("CRAP, JENKINS DATA SERVICE FAILED" + e.message)
             }
 
             def doneDateTime = new Date()
@@ -88,6 +86,5 @@ class UpdateDataFromSourceService {
         history.jobNotes = jobNotes
         history.jobResult = result
         history.save(failOnError: true)
-
     }
 }

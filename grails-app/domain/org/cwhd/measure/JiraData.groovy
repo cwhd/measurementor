@@ -22,6 +22,8 @@ class JiraData {
     String jiraProject
     int estimateHealth
     long rawEstimateHealth
+    String[] components
+    String product
 
     static constraints = {
         couchId nullable: true
@@ -38,5 +40,7 @@ class JiraData {
         jiraProject nullable: true
         estimateHealth nullable: true
         rawEstimateHealth nullable: true
+        components nullable: true
+        product nullable: true
     }
 }

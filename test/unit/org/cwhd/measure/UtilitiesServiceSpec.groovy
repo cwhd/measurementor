@@ -46,6 +46,14 @@ class UtilitiesServiceSpec extends Specification {
             firstDate << [1422639305990]
             secondDate << [1422642656258]
     }
+
+    void "Test String Timestamp To Date"() {
+        def theDate = utilitiesService.convertTimestampFromString(timestampString)
+        println theDate
+        expect: theDate == new Date(1421356703000L)
+        where:
+            timestampString << ["1421356703000"]
+    }
 /*
     void "Test time-estimate ratio for a fibonacci estimates"() {
         def estimateHealth = utilitiesService.estimateHealth(estimate, actualTime, 13, 9, fibonacciSeries)

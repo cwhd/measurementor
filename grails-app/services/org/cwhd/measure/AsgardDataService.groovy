@@ -4,7 +4,7 @@ import grails.transaction.Transactional
 import org.apache.commons.logging.LogFactory
 
 @Transactional
-class AsgardDataService implements SourceDataFetcher {
+class AsgardDataService {
     private static final logger = LogFactory.getLog(this)
     def grailsApplication
     def httpRequestService
@@ -23,14 +23,13 @@ class AsgardDataService implements SourceDataFetcher {
      */
 
     def getApplications() {
+        def credentials = grailsApplication.config.asgard.credentials
         logger.info("CALLING ASGARD")
         def url = grailsApplication.config.asgard.url
         def path = "/application/list.json"
-        def json = httpRequestService.callRestfulUrl(url, path, null, false)
-//        if(!json) {
-//            logger.info("TRYING AGAIN...")
-//            json = httpRequestService.callRestfulUrl(url, path, null, true)
-//        }
+        //TODO need to handle when the cookie expires...
+        def cookies = httpRequestService.getAuthCookies(url, path, false)
+        def json = httpRequestService.callRestfulUrl(url, path, null, false, cookies, credentials)
 
         def applications = []
 
@@ -45,7 +44,8 @@ class AsgardDataService implements SourceDataFetcher {
         return applications
     }
 
-    def getData(startAt, maxResults, project, fromDate) {
+    def getData(startAt, maxResults, project, fromDate, cookies) {
+        def credentials = grailsApplication.config.asgard.credentials
         if(!startAt) {
             startAt = 0
         }
@@ -62,7 +62,7 @@ class AsgardDataService implements SourceDataFetcher {
         def jiraQuery = "project=$project$fromQuery"
         def query = [jql: jiraQuery, expand:"changelog",startAt: startAt, maxResults: maxResults, fields:"*all"]
 
-        def json = httpRequestService.callRestfulUrl(url, path, query, true)
+        def json = httpRequestService.callRestfulUrl(url, path, query, true, cookies, credentials)
         def keepGoing = false
         if(json.total) {
             logger.info("----------------------------------")
