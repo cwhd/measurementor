@@ -12,6 +12,7 @@ package{'unzip': ensure => installed }
 package{'rpm': ensure => installed } 
 package{'groovy': ensure => installed } 
 #package{'mongodb-org': ensure => latest }
+include '::mongodb::server'
 
 # Update APT Cache
 class { 'apt':
