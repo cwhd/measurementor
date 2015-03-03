@@ -28,7 +28,7 @@ class UpdateDataFromSourceService {
             logger.info("---------------------------------------------------")
             logger.info("last job started: $lastJob.startDate : and took: $lastJob.completionTime : and was: $lastJob.jobResult")
             logger.info("---------------------------------------------------")
-            def wayBackDiff = 5 //grailsApplication.config.wayBackDiff //if we don't know when the last job ran, get data from yesterday
+            def wayBackDiff = 3 //grailsApplication.config.wayBackDiff //if we don't know when the last job ran, get data from yesterday
 //            if(wayBackDiff < 0) {
 //                wayBackDiff = 40
 //            }

@@ -49,7 +49,6 @@ class MapReducerService {
      * @param sandboxName
      */
     private void fillInTheBlanks(seriesName, sandboxName) {
-        def tds = new TimeDataSeries(seriesName:"Story Points Over Time", series:[]).save()
         def mapReduceSandboxCollection = []
         for(def p : db.mapReduceSandbox.find()) {
             if(p._id) {

@@ -29,7 +29,7 @@ class StashDataService {
         def path = "/rest/api/1.0/projects" ///get all the projects in stash...
         def json = makeStashRequest(path, [start: start, limit: limit])
         if(!json.isLastPage) {
-            logger.info("PAGING PROJECTS...")
+            logger.debug("PAGING PROJECTS...")
             getAll(path, [start: start+limit, limit: limit])
         }
         def projectList = []
@@ -37,8 +37,6 @@ class StashDataService {
             projectList.add(i.key) //add to the list to get off this thread
             logger.debug("STASH PROJECT: $i.key")
         }
-//        projectList.remove("BEP")
-        //projectList = ["SQA"]
         for(def project in projectList) {
             getProjectData(project, fromDate, start, limit)
         }
@@ -52,7 +50,7 @@ class StashDataService {
         def path = "/rest/api/1.0/projects/$projectKey/repos" ///get all the projects in stash...
         def json = makeStashRequest(path, [start: start, limit: limit])
         if(!json.isLastPage) {
-            logger.info("PAGING REPOS...")
+            logger.debug("PAGING REPOS...")
             getProjectData(projectKey, fromDate, [start: start+limit, limit: limit])
         }
 

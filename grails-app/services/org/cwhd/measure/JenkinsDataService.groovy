@@ -25,9 +25,8 @@ class JenkinsDataService {
         logger.info("CALLING JENKINS")
         logger.info("----")
         path += "api/json"      //add this to the end of everything to get a JSON response
-        //logger.info("ABOUT TO CALL $url AND $path")
-        def json = makeJenkinsRequest(path, null)
-//        def json = httpRequestService.callRestfulUrl(url, path, null, false, null, credentials)
+
+        def json = makeJenkinsRequest(null, path, null)
         def jobs = []
         if(json) {
             def newPath = ""
@@ -45,94 +44,94 @@ class JenkinsDataService {
                 logger.info("GETTING BUILDS FOR $b.url")
                 logger.debug("----")
                 newPath = UtilitiesService.getPathFromUrl(b.url)
-                getBuild(b.url, newPath, fromDate)
+                def buildDate = getBuild(b.url, newPath)
+                if(buildDate >= fromDate) {
+                    //we only need to do stuff if this was modified on or after the fromDate
+                    logger.info("AFTER THE WAY BACK JENKINS DATE: $buildDate is >= then $fromDate")
+                    break
+                }
             }
         }
         return jobs
     }
 
-    def getBuild(url, path, fromDate) {
-        def json = makeJenkinsRequest(path + "/api/json", null)
-//        def json = httpRequestService.callRestfulUrl(url, path + "/api/json", null, false, null, credentials)
+    def getBuild(url, path) {
+        def json = makeJenkinsRequest(url, path + "/api/json", null)
         if(json) {
             def cleanTimestamp = UtilitiesService.convertTimestampFromString(json.timestamp)
-            logger.info("CLEAN TIMESTAMP: $cleanTimestamp : " + cleanTimestamp.getClass().toString())
-            logger.info("FROM DATE:: $fromDate : " + fromDate.getClass().toString())
-            if(cleanTimestamp >= fromDate) {   //we only need to do stuff if this was modified on or after the fromDate
-                logger.info("AFTER THE WAY BACK JENKINS DATE: $cleanTimestamp is >= then $fromDate")
-
-                def causedBy = ""
-                def remoteUrl = ""
-                def lastBuiltRevision = ""
-                logger.debug("----")
-                logger.debug("buildName: $json.fullDisplayName")
-                logger.debug("buildId: $json.id")
-                logger.debug("result: $json.result")
-                logger.debug("buildNumber: $json.number")
-                logger.debug("timstamp: $cleanTimestamp")
-                logger.debug("URL: $json.url")
-                //logger.info(json.changeset)
-                for (def a in json.actions) {
-                    if (a.causes) {
-                        for (def c in a.causes) {
-                            logger.info("cause User Id: $c.userId")
-                            causedBy = c.userId
-                        }
-                    }
-                    if (a.remoteUrls) {
-                        for (def r in a.remoteUrls) { //TODO i should make sure to comma separate these...
-                            logger.info("remoteUrls: $r")
-                            remoteUrl += r
-                        }
-                    }
-                    if (a.lastBuildRevision) {    //TODO not sure why this doesn't work yet...
-                        logger.info("lastBuiltRevision: $a.lastBuiltRevision.SHA1")
-                        lastBuiltRevision = a.lastBuiltRevision.SHA1
+            def causedBy = ""
+            def remoteUrl = ""
+            def lastBuiltRevision = ""
+            logger.debug("----")
+            logger.debug("buildName: $json.fullDisplayName")
+            logger.debug("buildId: $json.id")
+            logger.debug("result: $json.result")
+            logger.debug("buildNumber: $json.number")
+            logger.debug("timstamp: $cleanTimestamp")
+            logger.debug("URL: $json.url")
+            //logger.info(json.changeset)
+            for (def a in json.actions) {
+                if (a.causes) {
+                    for (def c in a.causes) {
+                        logger.info("cause User Id: $c.userId")
+                        causedBy = c.userId
                     }
                 }
-                logger.info("----")
-                def cleanDisplayName = ""
-                if (json.fullDisplayName) {
-                    cleanDisplayName = UtilitiesService.cleanFullBuildName(json.fullDisplayName)
+                if (a.remoteUrls) {
+                    for (def r in a.remoteUrls) { //TODO i should make sure to comma separate these...
+                        logger.info("remoteUrls: $r")
+                        remoteUrl += r
+                    }
                 }
-                def jenkinsData = JenkinsData.findByBuildId(json.id)
-                if (jenkinsData) {
-                    jenkinsData.timestamp = cleanTimestamp
-                    jenkinsData.jenkinsUrl = json.url
-                    jenkinsData.buildName = cleanDisplayName
-                    jenkinsData.result = json.result
-                    jenkinsData.duration = json.duration
-                    jenkinsData.causedBy = causedBy
-                    jenkinsData.remoteUrl = remoteUrl
-                    jenkinsData.lastBuiltRevision = lastBuiltRevision
-                    jenkinsData.dataType = "CI"
-                    jenkinsData.buildNumber = json.number
-                } else {
-                    jenkinsData = new JenkinsData(buildId: json.id, timestamp: cleanTimestamp, jenkinsUrl: json.url,
-                            buildName: cleanDisplayName, result: json.result, buildNumber: json.number,
-                            duration: json.duration, causedBy: causedBy, remoteUrl: remoteUrl,
-                            lastBuiltRevision: lastBuiltRevision, dataType: "CI")
+                if (a.lastBuildRevision) {    //TODO not sure why this doesn't work yet...
+                    logger.info("lastBuiltRevision: $a.lastBuiltRevision.SHA1")
+                    lastBuiltRevision = a.lastBuiltRevision.SHA1
                 }
-                def couchReturn = couchConnectorService.saveToCouch(jenkinsData)
-                logger.debug("RETURNED FROM COUCH: $couchReturn")
-                jenkinsData.couchId = couchReturn
-
-                jenkinsData.save(flush: true, failOnError: true)
             }
+            def cleanDisplayName = ""
+            if (json.fullDisplayName) {
+                cleanDisplayName = UtilitiesService.cleanFullBuildName(json.fullDisplayName)
+            }
+            def jenkinsData = JenkinsData.findByBuildId(json.id)
+            if (jenkinsData) {
+                jenkinsData.timestamp = cleanTimestamp
+                jenkinsData.jenkinsUrl = json.url
+                jenkinsData.buildName = cleanDisplayName
+                jenkinsData.result = json.result
+                jenkinsData.duration = json.duration
+                jenkinsData.causedBy = causedBy
+                jenkinsData.remoteUrl = remoteUrl
+                jenkinsData.lastBuiltRevision = lastBuiltRevision
+                jenkinsData.dataType = "CI"
+                jenkinsData.buildNumber = json.number
+            } else {
+                jenkinsData = new JenkinsData(buildId: json.id, timestamp: cleanTimestamp, jenkinsUrl: json.url,
+                        buildName: cleanDisplayName, result: json.result, buildNumber: json.number,
+                        duration: json.duration, causedBy: causedBy, remoteUrl: remoteUrl,
+                        lastBuiltRevision: lastBuiltRevision, dataType: "CI")
+            }
+            def couchReturn = couchConnectorService.saveToCouch(jenkinsData)
+            logger.debug("RETURNED FROM COUCH: $couchReturn")
+            jenkinsData.couchId = couchReturn
+            jenkinsData.save(flush: true, failOnError: true)
+            return cleanTimestamp
+
         } else {
             logger.error("ERROR: NOTHING RETURNED FOR BUILD")
         }
     }
 
-    def makeJenkinsRequest(path, query) {
+    def makeJenkinsRequest(url, path, query) {
         def credentials = grailsApplication.config.jenkins.credentials
-        def url = grailsApplication.config.jenkins.url //this is defined in application.properties
+        if(!url) {
+            url = grailsApplication.config.jenkins.url //this is defined in application.properties
+        }
         try {
             return httpRequestService.callRestfulUrl(url, path, query, false, null, credentials)
-            logger.debug("GOT DATA BACK FROM JIRA")
+            logger.debug("GOT DATA BACK FROM JENKINS")
         } catch (Exception ex) {
             //TODO handle this!!!
-            logger.error("JIRA FAIL: $ex.message")
+            logger.error("JENKINS FAIL: $ex.message")
         }
     }
 }
