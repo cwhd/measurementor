@@ -4,6 +4,7 @@ import grails.transaction.Transactional
 import org.cwhd.measure.system.JobHistory
 import org.apache.commons.logging.LogFactory
 import java.util.concurrent.TimeUnit
+import groovyx.gpars.GParsPool
 
 @Transactional
 class UpdateDataFromSourceService {
@@ -28,7 +29,7 @@ class UpdateDataFromSourceService {
             logger.info("---------------------------------------------------")
             logger.info("last job started: $lastJob.startDate : and took: $lastJob.completionTime : and was: $lastJob.jobResult")
             logger.info("---------------------------------------------------")
-            def wayBackDiff = 3 //grailsApplication.config.wayBackDiff //if we don't know when the last job ran, get data from yesterday
+            def wayBackDiff = 2 //grailsApplication.config.wayBackDiff //if we don't know when the last job ran, get data from yesterday
 //            if(wayBackDiff < 0) {
 //                wayBackDiff = 40
 //            }
@@ -45,27 +46,39 @@ class UpdateDataFromSourceService {
             def getDataFrom = wayBackDate.format("YYYY-MM-dd")
             logger.info("getDataFrom: $getDataFrom")
 
+            //TODO make this work
             def jiraProjects = jiraDataService.getProjects()
             history.projectCount = jiraProjects.size()
-            for (def p : jiraProjects) {
-                logger.info("-----")
-                logger.info("getting data for $p")
-                try {
-                    jiraDataService.getData(0, 250, p, getDataFrom)
-                } catch (Exception e) {
-                    logger.info("JIRA FAIL: $e.stackTrace")
-                    jobNotes += "JIRA FAIL: $p : $e.message"
-                }
-            }
-            try {
-                jenkinsDataService.getJobs(null, "", wayBackDate)
-            } catch (Exception e) {
-                logger.error("CRAP, JENKINS DATA SERVICE FAILED" + e.message)
-            }
-            try {
-                stashDataService.getAll(wayBackDate)
-            } catch (Exception e) {
-                logger.error("CRAP, STASH DATA SERVICE FAILED" + e.getStackTrace())
+
+            //execute everything async.  it might be good to get some of this in the service calls as well...
+            GParsPool.withPool {
+                GParsPool.executeAsyncAndWait(
+                        {
+                            for (def p : jiraProjects) {
+                                logger.info("-----")
+                                logger.info("getting JIRA data for $p")
+                                try {
+                                    jiraDataService.getData(0, 250, p, getDataFrom)
+                                } catch (Exception e) {
+                                    logger.info("JIRA FAIL: $e.stackTrace")
+                                    jobNotes += "JIRA FAIL: $p : $e.message"
+                                }
+                            }
+                        },
+                        {
+                            try {
+                                jenkinsDataService.getJobs(null, "", wayBackDate)
+                            } catch (Exception e) {
+                                logger.error("CRAP, JENKINS DATA SERVICE FAILED" + e.message)
+                            }
+                        },
+                        {
+                            try {
+                                stashDataService.getAll(wayBackDate)
+                            } catch (Exception e) {
+                                logger.error("CRAP, STASH DATA SERVICE FAILED" + e.getStackTrace())
+                            }
+                        })
             }
 
             def doneDateTime = new Date()

@@ -3,7 +3,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath "org.grails:grails-gradle-plugin:2.1.0"
+        classpath "org.grails:grails-gradle-plugin:2.1.2"
     }
 }
 apply plugin: 'grails'
@@ -20,19 +20,23 @@ repositories {
 }
 
 dependencies {
-    bootstrap 'org.grails.plugins:tomcat:7.0.50.1'
+    bootstrap 'org.grails.plugins:tomcat:7.0.55'
 
-    compile 'org.grails.plugins:scaffolding:2.0.2'
-    compile 'org.grails.plugins:cache:1.1.1'
-
-    runtime 'org.grails.plugins:hibernate:3.6.10.8' //or 'org.grails.plugins:hibernate4:4.3.1.1'
-    runtime 'org.grails.plugins:database-migration:1.3.8'
-    runtime 'org.grails.plugins:jquery:1.11.0'
-    runtime 'org.grails.plugins:resources:1.2.2'
+    compile 'org.grails.plugins:scaffolding:2.1.2'
+    compile 'org.grails.plugins:cache:1.1.7'
+    compile 'org.grails.plugins:asset-pipeline:1.9.6'
 
     compile 'org.grails.plugins:rest:0.8'
     compile 'org.grails.plugins:mongodb:3.0.2'
     compile 'org.grails.plugins:quartz:1.0.2'
     compile 'org.grails.plugins:elasticsearch:0.0.3.6'
+
+    runtime 'org.grails.plugins:hibernate4:4.3.5.5' //or 'org.grails.plugins:hibernate4:4.3.1.1'
+    runtime 'org.grails.plugins:database-migration:1.4.0'
+    runtime 'org.grails.plugins:jquery:1.11.1'
+
+    test 'org.grails:grails-datastore-test-support:1.0-grails-2.4'
+    //runtime 'org.grails.plugins:resources:1.2.2'
+
 
 }

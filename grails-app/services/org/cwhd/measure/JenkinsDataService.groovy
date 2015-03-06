@@ -39,6 +39,7 @@ class JenkinsDataService {
                 getJobs(i.url, newPath, fromDate)
                 jobs.add(i.name)
             }
+            //TODO maybe process the builds async, since that's the long pole here...
             for (def b in json.builds) {
                 logger.info("----")
                 logger.info("GETTING BUILDS FOR $b.url")
@@ -73,7 +74,7 @@ class JenkinsDataService {
             for (def a in json.actions) {
                 if (a.causes) {
                     for (def c in a.causes) {
-                        logger.info("cause User Id: $c.userId")
+                        logger.debug("cause User Id: $c.userId")
                         causedBy = c.userId
                     }
                 }
@@ -110,9 +111,13 @@ class JenkinsDataService {
                         duration: json.duration, causedBy: causedBy, remoteUrl: remoteUrl,
                         lastBuiltRevision: lastBuiltRevision, dataType: "CI")
             }
-            def couchReturn = couchConnectorService.saveToCouch(jenkinsData)
-            logger.debug("RETURNED FROM COUCH: $couchReturn")
-            jenkinsData.couchId = couchReturn
+
+            if(grailsApplication.config.sendDataToCouch) {
+                def couchReturn = couchConnectorService.saveToCouch(jenkinsData)
+                logger.debug("RETURNED FROM COUCH: $couchReturn")
+                jenkinsData.couchId = couchReturn
+            }
+
             jenkinsData.save(flush: true, failOnError: true)
             return cleanTimestamp
 

@@ -110,9 +110,13 @@ class StashDataService {
                         stashData.stashProject = UtilitiesService.makeNonTokenFriendly(project)
                         stashData.commitCount = 1
                     }
-                    def couchReturn = couchConnectorService.saveToCouch(stashData)
-                    logger.debug("RETURNED FROM COUCH: $couchReturn")
-                    stashData.couchId = couchReturn
+
+                    if(grailsApplication.config.sendDataToCouch) {
+                        def couchReturn = couchConnectorService.saveToCouch(stashData)
+                        logger.debug("RETURNED FROM COUCH: $couchReturn")
+                        stashData.couchId = couchReturn
+                    }
+
                     stashData.save(flush: true, failOnError: true)
                 } else {
                     hitFromDate = true
@@ -199,9 +203,13 @@ class StashDataService {
                             commitCount: commitCount
                     )
                 }
-                def couchReturn = couchConnectorService.saveToCouch(stashData)
-                logger.debug("ID RETURNED FROM COUCH: $couchReturn")
-                stashData.couchId = couchReturn
+
+                if(grailsApplication.config.sendDataToCouch) {
+                    def couchReturn = couchConnectorService.saveToCouch(stashData)
+                    logger.debug("ID RETURNED FROM COUCH: $couchReturn")
+                    stashData.couchId = couchReturn
+                }
+
                 stashData.save(flush: true, failOnError: true)
             } else {
                 hitFromDate = true

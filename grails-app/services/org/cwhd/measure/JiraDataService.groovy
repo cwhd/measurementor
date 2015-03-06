@@ -22,7 +22,6 @@ class JiraDataService {
     def getProjects() {
         def path = "/rest/api/2/project"
         def json = makeJiraRequest(path, null)
-//        def json = httpRequestService.callRestfulUrl(url, path, null, true, null)
         def projects = []
 
         logger.info("GETTING JIRA PROJECTS...")
@@ -57,8 +56,6 @@ class JiraDataService {
         def path = "/rest/api/2/search"
         def jiraQuery = "project=$project$fromQuery"
         def query = [jql: jiraQuery, expand:"changelog",startAt: startAt, maxResults: maxResults, fields:"*all"]
-
-//        def json = httpRequestService.callRestfulUrl(url, path, query, true, null)
         def json = makeJiraRequest(path, query)
         def keepGoing = false
         if(json.total) {
@@ -151,7 +148,9 @@ class JiraDataService {
                 def createdDate = UtilitiesService.cleanJiraDate(i.fields.created)
                 def fin = UtilitiesService.cleanJiraDate(i.fields.resolutiondate)
 
-                //figure out how many days this took to get done
+                //figure out how many days this took to get done.
+                //0 means the task hasn't started yet.
+                //Round anything less than a day to 1 day.
                 def leadTime = 0
                 def devTime = 0
                 if (createdDate) {
@@ -161,6 +160,9 @@ class JiraDataService {
                     }
                     long duration = endLeadTime.getTime() - createdDate.getTime()
                     leadTime = TimeUnit.MILLISECONDS.toDays(duration)
+                    if(leadTime == 0) {
+                        leadTime = 1
+                    }
                 }
 
                 if (movedToDev) {
@@ -170,8 +172,12 @@ class JiraDataService {
                     }
                     long duration = endLeadTime.getTime() - movedToDev.getTime()
                     devTime = TimeUnit.MILLISECONDS.toDays(duration)
+                    if(devTime == 0) {
+                        devTime = 1
+                    }
                 }
 
+                //TODO - need a way to figure out estimates based on input
                 def estimateHealth = UtilitiesService.estimateHealth(storyPoints, devTime, 13, 9, [1, 2, 3, 5, 8, 13])
 
                 def jiraData = JiraData.findByKey(i.key)
@@ -215,9 +221,11 @@ class JiraDataService {
                             product: product)
                 }
 
-                def couchReturn = couchConnectorService.saveToCouch(jiraData)
-                logger.debug("RETURNED FROM COUCH: $couchReturn")
-                jiraData.couchId = couchReturn
+                if(grailsApplication.config.sendDataToCouch) {
+                    def couchReturn = couchConnectorService.saveToCouch(jiraData)
+                    logger.debug("RETURNED FROM COUCH: $couchReturn")
+                    jiraData.couchId = couchReturn
+                }
                 jiraData.save(flush: true, failOnError: true)
             }
         }

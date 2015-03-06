@@ -15,6 +15,7 @@ class MapReducerService {
     //TODO get the fields we need to map reduce for the collection
     //TODO run the map-reduce jobs to get the aggregated/sorted metric building blocks we need
     def mapReduceJiraData() {
+        //reduce by project by day
         def result = db.jiraData.mapReduce(
                 """
                 function map() {
@@ -35,10 +36,12 @@ class MapReducerService {
     }
 
     def mapReduceStashData() {
+        //reduce by repo by day
 
     }
 
     def mapReduceJenkinsData() {
+        //reduce by build by day
 
 
     }
