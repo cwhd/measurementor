@@ -9,11 +9,9 @@ class MapReducerService {
     def db = mongo.getDB("test")
     //TODO figure out what cross-collection data needs to be map-reduced
 
-    //
-
-    //TODO each collection should have a method for doing map-reduce
     //TODO get the fields we need to map reduce for the collection
     //TODO run the map-reduce jobs to get the aggregated/sorted metric building blocks we need
+    //TODO run a finalize to combine data to make complex metrics
     def mapReduceJiraData() {
         //reduce by project by day
         def result = db.jiraData.mapReduce(

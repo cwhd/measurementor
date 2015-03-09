@@ -6,12 +6,9 @@
    }
 }
 
-include apt
-
-package{'unzip': ensure => installed } 
-package{'rpm': ensure => installed } 
-package{'groovy': ensure => installed } 
-#package{'mongodb-org': ensure => latest }
+package{'unzip': ensure => installed }
+package{'rpm': ensure => installed }
+#package{'groovy': ensure => installed }
 include '::mongodb::server'
 
 # Update APT Cache
@@ -20,7 +17,7 @@ class { 'apt':
 }
 
 exec { 'apt-get update':
-  before  => [ Class['elasticsearch'], Class['logstash'] ],
+  before  => [ Class['elasticsearch'], Class['logstash'], Class['gvm'] ],
   command => '/usr/bin/apt-get update -qq'
 }
 
@@ -51,7 +48,7 @@ class { 'elasticsearch':
   ensure       => 'present',
   status => 'enabled',
   manage_repo  => true,
-  repo_version => '1.4',
+  repo_version => '1.4.4',
   require      => [ Class['java'], File['/vagrant/elasticsearch'] ],
 }->
 file_line { 'update_yml':
@@ -116,7 +113,7 @@ file { '/vagrant/kibana':
 }
 
 exec { 'download_kibana':
-  command => '/usr/bin/curl https://download.elasticsearch.org/kibana/kibana/kibana-3.1.2.tar.gz | /bin/tar xz -C /vagrant/kibana',
+  command => '/usr/bin/curl https://download.elasticsearch.org/kibana/kibana/kibana-4.0.1-linux-x64.tar.gz | /bin/tar xz -C /vagrant/kibana',
   creates => '/vagrant/kibana/kibana-latest/config.js',
   require => [ Package['curl'], File['/vagrant/kibana'] ],
 }
@@ -125,20 +122,21 @@ exec { 'download_kibana':
 ####
 class { 'gvm' :
   owner => 'vagrant',
-} 
+  require => [ Package['curl'] ],
+}
 
 gvm::package { 'grails':
   version    => '2.4.3',
   is_default => true,
   ensure     => present,
-  require    => Class['java']
+  require    => [ Package['curl'], Class['java'] ],
 } 
 
 gvm::package { 'groovy':
   version    => '2.3.6',
   is_default => true,
   ensure     => present,
-  require    => Class['java']
+  require    => [ Package['curl'], Class['java'] ],
 } 
 
 #TODO
