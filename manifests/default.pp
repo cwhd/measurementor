@@ -8,7 +8,8 @@
 
 include stdlib
 include nodejs
-package{'unzip': ensure => installed }
+ include '::mongodb::server'
+ package{'unzip': ensure => installed }
 
  class { 'apt':
    always_apt_update    => true,
@@ -87,6 +88,8 @@ class { 'elasticsearch':
   repo_version => '1.4',
   require      => [ File['/vagrant/elasticsearch'] ],
 }
+ elasticsearch::instance { 'es-01': }
+
 #}->
 #file_line { 'update_yml':
 #  path  => '/etc/elasticsearch/elasticsearch.yml',
@@ -95,11 +98,12 @@ class { 'elasticsearch':
 #  require      => [ Package['elasticsearch'] ],
 #}
 #
-#service { "elasticsearch-service":
-#  name => 'elasticsearch',
-#  ensure => 'running',
-#  require => [ Package['elasticsearch'] ]
-#}
+service { "elasticsearch-service":
+  name => 'elasticsearch',
+  ensure => 'running',
+  require => [ Package['elasticsearch'] ]
+}
+
 #
 ## Logstash
 #class { 'logstash':
