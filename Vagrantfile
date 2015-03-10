@@ -36,6 +36,9 @@ fi
 if [ ! -d /etc/puppet/modules/wget ]; then
 puppet module install maestrodev-wget
 fi
+if [ ! -d /etc/puppet/modules/augeasproviders ]; then
+puppet module install herculesteam-augeasproviders
+fi
 
 SCRIPT
 

@@ -19,6 +19,9 @@ include nodejs
    require => [ Class['apt'] ],
  }
 
+ class { 'augeasproviders::instances':
+   sysctl_hash => { 'net.ipv4.ip_forward' => { 'value' => '1' } },
+ }
 
  apt::source { 'es':
    location   => 'http://packages.elasticsearch.org/elasticsearch/1.4/debian',
@@ -68,6 +71,7 @@ file { '/vagrant/elasticsearch':
 #
 #
 # Elasticsearch
+ #/usr/share/elasticsearch/bin
 class { 'elasticsearch':
 # autoupgrade  => true,
   config       => {
@@ -81,6 +85,10 @@ class { 'elasticsearch':
     'network'  => {
       'host'   => '0.0.0.0',
     },
+    'path' => {
+      'logs' => '/var/log/elasticsearch',
+      #'data' => '/var/data/elasticsearch',
+    },
   },
   ensure       => 'present',
   status       => 'enabled',
@@ -88,7 +96,7 @@ class { 'elasticsearch':
   repo_version => '1.4',
   require      => [ File['/vagrant/elasticsearch'] ],
 }
- elasticsearch::instance { 'es-01': }
+# elasticsearch::instance { 'es-01': }
 
 #}->
 #file_line { 'update_yml':
