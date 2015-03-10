@@ -27,6 +27,16 @@ fi
 if [ ! -d /etc/puppet/modules/gvm ]; then
 puppet module install paulosuzart-gvm
 fi
+if [ ! -d /etc/puppet/modules/stdlib ]; then
+puppet module install puppetlabs-stdlib
+fi
+if [ ! -d /etc/puppet/modules/nodejs ]; then
+puppet module install puppetlabs-nodejs
+fi
+if [ ! -d /etc/puppet/modules/wget ]; then
+puppet module install maestrodev-wget
+fi
+
 SCRIPT
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
@@ -36,7 +46,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     config.vbguest.auto_update = true
   end
 
-  config.vm.synced_folder "/measurementor", "/measurementor", create: "true" #TODO change this to where you are running measurementor
+  config.vm.synced_folder "/Users/Shared/Development/NikeBuild/measurementor", "/measurementor", create: "true" #TODO change this to where you are running measurementor
   config.vm.box = "hashicorp/precise64"
   config.vm.network :forwarded_port, guest: 27017, host: 27017 #mongo
   config.vm.network :forwarded_port, guest: 28017, host: 28017 #mongo
