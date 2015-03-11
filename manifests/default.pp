@@ -19,9 +19,6 @@ include nodejs
    require => [ Class['apt'] ],
  }
 
- class { 'augeasproviders::instances':
-   sysctl_hash => { 'net.ipv4.ip_forward' => { 'value' => '1' } },
- }
 
  apt::source { 'es':
    location   => 'http://packages.elasticsearch.org/elasticsearch/1.4/debian',
@@ -96,6 +93,21 @@ class { 'elasticsearch':
   repo_version => '1.4',
   require      => [ File['/vagrant/elasticsearch'] ],
 }
+exec { "start_elasticsearch":
+   command => "/usr/share/elasticsearch/bin/elasticsearch",
+   require      => [ Class['elasticsearch'] ],
+}->
+es_instance_conn_validator { 'myinstance' :
+   server => 'localhost',
+   port   => '9200',
+}
+
+# class { 'kibana4' :
+#   require => Es_Instance_Conn_Validator['myinstance'],
+# }
+
+ #TODO fix the logging configuration:
+ #Caused by: java.nio.file.NoSuchFileException: /usr/share/elasticsearch/config
 # elasticsearch::instance { 'es-01': }
 
 #}->
@@ -155,12 +167,13 @@ file { '/vagrant/kibana':
   group  => 'vagrant',
   owner  => 'vagrant',
 }
+
 #
-#exec { 'download_kibana':
-#  command => '/usr/bin/curl https://download.elasticsearch.org/kibana/kibana/kibana-4.0.1-linux-x64.tar.gz | /bin/tar xz -C /vagrant/kibana',
-#  creates => '/vagrant/kibana/kibana-latest/config.js',
-#  require => [ Package['curl'], File['/vagrant/kibana'] ],
-#}
+exec { 'download_kibana':
+  command => '/usr/bin/curl https://download.elasticsearch.org/kibana/kibana/kibana-4.0.1-linux-x64.tar.gz | /bin/tar xz -C /vagrant/kibana',
+  #creates => '/vagrant/kibana/kibana-latest/config.js',
+  require => [ Package['curl'], File['/vagrant/kibana'] ],
+}
 #
 
 ##https://forge.puppetlabs.com/paulosuzart/gvm

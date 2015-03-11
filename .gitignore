@@ -10,3 +10,4 @@ application.properties
 /out
 application.properties
 .vagrant/
+/kibana
