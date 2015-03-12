@@ -108,6 +108,21 @@ class JiraDataService {
                                     assignees.add(UtilitiesService.makeNonTokenFriendly(t.toString))
                                 }
                             }
+                            def history = History.findBySourceId(h.id)
+                            if(!history) {
+                                //TODO not totally sure if i care about updates...
+                            } else {
+                                history = new History(
+                                        dataType: "PTS",
+                                        sourceId: h.id,
+                                        timestamp: h.created,
+                                        changeField: t.field,
+                                        newValue: t.toString,
+                                        changedBy: h.author.emailAddress,
+                                        key: i.key
+                                )
+                                history.save(flush: true, failOnError: true)
+                            }
                         }
                     }
                     //at this point we should know when this moved to dev

@@ -8,17 +8,18 @@
 
 include stdlib
 include nodejs
- include '::mongodb::server'
  package{'unzip': ensure => installed }
 
- class { 'apt':
-   always_apt_update    => true,
-}
+ class {'::mongodb::globals':
+   manage_package_repo => true,
+ }->
+ class {'::mongodb::server': }->
+ class {'::mongodb::client': }
+
  package { 'curl':
    ensure  => 'present',
    require => [ Class['apt'] ],
  }
-
 
  apt::source { 'es':
    location   => 'http://packages.elasticsearch.org/elasticsearch/1.4/debian',
@@ -61,14 +62,7 @@ file { '/vagrant/elasticsearch':
   owner  => 'vagrant',
 }
 
-#class { 'elasticsearch':
-#  version => '1.4.4',
-#  require      => [ Class['java'], File['/vagrant/elasticsearch'] ],
-#}
-#
-#
 # Elasticsearch
- #/usr/share/elasticsearch/bin
 class { 'elasticsearch':
 # autoupgrade  => true,
   config       => {
@@ -93,14 +87,17 @@ class { 'elasticsearch':
   repo_version => '1.4',
   require      => [ File['/vagrant/elasticsearch'] ],
 }
-exec { "start_elasticsearch":
-   command => "/usr/share/elasticsearch/bin/elasticsearch",
-   require      => [ Class['elasticsearch'] ],
-}->
-es_instance_conn_validator { 'myinstance' :
-   server => 'localhost',
-   port   => '9200',
-}
+ #/usr/share/elasticsearch/bin
+ #cd /vagrant/kibana/kibana-4.0.1-linux-x64/bin
+ #./kibana
+#exec { "start_elasticsearch":
+#   command => "/usr/share/elasticsearch/bin/elasticsearch",
+#   require      => [ Class['elasticsearch'] ],
+#}->
+#es_instance_conn_validator { 'myinstance' :
+#   server => 'localhost',
+#   port   => '9200',
+#}
 
 # class { 'kibana4' :
 #   require => Es_Instance_Conn_Validator['myinstance'],
@@ -177,28 +174,33 @@ exec { 'download_kibana':
 #
 
 ##https://forge.puppetlabs.com/paulosuzart/gvm
-#####
-#class { 'gvm' :
-#  owner => 'vagrant',
-#  require => [ Package['curl'] ],
-#}
+####
+class { 'gvm' :
+  owner => 'vagrant',
+  require => [ Package['curl'] ],
+}
+
+gvm::package { 'grails':
+  version    => '2.4.3',
+  is_default => true,
+  ensure     => present,
+  require    => [ Package['curl'], Package["oracle-java7-installer"] ],
+}
+
+gvm::package { 'groovy':
+  version    => '2.3.6',
+  is_default => true,
+  ensure     => present,
+  require    => [ Package['curl'], Package["oracle-java7-installer"] ],
+}
 #
-#gvm::package { 'grails':
-#  version    => '2.4.3',
-#  is_default => true,
-#  ensure     => present,
-#  require    => [ Package['curl'], Class['java'] ],
-#}
-#
-#gvm::package { 'groovy':
-#  version    => '2.3.6',
-#  is_default => true,
-#  ensure     => present,
-#  require    => [ Package['curl'], Class['java'] ],
-#}
-#
-##TODO
-## on start up we need to use java 7 JAVA_HOME=/usr/lib/jvm/java-7-openjdk-amd64
-## start the following services
-## sudo service start elasticsearch
-# sudo service restart nginx
+ ######TODO these are manual steps we still need to automate
+#1) get elasticsearch running - this still has errors when it starts up but it does run
+ #cd /usr/share/elasticsearch/bin
+ #sudo ./elasticsearch &
+#2) get kibana running
+ #cd /vagrant/kibana/kibana-4.0.1-linux-x64/bin
+ #sudo ./kibana &
+#3) Run the data collector!
+ #cd /measurementor
+ #grails run-app -Dgrails.server.port.http=8070
