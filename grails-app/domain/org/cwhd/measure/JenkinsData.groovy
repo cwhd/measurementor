@@ -1,14 +1,9 @@
 package org.cwhd.measure
 
-/**
- * as an example check this out
- * https://jenkins.tools.nikecloud.com/job/SQA/job/humulo-staticanalysis/lastBuild/api/json
- */
 class JenkinsData {
     static mapWith = "mongo"
     static searchable = true
 
-    //TODO what ties this back to a PTS or SCM project?
     String dataType
     String buildId
     String couchId
@@ -18,12 +13,11 @@ class JenkinsData {
     int duration
     String lastBuiltRevision
     String jenkinsUrl
-    String remoteUrl
+    String remoteUrl    //TODO this looks like a stash repo, i should be able to tie this back to SCM with a better name...
     String causedBy
-    int buildNumber //TODO not sure if i need to get this granular of if i should roll this up
+    int buildNumber
     //changeset is an interesting piece of data...:
-    //https://jenkins.tools.nikecloud.com/job/SQA/job/qmjobwriter-war/lastBuild/api/json
-    //maybe i can tie it back with remoteUrls[] ?  i think that points to where the source repo is...
+    //maybe i can tie it back with remoteUrls[] ?
     //changeset.items[].author - though this might not tie back to a user somewhere else...
 
     static constraints = {
