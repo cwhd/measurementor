@@ -77,6 +77,10 @@ class { 'elasticsearch':
   manage_repo  => true,
   repo_version => '1.4',
   require      => [ File['/vagrant/elasticsearch'] ],
+}->
+exec { "start_elasticsearch":
+  command => "/usr/share/elasticsearch/bin/elasticsearch &",
+  require      => [ Package['elasticsearch'] ],
 }
 
 #es needs these files
@@ -95,54 +99,21 @@ file { '/usr/share/elasticsearch/config/elasticsearch.yml':
   target => '/etc/elasticsearch/elasticsearch.yml',
 }
 
-#/usr/share/elasticsearch/bin
-#cd /vagrant/kibana/kibana-4.0.1-linux-x64/bin
-#./kibana
-#exec { "start_elasticsearch":
-#   command => "/usr/share/elasticsearch/bin/elasticsearch",
-#   require      => [ Class['elasticsearch'] ],
-#}->
-#es_instance_conn_validator { 'myinstance' :
-#   server => 'localhost',
-#   port   => '9200',
-#}
-
-# class { 'kibana4' :
-#   require => Es_Instance_Conn_Validator['myinstance'],
-# }
-
-#TODO fix the logging configuration:
-#Caused by: java.nio.file.NoSuchFileException: /usr/share/elasticsearch/config
-# elasticsearch::instance { 'es-01': }
-
-#}->
-#file_line { 'update_yml':
-#  path  => '/etc/elasticsearch/elasticsearch.yml',
-#  line => 'http.cors.enabled: true',
-#  match => '^http\.cors\.enabled: true*',
-#  require      => [ Package['elasticsearch'] ],
-#}
-#
-service { "elasticsearch-service":
-  name    => 'elasticsearch',
-  ensure  => 'running',
-  require => [ Package['elasticsearch'] ]
-}
-
 ## Kibana
 file { '/vagrant/kibana':
   ensure => 'directory',
   group  => 'vagrant',
   owner  => 'vagrant',
 }
-
-#
 exec { 'download_kibana':
   command => '/usr/bin/curl https://download.elasticsearch.org/kibana/kibana/kibana-4.0.1-linux-x64.tar.gz | /bin/tar xz -C /vagrant/kibana',
 #creates => '/vagrant/kibana/kibana-latest/config.js',
   require => [ Package['curl'], File['/vagrant/kibana'] ],
+}->
+exec { "start_kibana":
+  command => "/vagrant/kibana/kibana-4.0.1-linux-x64/bin/kibana &",
+  require      => [ Class['elasticsearch'] ],
 }
-#
 
 ##https://forge.puppetlabs.com/paulosuzart/gvm
 #### We need groovy & grails for measurementor.  GVM can take care of them for us.
@@ -164,38 +135,3 @@ gvm::package { 'groovy':
   ensure     => present,
   require    => [ Package['curl'], Package["oracle-java7-installer"] ],
 }
-#
-######TODO these are manual steps we still need to automate
-#1) get elasticsearch running - this still has errors when it starts up but it does run
-#sudo sh /usr/share/elasticsearch/bin/elasticsearch &
-#2) get kibana running
-#cd /vagrant/kibana/kibana-4.0.1-linux-x64/bin
-#sudo ./kibana &
-#3) Run the data collector!
-#cd /measurementor
-#grails run-app -Dgrails.server.port.http=8070
-
-
-####TODO I am not sure if i need this anymore...
-#
-## Logstash
-#class { 'logstash':
-#  # autoupgrade  => true,
-#  ensure       => 'present',
-#  manage_repo  => true,
-#  repo_version => '1.4',
-#  require      => [ Class['java'], Class['elasticsearch'] ],
-#}
-#
-#file { '/etc/logstash/conf.d/logstash':
-#  ensure  => '/vagrant/confs/logstash/logstash.conf',
-#  #source => '/Users/Shared/Development/NikeBuild/ELK/vagrant-elk-box/confs/logstash/elasto.conf', #this conf should have everything we need to parse the logs we need
-#  require => [ Class['logstash'] ],
-#}
-#
-#TODO I think this comes from another library so i don't think i need it...
-#exec { 'apt-get update':
-#  before  => [ Class['elasticsearch'], Class['logstash'], Class['gvm'] ],
-#  command => '/usr/bin/apt-get update -qq'
-#}
-#
