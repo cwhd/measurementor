@@ -27,6 +27,7 @@ To get the measurementor grails app running inside the vagrant box:
 - Measurementor has a number of configurable settings including the URLs and credentials of the source systems and system defaults.  Update the application.properties (measurementor.properties) to configure your source systems.
 - Get your vagrant box up and running and use the following commands to get it up and running
 
+
     vagrant up
     vagrant ssh
     cd /measurementor
