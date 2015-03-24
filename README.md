@@ -22,8 +22,12 @@ by navigating to the following URLs in your web browser of choice:
 - local elasticsearch: [http://localhost:9200](http://localhost:9200)
 - local kibana: [http://localhost:5601](http://localhost:5601)
 
-To get the measurementor grails app running inside the vagrant box update the shared directory in your Vagrantfile on line 49.  This will share the source code on your local box with the appropriate directory on the Vagrant box.  Specifically, replace [DIRECTORY WHERE YOU DOWNLOADED THE CODE] with the path on your dev machine where you downloaded this code.
-Measurementor has a number of configurable settings including the URLs and credentials of the source systems and system defaults.  Update the application.properties (measurementor.properties) to configure your source systems.
+To get the measurementor grails app running inside the vagrant box update the shared directory in your Vagrantfile on line 49.
+This will share the source code on your local box with the appropriate directory on the Vagrant box.  Specifically, replace
+[DIRECTORY WHERE YOU DOWNLOADED THE CODE] with the path on your dev machine where you downloaded this code.
+
+Measurementor has a number of configurable settings including the URLs and credentials of the source systems and system defaults.
+Copy measurementor.properties into a new file, name it "application.properties", and the connections and credentials to your source systems.
 
 Get your vagrant box up and running:
 
