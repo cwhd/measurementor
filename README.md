@@ -27,7 +27,7 @@ This will share the source code on your local box with the appropriate directory
 [DIRECTORY WHERE YOU DOWNLOADED THE CODE] with the path on your dev machine where you downloaded this code.
 
 Measurementor has a number of configurable settings including the URLs and credentials of the source systems and system defaults.
-Copy measurementor.properties into a new file, name it "application.properties", and the connections and credentials to your source systems.
+Copy measurementor.properties into a new file, name it "application.properties", and add the connections and credentials to your source systems.
 
 Get your vagrant box up and running:
 
