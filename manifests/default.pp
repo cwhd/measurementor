@@ -135,3 +135,5 @@ gvm::package { 'groovy':
   ensure     => present,
   require    => [ Package['curl'], Package["oracle-java7-installer"] ],
 }
+
+#TODO maybe have a gradle script that checks the application.properties, then runs the app as a standalone jar (war)
