@@ -123,14 +123,14 @@ class { 'gvm' :
 }
 
 gvm::package { 'grails':
-  version    => '2.4.3',
+  version    => '2.4.5',
   is_default => true,
   ensure     => present,
   require    => [ Package['curl'], Package["oracle-java7-installer"] ],
 }
 
 gvm::package { 'groovy':
-  version    => '2.3.6',
+  version    => '2.4.3',
   is_default => true,
   ensure     => present,
   require    => [ Package['curl'], Package["oracle-java7-installer"] ],
