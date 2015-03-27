@@ -137,20 +137,20 @@ class UtilitiesService {
      * @param escapedDefects
      * @return
      */
-    static int calculateCHD(cloc, estimateHealth, recidivism, escapedDefects) {
-        def chd = 0
-
-        def a = ((int)(cloc/50))*2.5
-        def b = Math.abs(estimateHealth)
-        def c = recidivism*10
-        def d = escapedDefects*2.5
-        logger.debug("a: $a, b: $b, c: $c, d: $d")
-
-        chd = (minMax(a)+minMax(b)+(minMax(c))+minMax(d)) * 5
-        logger.info("chd: $chd")
-
-        return chd
-    }
+//    static int calculateCHD(cloc, estimateHealth, recidivism, escapedDefects) {
+//        def chd = 0
+//
+//        def a = ((int)(cloc/50))*2.5
+//        def b = Math.abs(estimateHealth)
+//        def c = recidivism*10
+//        def d = escapedDefects*2.5
+//        logger.debug("a: $a, b: $b, c: $c, d: $d")
+//
+//        chd = (minMax(a)+minMax(b)+(minMax(c))+minMax(d)) * 5
+//        logger.info("chd: $chd")
+//
+//        return chd
+//    }
 
     /**
      * private method used in calculateCHD to calculate the minimum of maximum value of the elements

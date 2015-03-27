@@ -236,7 +236,7 @@ class JiraDataService {
                             product: product)
                 }
 
-                if(grailsApplication.config.sendDataToCouch) {
+                if(grailsApplication.config.sendDataToCouch == "true") {
                     def couchReturn = couchConnectorService.saveToCouch(jiraData)
                     logger.debug("RETURNED FROM COUCH: $couchReturn")
                     jiraData.couchId = couchReturn

@@ -50,9 +50,11 @@ NOTE: by default Grails uses port 8080 which is used by many other things, so I 
 
 # In Progress...
 This is still a bit of a work in progress but feel free to let me know if there's anything that could be better.
-- Still tweaking the vagrant/puppet setup
-- When Grails 3 comes out I need to update the app to take advantage of the new goodness
+- When Grails 3 comes out I need to update the app to take advantage of native gradle
 - Need to install the data collector and start it up when everything else starts up
+- It would be good to have a shell script to set everything up
+- Need a data collector for github
+- Write more unit tests
 
 thanks!
 

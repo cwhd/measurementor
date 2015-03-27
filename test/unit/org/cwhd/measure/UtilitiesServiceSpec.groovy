@@ -111,6 +111,24 @@ class UtilitiesServiceSpec extends Specification {
         actualTime <<   [1, 1, 2, 2, 3, 4, 4, 5, 6, 7, 8, 8, 9]
     }
 
+    void "Test MinMax Works For Min"() {
+        def minOutput = utilitiesService.minMax(minInput)
+        expect: minOutput == 5
+        where: minInput << [0, -1, -2, -50, -0.3, -2.2]
+    }
+
+    void "Test MinMax Works For Max"() {
+        def maxOutput = utilitiesService.minMax(maxInput)
+        expect: maxOutput == 0
+        where: maxInput << [5, 5.5, 30, 50, 6, 22.2]
+    }
+
+    void "Test MinMax Works For Mid"() {
+        def midOutput = utilitiesService.minMax(midInput)
+        expect: midOutput == 5-midInput
+        where: midInput << [1, 2, 3, 4]
+    }
+
     /*
     void "Test CHD Calculation with perfect result"(){
         def chd = utilitiesService.calculateCHD(cloc, estimateHealth, recidivism, escapedDefects)

@@ -1,6 +1,7 @@
 package org.cwhd.measure
 
 import grails.test.mixin.TestFor
+import org.cwhd.connect.CouchConnectorService
 import spock.lang.Specification
 
 import java.text.SimpleDateFormat
@@ -13,7 +14,9 @@ class JiraDataServiceSpec extends Specification {
     def jiraDataService
 
     def setup() {
-        jiraDataService = mockService(JiraDataService)
+        jiraDataService = new JiraDataService() // mockService(JiraDataService)
+        jiraDataService.httpRequestService = Mock(HttpRequestService)
+        jiraDataService.couchConnectorService = Mock(CouchConnectorService)
     }
 
     def cleanup() {

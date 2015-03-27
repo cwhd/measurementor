@@ -112,7 +112,7 @@ class JenkinsDataService {
                         lastBuiltRevision: lastBuiltRevision, dataType: "CI")
             }
 
-            if(grailsApplication.config.sendDataToCouch) {
+            if(grailsApplication.config.sendDataToCouch == "true") {
                 def couchReturn = couchConnectorService.saveToCouch(jenkinsData)
                 logger.debug("RETURNED FROM COUCH: $couchReturn")
                 jenkinsData.couchId = couchReturn

@@ -111,7 +111,7 @@ class StashDataService {
                         stashData.commitCount = 1
                     }
 
-                    if(grailsApplication.config.sendDataToCouch) {
+                    if(grailsApplication.config.sendDataToCouch == "true") {
                         def couchReturn = couchConnectorService.saveToCouch(stashData)
                         logger.debug("RETURNED FROM COUCH: $couchReturn")
                         stashData.couchId = couchReturn
@@ -204,7 +204,7 @@ class StashDataService {
                     )
                 }
 
-                if(grailsApplication.config.sendDataToCouch) {
+                if(grailsApplication.config.sendDataToCouch == "true") {
                     def couchReturn = couchConnectorService.saveToCouch(stashData)
                     logger.debug("ID RETURNED FROM COUCH: $couchReturn")
                     stashData.couchId = couchReturn

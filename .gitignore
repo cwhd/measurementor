@@ -6,6 +6,7 @@
 /build
 /conf/qma/asgard/asgard-configuration.json
 application.properties
+application.properties.backup
 /data/elasticsearch
 /out
 application.properties

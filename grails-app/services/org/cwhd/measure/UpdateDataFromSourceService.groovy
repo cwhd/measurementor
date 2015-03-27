@@ -29,7 +29,7 @@ class UpdateDataFromSourceService {
             logger.info("---------------------------------------------------")
             logger.info("last job started: $lastJob.startDate : and took: $lastJob.completionTime : and was: $lastJob.jobResult")
             logger.info("---------------------------------------------------")
-            def wayBackDiff = 6 //grailsApplication.config.wayBackDiff //if we don't know when the last job ran, get data from yesterday
+            def wayBackDiff = 1 //grailsApplication.config.wayBackDiff //if we don't know when the last job ran, get data from yesterday
 //            if(wayBackDiff < 0) {
 //                wayBackDiff = 40
 //            }
@@ -46,8 +46,8 @@ class UpdateDataFromSourceService {
             def getDataFrom = wayBackDate.format("YYYY-MM-dd")
             logger.info("getDataFrom: $getDataFrom")
 
-            //TODO make this work
-            def jiraProjects = jiraDataService.getProjects()
+            //def jiraProjects = jiraDataService.getProjects()
+            def jiraProjects = ["ACOE"]
             history.projectCount = jiraProjects.size()
 
             //execute everything async.  it might be good to get some of this in the service calls as well...
@@ -67,16 +67,20 @@ class UpdateDataFromSourceService {
                         },
                         {
                             try {
-                                jenkinsDataService.getJobs(null, "", wayBackDate)
+                                if(grailsApplication.config.jenkins.url) {
+                                    jenkinsDataService.getJobs(null, "", wayBackDate)
+                                }
                             } catch (Exception e) {
-                                logger.error("CRAP, JENKINS DATA SERVICE FAILED" + e.message)
+                                logger.error("DARN, JENKINS DATA SERVICE FAILED" + e.message)
                             }
                         },
                         {
                             try {
-                                stashDataService.getAll(wayBackDate)
+                                if(grailsApplication.config.stash.url) {
+                                    stashDataService.getAll(wayBackDate)
+                                }
                             } catch (Exception e) {
-                                logger.error("CRAP, STASH DATA SERVICE FAILED" + e.getStackTrace())
+                                logger.error("DARN, STASH DATA SERVICE FAILED" + e.getStackTrace())
                             }
                         })
             }
