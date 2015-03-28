@@ -5,26 +5,36 @@ echo "/ \/ \ ) _) /    \\___ \) \/ ( )   / ) _) / \/ \ ) _) /    /  )( (  O ))  
 echo "\_)(_/(____)\_/\_/(____/\____/(__\_)(____)\_)(_/(____)\_)__) (__) \__/(__\_)"
 echo "Welcome to measurementor setup!"
 echo "This script will help you set your system up for the first time.  You can always re-run this script, or update the application.properties file with the latest variables."
-echo "copying configuration file..."
-#cp measurementor.properties application.properties
-sed -Ei 's/jenkins/whatev/g' application.properties
-#while true; do
-#    read -p "Do you have a JIRA instance to connect to?" yn
-#    case $yn in
-#        [Yy]* ) echo "cool"; break;;
-#        [Nn]* ) echo "whatev"; break;;
-#        * ) echo "Please answer yes or no.";;
-#    esac
-#done
-read -p "Enter JIRA URL: " jiraUrl
-read -p "Enter JIRA Credentials: " jiraCreds
 
+CONFIGFILE=application.properties
+VAGRANTFILE=Vagrantfile
 
+cp measurementor.properties $CONFIGFILE
+
+read -p "Do you have a JIRA system to connect to? (y/n)" hasJira
+if [ $hasJira = "y" ]; then
+  read -p "Enter JIRA URL: " jiraUrl
+  sed -Ei s/jira\.url=/jira\.url=$jiraUrl/g $CONFIGFILE
+  read -p "Enter JIRA Credentials: " jiraCreds
+  sed -Ei s/jira\.credentials=/jira\.credentials=$jiraCreds/g $CONFIGFILE
+fi
+read -p "Do you have a Jenkins system to connect to? (y/n)" hasJenkins
+if [ $hasJenkins = "y" ]; then
+  read -p "Enter Jenkins URL: " jenkinsUrl
+  sed -Ei s/jenkins\.url=/jenkins\.url=$jenkinsUrl/g $CONFIGFILE
+  read -p "Enter Jenkins Credentials: " jenkinsCreds
+  sed -Ei s/jenkins\.credentials=/jenkins\.credentials=$jenkinsCreds/g $CONFIGFILE
+fi
+read -p "Do you have a Stash system to connect to? (y/n)" hasStash
+if [ $hasStash = "y" ]; then
+  read -p "Enter Stash URL: " stashUrl
+  sed -Ei s/stash\.url=/jenkins\.url=$stashUrl/g $CONFIGFILE
+  read -p "Enter Stash Credentials: " stashCreds
+  sed -Ei s/stash\.credentials=/stash\.credentials=$stashCreds/g $CONFIGFILE
+fi
+echo "You should be ready to go!  Enjoy!"
 
 #TODO
-#copy measurementor.properties to application.properties
-#prompt user for all the values
-#for each value update the properties file
 #do you have an instance of mongoDB to use?
 #if so, we need the credentials for the grails config
 #do you have an EC you want to use?

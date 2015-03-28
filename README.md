@@ -27,7 +27,8 @@ This will share the source code on your local box with the appropriate directory
 [DIRECTORY WHERE YOU DOWNLOADED THE CODE] with the path on your dev machine where you downloaded this code.
 
 Measurementor has a number of configurable settings including the URLs and credentials of the source systems and system defaults.
-Copy measurementor.properties into a new file, name it "application.properties", and add the connections and credentials to your source systems.
+To update these variables you can just run the setup.sh script and it will prompt you to enter all the configurable values.
+
 
 Get your vagrant box up and running:
 
@@ -43,16 +44,13 @@ Navigate to the directory that's shared with your dev machine for the measuremen
 
 Run the app:
 
-    grails run-app -Dgrails.server.port.http=8070
-
-NOTE: by default Grails uses port 8080 which is used by many other things, so I changed it to 8070.
-
+    grails run-app
 
 # In Progress...
 This is still a bit of a work in progress but feel free to let me know if there's anything that could be better.
 - When Grails 3 comes out I need to update the app to take advantage of native gradle
 - Need to install the data collector and start it up when everything else starts up
-- It would be good to have a shell script to set everything up
+- Working on making the setup.sh do everything you need
 - Need a data collector for github
 - Write more unit tests
 
