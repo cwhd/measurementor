@@ -1,9 +1,7 @@
 class BootStrap {
     def grailsApplication
     def updateDataFromSourceService
-    def asgardDataService
-    def jenkinsDataService
-    def stashDataService
+    def githubDataService
 
     def init = { servletContext ->
         println("GO TIME!")

@@ -8,8 +8,15 @@ import spock.lang.Specification
  */
 @TestFor(GithubDataService)
 class GithubDataServiceSpec extends Specification {
+    def githubDataService
 
     def setup() {
+        githubDataService = new GithubDataService()
+    }
+
+    def "Make An HTTP Request To GitHub"() {
+//        def githubResponse = githubDataService.makeGitHubRequest("/users/cwhd/repos", [start: 0, limit: 300])
+//        expect: githubResponse == "{ one:one }"
     }
 
     def cleanup() {

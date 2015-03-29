@@ -6,7 +6,7 @@ echo "\_)(_/(____)\_/\_/(____/\____/(__\_)(____)\_)(_/(____)\_)__) (__) \__/(__\
 echo "Welcome to measurementor setup!"
 echo "This script will help you set your system up for the first time.  You can always re-run this script, or update the application.properties file with the latest variables."
 
-CONFIGFILE=application.properties
+CONFIGFILE=application-config.properties
 VAGRANTFILE=Vagrantfile
 
 cp measurementor.properties $CONFIGFILE
@@ -28,9 +28,16 @@ fi
 read -p "Do you have a Stash system to connect to? (y/n)" hasStash
 if [ $hasStash = "y" ]; then
   read -p "Enter Stash URL: " stashUrl
-  sed -Ei s/stash\.url=/jenkins\.url=$stashUrl/g $CONFIGFILE
+  sed -Ei s/stash\.url=/stash\.url=$stashUrl/g $CONFIGFILE
   read -p "Enter Stash Credentials: " stashCreds
   sed -Ei s/stash\.credentials=/stash\.credentials=$stashCreds/g $CONFIGFILE
+fi
+read -p "Do you have a Github repo to connect to? (y/n)" hasGithub
+if [ $hasGithub = "y" ]; then
+  read -p "Enter Github repo URL: " githubUrl
+  sed -Ei s/github\.url=/github\.url=$githubUrl/g $CONFIGFILE
+  read -p "Enter Github Credentials: " githubCreds
+  sed -Ei s/github\.credentials=/github\.credentials=$githubCreds/g $CONFIGFILE
 fi
 echo "You should be ready to go!  Enjoy!"
 

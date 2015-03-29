@@ -68,6 +68,16 @@ class UtilitiesService {
         return result
     }
 
+    static Date cleanGithubDate(date) {
+        def result
+        //2015-03-28T14:09:22Z
+        if(date) {
+            result = date.replace("T","")
+            result = new SimpleDateFormat("yyyy-MM-ddHH:mm:ssz").parse(result)
+        }
+        return result
+    }
+
     /**
      * this method will tell you if your estimates are high or low.
      *         //get the exact time ratio for the upper & lower bounds
