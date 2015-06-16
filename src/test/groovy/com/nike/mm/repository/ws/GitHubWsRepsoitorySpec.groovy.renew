@@ -1,0 +1,53 @@
+package com.nike.mm.repository.ws
+
+import org.junit.Test
+import org.junit.runner.RunWith
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.SpringApplicationConfiguration
+import org.springframework.core.env.Environment
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner
+import org.springframework.test.context.web.WebAppConfiguration
+
+import spock.lang.Specification
+
+import com.nike.mm.MeasurementorApplication
+import com.nike.mm.dto.HttpRequestDto
+import com.nike.mm.entity.Github
+
+@RunWith(SpringJUnit4ClassRunner.class)
+@SpringApplicationConfiguration(classes = MeasurementorApplication.class)
+@WebAppConfiguration
+class GitHubWsRepsoitorySpec extends Specification {
+	
+	@Autowired IGithubWsRepository githubWsRepository;
+	
+	@Autowired
+	private Environment env;
+	
+	@Test
+	def "run against github for repos list"() {
+		
+		setup:
+		String path = "/users/cwhd/repos";
+		HttpRequestDto dto = [url: "https://api.github.com", path: path, query:[access_token: "d23591f13c149fe29a1135f484cd28540cd3f7e4", start: 0, limit: 1]] as HttpRequestDto
+		
+		when:
+		def repoList = this.githubWsRepository.findAllRepositories(dto);
+		
+		then:
+		!repoList.isEmpty();
+	}
+	
+	@Test
+	def "get all the commit information from the repository"() {
+		given:
+		String path = "/repos/cwhd/measurementor/commits";
+		HttpRequestDto dto = [url: "https://api.github.com", path: path, query:[access_token: "d23591f13c149fe29a1135f484cd28540cd3f7e4", start: 0, limit: 1]] as HttpRequestDto
+		
+		when:
+		List<Github> commits = this.githubWsRepository.findAllCommitsForRepository(dto);
+		
+		then:
+		!commits.isEmpty()
+	}
+}
