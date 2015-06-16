@@ -2,7 +2,7 @@
 measurementor helps you visualize data from your development cycle to help you be a better team.  This code is
 used as an example data collection system in the book [Agile Metrics In Action](http://manning.com/davis2/).
 
-# Devolpment Branch
+# Development Branch
 This is the development branch for the updated project.
 
 # Getting Started
