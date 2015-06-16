@@ -3,7 +3,7 @@ measurementor helps you visualize data from your development cycle to help you b
 used as an example data collection system in the book [Agile Metrics In Action](http://manning.com/davis2/).
 
 # Development Branch
-This is the development branch for the updated project.
+This is the development branch for the updated project. Updated with the latest.
 
 # Getting Started
 First note the [vagrant file](https://www.vagrantup.com/).  That will call the [puppet](http://puppetlabs.com/) manifest
