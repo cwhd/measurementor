@@ -1,35 +1,42 @@
-#!groovy    
-
-apply from: file('gradle/blueprint.gradle')
-apply from: file('gradle/check.gradle')
-
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
-
 buildscript {
-    ext {
-        springBootVersion = '1.2.3.RELEASE'
-    }
     repositories {
-        maven  {
-        	url "http://repo1.maven.org/maven2"
-    	}
+        jcenter()
     }
     dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}") 
+        classpath "org.grails:grails-gradle-plugin:2.1.2"
     }
-} 
+}
+apply plugin: 'grails'
 
-springBoot {
-    mainClass = 'com.nike.mm.MeasurementorApplication'
-    agent = file('/opt/newrelic/newrelic.jar')			
+grails {
+    grailsVersion = '2.4.3' // Specifies the Grails version to use
+    groovyVersion = '2.3.6' // Specify the Groovy version to use (should match the version that ships with the above Grails version)
+    springLoadedVersion = '1.2.0.RELEASE' // Specify the Spring Loaded version to use
 }
 
-jar {
-    baseName = 'measurementor'
-    version = '0.0.1-SNAPSHOT'
+repositories {
+    jcenter()
+    grails.central() //Adds the Grails Central Repository for resolving Grails plugins (replaces grailsPlugins(), grailsCentral() from BuildConfig.groovy)
 }
 
-task wrapper(type: Wrapper) {
-    gradleVersion = '2.4'
+dependencies {
+    bootstrap 'org.grails.plugins:tomcat:7.0.55'
+
+    compile 'org.grails.plugins:scaffolding:2.1.2'
+    compile 'org.grails.plugins:cache:1.1.7'
+    compile 'org.grails.plugins:asset-pipeline:1.9.6'
+
+    compile 'org.grails.plugins:rest:0.8'
+    compile 'org.grails.plugins:mongodb:3.0.2'
+    compile 'org.grails.plugins:quartz:1.0.2'
+    compile 'org.grails.plugins:elasticsearch:0.0.3.6'
+
+    runtime 'org.grails.plugins:hibernate4:4.3.5.5' //or 'org.grails.plugins:hibernate4:4.3.1.1'
+    runtime 'org.grails.plugins:database-migration:1.4.0'
+    runtime 'org.grails.plugins:jquery:1.11.1'
+
+    test 'org.grails:grails-datastore-test-support:1.0-grails-2.4'
+    //runtime 'org.grails.plugins:resources:1.2.2'
+
+
 }
