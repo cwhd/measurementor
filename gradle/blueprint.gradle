@@ -32,14 +32,6 @@ repositories {
     maven  {
         url "http://repo1.maven.org/maven2"
     }
-
-	maven { 
-		credentials { 
-			username "maven"
-			password "ludist"
-		}
-	    url "http://repo.nikedev.com:8081/artifactory/all-repos"
-	}
 }
 
 dependencies {
