@@ -2,6 +2,9 @@
 measurementor helps you visualize data from your development cycle to help you be a better team.  This code is
 used as an example data collection system in the book [Agile Metrics In Action](http://manning.com/davis2/).
 
+# Devolpment Branch
+This is the development branch for the updated project.
+
 # Getting Started
 First note the [vagrant file](https://www.vagrantup.com/).  That will call the [puppet](http://puppetlabs.com/) manifest
 that will install everything you need to get going.  In a nutshell it installs:
