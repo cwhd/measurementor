@@ -6,6 +6,12 @@ used as an example data collection system in the book [Agile Metrics In Action](
 This is the development branch for the updated project. Updated with the latest.
 
 # Getting Started
+Please install the following:
+- [JDK](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html): Note that Java 7 also works for this project.
+- [Gradle](https://gradle.org/): Used for the build of the application.
+
+
+Additiona
 First note the [vagrant file](https://www.vagrantup.com/).  That will call the [puppet](http://puppetlabs.com/) manifest
 that will install everything you need to get going.  In a nutshell it installs:
 - [Elasticsearch](http://www.elasticsearch.org/) : used for indexing data for searching

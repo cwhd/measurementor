@@ -25,7 +25,7 @@ class MeasureMentorJobsConfigRest implements IMeasureMentorJobsConfigRest{
 	
 	@Autowired MeasureMentorJobsConfigResourceAssembler measureMentorJobsConfigResourceAssembler;
 	
-	//http://localhost:8080/jobs-config?page=2&size=2&sort=name,desc
+	//http://localhost:8080/api/jobs-config?page=2&size=2&sort=name,desc
 	@Override
 	@RequestMapping(method = RequestMethod.GET, produces = "application/json")
 	public PagedResources<MeasureMentorJobsConfigDto> pageThroughJobConfigs(final Pageable pageable, final PagedResourcesAssembler assembler) {
