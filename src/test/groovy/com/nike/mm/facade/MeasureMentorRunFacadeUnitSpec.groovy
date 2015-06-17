@@ -1,5 +1,6 @@
 package com.nike.mm.facade
 
+import com.nike.mm.business.internal.IDateBusiness
 import com.nike.mm.business.internal.IJobHistoryBusiness
 import com.nike.mm.business.internal.IMeasureMentorJobsConfigBusiness
 import com.nike.mm.business.internal.IMeasureMentorRunBusiness
@@ -9,9 +10,6 @@ import com.nike.mm.entity.JobHistory
 import com.nike.mm.facade.impl.MeasureMentorRunFacade
 import spock.lang.Specification
 
-/**
- * Created by rparr2 on 6/13/15.
- */
 class MeasureMentorRunFacadeUnitSpec  extends Specification {
 
     MeasureMentorRunFacade measureMentorRunFacade
@@ -22,14 +20,18 @@ class MeasureMentorRunFacadeUnitSpec  extends Specification {
 
     IMeasureMentorJobsConfigBusiness measureMentorConfigBusiness
 
+    IDateBusiness dateBusiness
+
     def setup() {
         this.measureMentorRunFacade                             = new MeasureMentorRunFacade()
         this.measureMentorRunBusiness                           = Mock(IMeasureMentorRunBusiness)
         this.jobHistoryBusiness                                 = Mock(IJobHistoryBusiness)
         this.measureMentorConfigBusiness                        = Mock(IMeasureMentorJobsConfigBusiness)
+        this.dateBusiness = Mock(IDateBusiness)
         this.measureMentorRunFacade.measureMentorRunBusiness    = this.measureMentorRunBusiness
         this.measureMentorRunFacade.jobHistoryBusiness          = this.jobHistoryBusiness
         this.measureMentorRunFacade.measureMentorConfigBusiness = this.measureMentorConfigBusiness
+        this.measureMentorRunFacade.dateBusiness = this.dateBusiness
     }
 
     def "run job id throw exception because it is already running" () {
@@ -38,6 +40,7 @@ class MeasureMentorRunFacadeUnitSpec  extends Specification {
         this.measureMentorRunFacade.runJobId("anyid")
 
         then:
+        2 * this.dateBusiness.getCurrentDateTime()
         1 * this.measureMentorRunBusiness.isJobRunning(_)               >> true
         1 * this.jobHistoryBusiness.save(_)
         thrown(RuntimeException)
@@ -109,6 +112,7 @@ class MeasureMentorRunFacadeUnitSpec  extends Specification {
         this.measureMentorRunFacade.runJobId("anyid")
 
         then:
+        2 * this.dateBusiness.getCurrentDateTime()
         1 * this.measureMentorRunBusiness.isJobRunning(_)               >> false
         1 * this.measureMentorRunBusiness.startJob(_)
         1 * this.measureMentorConfigBusiness.findById(_)                >> configDto
@@ -126,20 +130,22 @@ class MeasureMentorRunFacadeUnitSpec  extends Specification {
         IMeasureMentorBusiness measureMentorBusiness                    = Mock(IMeasureMentorBusiness)
         IMeasureMentorBusiness measureMentorBusinessSkip                = Mock(IMeasureMentorBusiness)
         this.measureMentorRunFacade.measureMentorBusinesses             = [measureMentorBusinessSkip, measureMentorBusiness];
-        def configDto                                                   = [id: 'testId', name: 'SomeBuild', config: [[type:'availableButFailConfig']]] as MeasureMentorJobsConfigDto
+        def configDto = [id: 'testId', name: 'SomeBuild', config: [[type: 'availableAndPassesConfig']]] as
+                MeasureMentorJobsConfigDto
 
         when:
         this.measureMentorRunFacade.runJobId("anyid")
 
         then:
+        2 * this.dateBusiness.getCurrentDateTime()
         1 * this.measureMentorRunBusiness.isJobRunning(_)               >> false
         1 * this.measureMentorRunBusiness.startJob(_)
         1 * this.measureMentorConfigBusiness.findById(_)                >> configDto
         1 * this.jobHistoryBusiness.findLastSuccessfulJobRanForJobid(_) >> null
-        1 * measureMentorBusinessSkip.type()                            >> 'skip'
+        1 * measureMentorBusinessSkip.type() >> 'availableAndFailsConfig'
         0 * measureMentorBusinessSkip.validateConfig()
         0 * measureMentorBusinessSkip.updateData(_, _)
-        1 * measureMentorBusiness.type()                                >> 'availableButFailConfig'
+        1 * measureMentorBusiness.type() >> 'availableAndPassesConfig'
         1 * measureMentorBusiness.validateConfig(_)                     >> true
         1 * measureMentorBusiness.updateData(_, _)
         1 * this.jobHistoryBusiness.save(_)
