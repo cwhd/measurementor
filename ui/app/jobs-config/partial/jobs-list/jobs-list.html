@@ -1,0 +1,103 @@
+<div ng-controller="JobsListCtrl" style="height: 100%; width: 100%;">
+	<div layout="column" style="height: 100%; width: 100%;">
+		<div layout="row" style="width: 100%; margin-top: 58px;">
+			<md-content flex="0" flex-md="5" flex-gt-md="10"></md-content>
+			<md-content layout-padding flex="100" flex-md="90" flex-gt-md="80" style="overflow: visible;">
+				<div>
+					<md-button id="AddJobBtn" ng-click="onAdd()">
+						 <md-icon md-font-icon="fa fa-plus" class="awesomeFontIcon">
+						 </md-icon> 
+						 &nbsp;Add job
+					</md-button>
+					<md-button ng-click="onPrevious()">
+						 <md-icon md-font-icon="fa fa-backward" class="awesomeFontIcon">
+						 </md-icon> 
+						 &nbsp;Previous
+					</md-button>
+					<md-button ng-click="onNext()">
+						 <md-icon md-font-icon="fa fa-forward" class="awesomeFontIcon">
+						 </md-icon> 
+						 &nbsp;Next
+					</md-button>
+				</div>
+				<md-list>
+					<md-subheader class="md-no-sticky" style="font-size: 1.6rem;">List of jobs
+					</md-subheader>
+					<md-list-item class="md-3-line" ng-repeat="job in jobs">
+						<div class="borderBottom" style="width: 100%;">	
+							<div layout="row" style="width: 100%; outline: 0px;">
+								<md-content flex="25" flex-md="25" flex-gt-md="25" ng-class="job.lastbuildstatus ? 'successBackGroundColor' : 'errorBackGroundColor'" class="paddingLeft2X">
+									<div class="md-list-item-text">
+										<md-button ng-click="job.isOpen = !job.isOpen">
+											 <md-icon ng-if="!job.isOpen" md-font-icon="fa fa-folder" class="awesomeFontIcon"style="width: 20px;">
+											 </md-icon> 
+											 <md-icon ng-if="job.isOpen" md-font-icon="fa fa-folder-open" class="awesomeFontIcon" style="width: 20px;">
+											 </md-icon> 							
+											 &nbsp;{{job.name}}
+										</md-button> 	
+									</div>
+								</md-content>
+								<md-content flex="25" flex-md="25" flex-gt-md="25" ng-class="job.lastbuildstatus ? 'successBackGroundColor' : 'errorBackGroundColor'" layout="row" layout-align="center center">
+									<div class="md-list-item-text">
+										Last Build: {{job.lastBuildDate? job.lastBuildDate: 'Never Been Built'}}
+									</div>
+									</md-content>
+									<md-content flex="25" flex-md="25" flex-gt-md="25" ng-class="job.lastbuildstatus ? 'successBackGroundColor' : 'errorBackGroundColor'" class="paddingRight2X">
+									<div ng-if=!job.jobRunning class="md-list-item-text">
+										<md-button ng-click="runJob(job.id)">
+											 <md-icon md-font-icon="fa fa-play-circle" class="awesomeFontIcon" >
+											 </md-icon> 
+											 &nbsp;Run
+										</md-button> 
+									</div>
+									<div ng-if=job.jobRunning class="md-list-item-text" >
+										Running...
+									</div>						
+								</md-content>
+								<md-content flex="25" flex-md="25" flex-gt-md="25" ng-class="job.lastbuildstatus ? 'successBackGroundColor' : 'errorBackGroundColor'">
+									<div class="md-list-item-text">
+										<md-button 	>
+											 <md-icon md-font-icon="fa fa-power-off" class="awesomeFontIcon" ng-click="job.jobOn = !job.jobOn">
+											 </md-icon> 
+											 &nbsp;{{job.jobOn ? 'On': 'Off'}}
+										</md-button> 								
+									</div>
+								</md-content>
+							</div>
+							<div ng-if="job.isOpen" ng-class="job.lastbuildstatus ? 'successBackGroundColor' : 'errorBackGroundColor'" class="paddingLeft2X listItemExpandAnimation">
+								<md-button ng-click="onEdit(job.id)">
+									 <md-icon md-font-icon="fa fa-edit" class="awesomeFontIcon">
+									 </md-icon> 
+									 &nbsp;Edit
+								</md-button> 
+								<md-button ng-click="onHistory(job.id)">
+									 <md-icon md-font-icon="fa fa-list" class="awesomeFontIcon">
+									 </md-icon> 
+									 &nbsp;History
+								</md-button>										
+							</div>	
+						</div>	
+					</md-list-item>
+				</md-list>
+				<div>
+					<md-button ng-click="onAdd()">
+						 <md-icon md-font-icon="fa fa-plus" class="awesomeFontIcon">
+						 </md-icon> 
+						 &nbsp;Add job
+					</md-button>
+					<md-button ng-click="onPrevious()">
+						 <md-icon md-font-icon="fa fa-backward" class="awesomeFontIcon">
+						 </md-icon> 
+						 &nbsp;Previous
+					</md-button>
+					<md-button ng-click="onNext()">
+						 <md-icon md-font-icon="fa fa-forward" class="awesomeFontIcon">
+						 </md-icon> 
+						 &nbsp;Next
+					</md-button>									
+				</div>				
+			</md-content>
+			<md-content flex="0" flex-md="5" flex-gt-md="10"></md-content>
+		</div>
+	</div>
+</div>

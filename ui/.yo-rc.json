@@ -1,0 +1,37 @@
+{
+  "generator-cg-angular": {
+    "uirouter": true,
+    "partialDirectory": "partial/",
+    "modalDirectory": "partial/",
+    "directiveDirectory": "directive/",
+    "filterDirectory": "filter/",
+    "serviceDirectory": "service/",
+    "inject": {
+      "js": {
+        "file": "index.html",
+        "marker": "<!-- Add New Component JS Above -->",
+        "template": "<script src=\"<%= filename %>\"></script>"
+      },
+      "less": {
+        "relativeToModule": true,
+        "file": "<%= module %>.less",
+        "marker": "/* Add Component LESS Above */",
+        "template": "@import \"<%= filename %>\";"
+      }
+    },
+    "modules": [
+      {
+        "name": "generalLayout",
+        "file": "app\\general-layout\\general-layout.js"
+      },
+      {
+        "name": "userManagement",
+        "file": "app\\user-management\\user-management.js"
+      },
+      {
+        "name": "jobsConfig",
+        "file": "app\\jobs-config\\jobs-config.js"
+      }
+    ]
+  }
+}

@@ -1,0 +1,54 @@
+<div style="height: 100%; width: 100%;" ng-controller="JobDetailsCtrl">
+	<div layout="row" style="width: 100%;">
+		<md-content flex="0" flex-md="1" flex-gt-md="1"></md-content>	
+		<md-content flex="100" flex-md="99" flex-gt-md="99">
+			<md-button id="BackBtn" ng-click="onBack()" class="marginTop2X">
+				 <md-icon md-font-icon="fa fa-arrow-left" class="awesomeFontIcon">
+				 </md-icon> 
+				 &nbsp;Back
+			</md-button>		
+		</md-content>	
+	</div>	
+	<div layout="column" style="height: -webkit-calc(100% - 64px); width: 100%;" layout-align="center start" >
+		<div layout="row"></div>
+		<div layout="row" style="width: 100%; padding-bottom: 64px;">
+			<md-content flex="0" flex-md="15" flex-gt-md="33"></md-content>					
+			<md-content layout-padding flex="100" flex-md="70" flex-gt-md="33" style="overflow: visible;">
+				<form name="jobDetailsForm">
+					<md-input-container md-is-error='formValidation.showJobNameValidation'>
+						<label>Job Name</label>
+						<input type="text" name="jobName" ng-model="jobDetailsData.jobName" ng-blur="onBlurFormElement($event)" ng-change="onChangeFormElement('jobName')">
+						<div ng-messages="formValidation">
+					         <div ng-message="showJobNameValidation">This field is required</div>
+				        </div>						
+					</md-input-container>
+					<md-input-container md-is-error='formValidation.showCronValidation'>
+						<label>Cron</label>
+						<input type="password" name="cron" ng-model="jobDetailsData.cron" ng-blur="onBlurFormElement($event)" ng-change="onChangeFormElement('cron')">
+						<div ng-messages="formValidation">
+					         <div ng-message="showCronValidation">This field is required</div>
+				        </div>							
+					</md-input-container>
+				 	
+			        <md-checkbox ng-model="jobDetailsData.jobOn" class="md-primary"b>
+			          Job On
+			        </md-checkbox>
+
+			        <md-input-container md-is-error='formValidation.showConfigValidation'>
+			           <label>Config</label>
+			           <textarea name="configAsString" ng-model="jobDetailsData.configAsString" ng-blur="onBlurFormElement($event)" ng-change="onChangeFormElement('configAsString')"></textarea>
+					   <div ng-messages="formValidation">
+					   	   <div ng-message="showConfigValidation">This field is required</div>
+				       	</div>	
+			        </md-input-container>
+
+					<div layout="column">
+						<md-button ng-click="onSave()" class="md-raised md-primary">Save Changes</md-button>			
+					</div>				
+				</form>
+			</md-content>
+			<md-content flex="0" flex-md="15" flex-gt-md="33"></md-content>
+		</div>
+	 	<div layout="row"></div>
+	</div>
+</div>

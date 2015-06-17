@@ -1,0 +1,87 @@
+	@defaultThemeColor: rgb(63, 81, 181);
+	@successBackGroundColor: #dff0d8;
+	@errorBackGroundColor: #fcf8e3;
+	@spacingUnit: 0.5rem;
+
+	.awesomeFontIcon{
+		color: @defaultThemeColor; 
+		outline: 0px;
+		font-size: 20px;
+	}
+
+	.awesomeFontIconWhite{
+		color: white; 
+		cursor: pointer;
+		outline: 0px;
+	}	
+
+	.successBackGroundColor{
+	  	background-color: @successBackGroundColor !important;
+	}
+
+	.errorBackGroundColor{
+		background-color: @errorBackGroundColor !important;
+	}
+
+	.borderBottom{
+		border-bottom: 1px solid silver;
+	}
+
+	.transparentBgd{
+		background-color: transparent !important;
+	}	
+
+	.paddingLeft2X{
+		padding-left: @spacingUnit*2;
+	}
+
+	.paddingRight2X{
+		padding-right: @spacingUnit*2;
+	}	
+
+	.paddingTop1X{
+		padding-top: @spacingUnit;
+	}
+
+	.paddingBottom1X{
+		padding-bottom: @spacingUnit*2;
+	}
+
+	.marginTop2X{
+		margin-top: @spacingUnit*2;
+	}
+
+	.listItemExpandAnimation.ng-enter, .listItemExpandAnimation.ng-leave {
+	    -webkit-transition: 0.2s linear all;
+	    -moz-transition: 0.2s linear all;
+	    -ms-transition: 0.2s linear all;
+	    -o-transition: 0.2s linear all;
+	    transition: 0.2s linear all;
+	}
+	/* du début de l'entrée */
+	.listItemExpandAnimation.ng-enter {
+	   max-height: 0;
+	}
+	/* à la fin de l'entrée */
+	.listItemExpandAnimation.ng-enter.ng-enter-active {
+	    max-height: 100px;
+	}
+	/* du début de la sortie */
+	.listItemExpandAnimation.ng-leave {
+	    max-height: 100px;
+	}
+	/* à la fin de la sortie */
+	.listItemExpandAnimation.ng-leave.ng-leave-active {
+	    max-height: 0;
+	}
+
+	md-list md-list-item button.md-button:not([disabled]):hover{
+		background-color: rgba(158,158,158,0.2);
+	}	
+
+
+	md-input-container label:not(.md-no-float), md-input-container .md-placeholder:not(.md-select-label){
+		transition: transform 0.25s;
+	}
+
+	
