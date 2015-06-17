@@ -46,6 +46,7 @@ dependencies {
     compile("org.jasypt:jasypt:1.9.2")
     compile("net.sf.dozer:dozer:5.5.1")
     compile("org.projectlombok:lombok:1.16.4")
+    compile("joda-time:joda-time:2.8.1")
     
     testCompile("org.springframework.boot:spring-boot-starter-test")
     testCompile("cglib:cglib-nodep:3.1")
