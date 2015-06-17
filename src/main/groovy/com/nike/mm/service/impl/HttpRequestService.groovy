@@ -41,7 +41,7 @@ class HttpRequestService implements IHttpRequestService {
 			}
 			headers.'User-Agent' = 'Mozilla/5.0 Ubuntu/8.10 Firefox/3.0.4'
 			if (httpRequestDto.credentials) {
-				headers.'Authorization' =  httpRequestDto.credentials
+				headers.'Authorization' =  "Basic " + httpRequestDto.credentials
 			}
 			headers.'Accept' = 'application/json'
 			headers.'Content-Type' = 'application/json'

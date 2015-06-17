@@ -16,6 +16,7 @@ class JenkinsWsRepository implements IJenkinsWsRepository {
 	
 	@Override
 	public List<String> getListOfRepositoryNames(final HttpRequestDto dto) {
+		def json = this.httpRequestService.callRestfulUrl(dto)
 		return null;
 	}
 }

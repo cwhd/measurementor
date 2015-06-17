@@ -6,9 +6,16 @@ used as an example data collection system in the book [Agile Metrics In Action](
 This is the development branch for the updated project. Updated with the latest.
 
 # Getting Started
+
+## Basics
 Please install the following:
 - [JDK](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html): Note that Java 7 also works for this project.
 - [Gradle](https://gradle.org/): Used for the build of the application.
+
+## [Elastic](https://www.elastic.co/)
+You will have 2 options for elasticsearch environments in development.
+- Install elastic on
+
 
 
 Additiona
