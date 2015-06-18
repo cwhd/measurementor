@@ -20,7 +20,7 @@ class MeasureMentorRunRest implements IMeasureMentorRunRest {
     ICronService cronService
 
     @Override
-    @RequestMapping(value = "/start/{jobid}", method = RequestMethod.GET)
+    @RequestMapping(value = "/{jobid}", method = RequestMethod.POST)
     public void runJobId(@PathVariable final String jobid) {
         this.measureMentorRunFacade.runJobId(jobid);
     }

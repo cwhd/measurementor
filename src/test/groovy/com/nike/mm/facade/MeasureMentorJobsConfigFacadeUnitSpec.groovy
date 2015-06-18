@@ -7,6 +7,7 @@ import com.nike.mm.dto.MeasureMentorJobsConfigDto
 import com.nike.mm.entity.JobHistory
 import com.nike.mm.entity.MeasureMentorJobsConfig
 import com.nike.mm.facade.impl.MeasureMentorJobsConfigFacade
+import com.nike.mm.service.ICronService
 import org.springframework.data.domain.PageImpl
 import spock.lang.Specification
 
@@ -23,14 +24,18 @@ class MeasureMentorJobsConfigFacadeUnitSpec extends Specification {
 
     IMeasureMentorRunBusiness measureMentorRunBusiness
 
+    ICronService cronService
+
     def setup() {
         this.measureMentorJobsConfigFacade                                  = new MeasureMentorJobsConfigFacade()
         this.measureMentorJobsConfigBusiness                                = Mock(IMeasureMentorJobsConfigBusiness)
         this.jobHistoryBusiness                                             = Mock(IJobHistoryBusiness)
         this.measureMentorRunBusiness                                       = Mock(IMeasureMentorRunBusiness)
+        this.cronService                                                    = Mock(ICronService)
         this.measureMentorJobsConfigFacade.measureMentorJobsConfigBusiness  = this.measureMentorJobsConfigBusiness
         this.measureMentorJobsConfigFacade.jobHistoryBusiness               = this.jobHistoryBusiness
         this.measureMentorJobsConfigFacade.measureMentorRunBusiness         = this.measureMentorRunBusiness
+        this.measureMentorJobsConfigFacade.cronService                      = this.cronService
     }
 
     def "find an individual record"() {
@@ -57,6 +62,7 @@ class MeasureMentorJobsConfigFacadeUnitSpec extends Specification {
 
         then:
         1 * this.measureMentorJobsConfigBusiness.saveConfig(_) >> entity
+        1 * this.cronService.removeJob("not a real id")
         rentity.id == dto.id
     }
 

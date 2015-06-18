@@ -62,7 +62,7 @@ class CronService implements ICronService {
     void removeJob(final String jobId) {
 
         if (!SCHEDULED_TASKS.containsKey(jobId)) {
-            throw new CronJobRuntimeException(MessageFormat.format(LOG_JOB_NOT_FOUND, jobId))
+//            throw new CronJobRuntimeException(MessageFormat.format(LOG_JOB_NOT_FOUND, jobId))
         } else {
             final ScheduledFuture future = SCHEDULED_TASKS.get(jobId)
             if (future.cancel(false)) {

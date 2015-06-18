@@ -1,5 +1,6 @@
 package com.nike.mm.facade.impl
 
+import com.nike.mm.service.ICronService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
@@ -26,6 +27,9 @@ class MeasureMentorJobsConfigFacade implements IMeasureMentorJobsConfigFacade {
     @Autowired
     IMeasureMentorRunBusiness measureMentorRunBusiness
 
+    @Autowired
+    ICronService cronService
+
     @Override
     MeasureMentorJobsConfigDto findById(final String id) {
         return this.measureMentorJobsConfigBusiness.findById(id);
@@ -33,7 +37,14 @@ class MeasureMentorJobsConfigFacade implements IMeasureMentorJobsConfigFacade {
 
     @Override
     Object saveJobsConfig(MeasureMentorJobsConfigDto dto) {
-        return this.measureMentorJobsConfigBusiness.saveConfig(dto);
+        Object result = this.measureMentorJobsConfigBusiness.saveConfig(dto)
+        if (dto.cron && dto.jobOn) {
+            this.cronService.addJob(dto.id)
+        } else {
+            this.cronService.removeJob(dto.id)
+        }
+
+        return result
     }
 
     @Override
