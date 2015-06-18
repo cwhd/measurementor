@@ -1,0 +1,31 @@
+<div layout="column" style="height: 100%; width: 100%;" ng-controller="SignInCtrl">
+	<div layout="column" style="height: 100%; width: 100%;" layout-align="center start" >
+		<div layout="row"></div>
+		<div layout="row" style="width: 100%; padding-bottom: 64px;">
+			<md-content flex="0" flex-md="15" flex-gt-md="33"></md-content>
+			<md-content layout-padding flex="100" flex-md="70" flex-gt-md="33" style="overflow: visible;">
+				<form name="loginForm" autocomplete="off">
+					<md-input-container  md-is-error='formValidation.showUserNameValidation'>
+						<label>User Name</label>
+						<input id='UserName' type="text" name="userName" ng-model="loginData.userName" ng-blur="onBlurFormElement($event)" ng-change="onChangeFormElement('userName')">
+						<div ng-messages="formValidation">
+					         <div ng-message="showUserNameValidation">This field is required</div>
+				        </div>							
+					</md-input-container>
+					<md-input-container md-is-error='formValidation.showPasswordValidation'>
+						<label>Password</label>
+						<input id='Password' type="password" name="password" ng-model="loginData.password" ng-blur="onBlurFormElement($event)" ng-change="onChangeFormElement('password')" >
+						<div ng-messages="formValidation">
+					         <div ng-message="showPasswordValidation">This field is required</div>
+				        </div>							
+					</md-input-container>
+					<div layout="column">
+						<md-button id='LogInBtn' ng-click="onLogIn()" class="md-raised md-primary">Log In</md-button>	
+					</div>	
+				</form>
+			</md-content>
+			<md-content flex="0" flex-md="15" flex-gt-md="33"></md-content>
+		</div>
+	   <div layout="row"></div>
+  </div>
+</div> 
