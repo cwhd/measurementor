@@ -1,5 +1,5 @@
 declare
-var angular; 
+var angular;
 
 angular.module("jobsConfig").controller("JobDetailsCtrl", function($scope, $state, $http, $stateParams, jobsConfig, generalLayout) {
     generalLayout.checkLogInStatus();
@@ -7,7 +7,7 @@ angular.module("jobsConfig").controller("JobDetailsCtrl", function($scope, $stat
 
     var initJobDetailsData = function() {
         $scope.jobDetailsData = {
-            jobName: "",
+            name: "",
             cron: "",
             jobOn: false,
             configAsString: ""
@@ -16,16 +16,16 @@ angular.module("jobsConfig").controller("JobDetailsCtrl", function($scope, $stat
 
     var initFormValidation = function() {
         $scope.formValidation = {
-            showJobNameValidation: false,
+            showNameValidation: false,
             showCronValidation: false,
             showConfigValidation: false
         };
     };
 
     if ($stateParams.id !== "-1") {
-        // $scope.jobDetailsData = jobsConfig.getJobConfig($stateParams.id);
-        // $scope.jobDetailsData.configAsString = JSON.stringify($scope.jobDetailsData);
-        initJobDetailsData();
+        jobsConfig.getJobConfig($stateParams.id).then(function(data) {
+            $scope.jobDetailsData = angular.copy(data);
+        });
     } else {
         initJobDetailsData();
     }
@@ -33,9 +33,9 @@ angular.module("jobsConfig").controller("JobDetailsCtrl", function($scope, $stat
     initFormValidation();
 
     $scope.onSave = function(successForTesting) {
-        if (!$scope.jobDetailsData.jobName || !$scope.jobDetailsData.cron || !$scope.jobDetailsData.configAsString) {
-            if (!$scope.jobDetailsData.jobName) {
-                $scope.formValidation.showJobNameValidation = true;
+        if (!$scope.jobDetailsData.name || !$scope.jobDetailsData.cron || !$scope.jobDetailsData.configAsString) {
+            if (!$scope.jobDetailsData.name) {
+                $scope.formValidation.showNameValidation = true;
             }
 
             if (!$scope.jobDetailsData.cron) {
@@ -48,17 +48,18 @@ angular.module("jobsConfig").controller("JobDetailsCtrl", function($scope, $stat
             return;
         }
         initFormValidation();
-        //$scope.jobDetailsData.config = JSON.parse($scope.jobDetailsData.configAsString);
-
+        
         var onSuccess = function() {
+            //console.log("success");
             $state.go("app.jobs-list");
         };
 
         var onError = function() {
+            //console.log("error");
             $state.go("app.jobs-list");
         };
 
-        jobsConfig.saveJobConfig($scope.jobDetailsData, onSuccess, onError, successForTesting);
+        jobsConfig.saveJobConfig(angular.copy($scope.jobDetailsData), onSuccess, onError, successForTesting);
     };
 
     $scope.onBack = function() {
@@ -67,11 +68,11 @@ angular.module("jobsConfig").controller("JobDetailsCtrl", function($scope, $stat
 
     $scope.onBlurFormElement = function(event) {
         switch (event.currentTarget.name) {
-            case "jobName":
+            case "name":
                 if (!event.currentTarget.value) {
-                    $scope.formValidation.showJobNameValidation = true;
+                    $scope.formValidation.showNameValidation = true;
                 } else {
-                    $scope.formValidation.showJobNameValidation = false;
+                    $scope.formValidation.showNameValidation = false;
                 }
                 break;
             case "cron":
@@ -93,11 +94,11 @@ angular.module("jobsConfig").controller("JobDetailsCtrl", function($scope, $stat
 
     $scope.onChangeFormElement = function(elementName) {
         switch (elementName) {
-            case "jobName":
-                if (!$scope.jobDetailsData.jobName) {
-                    $scope.formValidation.showJobNameValidation = true;
+            case "name":
+                if (!$scope.jobDetailsData.name) {
+                    $scope.formValidation.showNameValidation = true;
                 } else {
-                    $scope.formValidation.showJobNameValidation = false;
+                    $scope.formValidation.showNameValidation = false;
                 }
                 break;
             case "cron":

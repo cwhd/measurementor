@@ -33,7 +33,7 @@ describe("jobsConfig", function() {
             page: {}
         });
 
-        $httpBackend.when("GET", "api/jobs-history/1?page=0&size=2&sort=endDate,desc").respond({
+        $httpBackend.when("GET", "api/jobs-hostory/1?page=0&size=2&sort=endDate,desc").respond({
             _embedded: {
                 jobHistoryDtoes: [{
                     id: 1
@@ -59,14 +59,14 @@ describe("jobsConfig", function() {
 
     it("jobHistory service checks", inject(function(jobsConfig) {
         var jobHistories;
-        jobsConfig.getJobHistoryData("api/jobs-history/1?page=0&size=2&sort=endDate,desc", false).then(function(data) {
+        jobsConfig.getJobHistoryData("api/jobs-hostory/1?page=0&size=2&sort=endDate,desc", false).then(function(data) {
             jobHistories = data.jobHistories;
         });
         $httpBackend.flush();
 
         expect(jobHistories.length > 0).toBeTruthy();
 
-        jobHistories = jobsConfig.getJobHistoryData("api/jobs-history/1?page=0&size=2&sort=endDate,desc", true).jobHistories;
+        jobHistories = jobsConfig.getJobHistoryData("api/jobs-hostory/1?page=0&size=2&sort=endDate,desc", true).jobHistories;
         expect(jobHistories.length > 0).toBeTruthy();
     }));
 });

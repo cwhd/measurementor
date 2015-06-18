@@ -9,12 +9,12 @@
 						 </md-icon> 
 						 &nbsp;Add job
 					</md-button>
-					<md-button ng-click="onPrevious()">
+					<md-button ng-click="onPrevious()" ng-if="jobsData.links.prev && jobsData.links.prev.href">
 						 <md-icon md-font-icon="fa fa-backward" class="awesomeFontIcon">
 						 </md-icon> 
 						 &nbsp;Previous
 					</md-button>
-					<md-button ng-click="onNext()">
+					<md-button ng-click="onNext()" ng-if="jobsData.links.next && jobsData.links.next.href">
 						 <md-icon md-font-icon="fa fa-forward" class="awesomeFontIcon">
 						 </md-icon> 
 						 &nbsp;Next
@@ -23,7 +23,10 @@
 				<md-list>
 					<md-subheader class="md-no-sticky" style="font-size: 1.6rem;">List of jobs
 					</md-subheader>
-					<md-list-item class="md-3-line" ng-repeat="job in jobs">
+					<md-list-item class="md-3-line" ng-if="!jobsData.jobs.length">
+						<div class="md-list-item-text">No data found</div>			
+					</md-list-item>						
+					<md-list-item class="md-3-line" ng-repeat="job in jobsData.jobs">
 						<div class="borderBottom" style="width: 100%;">	
 							<div layout="row" style="width: 100%; outline: 0px;">
 								<md-content flex="25" flex-md="25" flex-gt-md="25" ng-class="job.lastbuildstatus ? 'successBackGroundColor' : 'errorBackGroundColor'" class="paddingLeft2X">
@@ -85,12 +88,12 @@
 						 </md-icon> 
 						 &nbsp;Add job
 					</md-button>
-					<md-button ng-click="onPrevious()">
+					<md-button ng-click="onPrevious()" ng-if="jobsData.links.prev && jobsData.links.prev.href">
 						 <md-icon md-font-icon="fa fa-backward" class="awesomeFontIcon">
 						 </md-icon> 
 						 &nbsp;Previous
 					</md-button>
-					<md-button ng-click="onNext()">
+					<md-button ng-click="onNext()" ng-if="jobsData.links.next && jobsData.links.next.href">
 						 <md-icon md-font-icon="fa fa-forward" class="awesomeFontIcon">
 						 </md-icon> 
 						 &nbsp;Next

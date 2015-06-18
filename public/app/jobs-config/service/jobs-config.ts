@@ -6,7 +6,6 @@ angular.module("jobsConfig").factory("jobsConfig", function($http, $q, constants
     var jobsConfig = {
         getJobs: function(url, mockData) {
             var deferred = $q.defer();
-
             if (angular.isUndefined(mockData)) {
                 mockData = constants.mockdata;
             }
@@ -66,16 +65,15 @@ angular.module("jobsConfig").factory("jobsConfig", function($http, $q, constants
                     };
                     deferred.resolve(result);
                 });
-
                 return deferred.promise;
             }
         },
         jobsConfig: function() {
             return;
         },
-        runJob: function(jobid, onSuccess) {
-            console.log("Running: " + jobid);
-            $http.get(("/api/run-job/" + jobid)).
+        runJob: function(jobId, onSuccess) {
+            console.log("Running: " + jobId);
+            $http.get(("/api/run-job/" + jobId)).
             success(function(data, status, headers, config) {
                 if (onSuccess) {
                     onSuccess();
@@ -85,15 +83,30 @@ angular.module("jobsConfig").factory("jobsConfig", function($http, $q, constants
                 console.log("ERROR!!!!!!!!!!!!!!!!!!!");
             });
         },
-        getJobConfig: function(jobid) {
-            $http.get("/api/jobs-config/" + jobid).then(function(data) {
+        getJobConfig: function(jobId) {
+            var deferred = $q.defer();
+            $http.get("http://localhost:8080/api/jobs-config/" + jobId).then(function(data) {
                 if (data) {
-                    return data.data;
+                    data.data.configAsString = JSON.stringify(data.data.config);
+                    return deferred.resolve(data.data);
                 }
             });
+
+            return deferred.promise;
         },
         saveJobConfig: function(jobConfig, onSuccess, onError) {
-            $http.post("/api/jobs-config", jobConfig).
+            jobConfig.config = JSON.parse(jobConfig.configAsString);
+            delete jobConfig.configAsString;
+
+            var req = {
+                method: "POST",
+                url: "http://localhost:8080/api/jobs-config",
+                headers: {
+                    "Access-Control-Allow-Origin": "*"
+                },
+                data: jobConfig
+            };
+            $http(req).
             success(function(data, status, headers, config) {
                 if (onSuccess) {
                     onSuccess();
@@ -105,6 +118,18 @@ angular.module("jobsConfig").factory("jobsConfig", function($http, $q, constants
                     onError();
                 }
             });
+            // $http.post("http://localhost:8080/api/jobs-config", jobConfig).
+            // success(function(data, status, headers, config) {
+            //     if (onSuccess) {
+            //         onSuccess();
+            //     }
+
+            // }).
+            // error(function(data, status, headers, config) {
+            //     if (onError) {
+            //         onError();
+            //     }
+            // });
         },
         getJobHistoryData: function(url, mockData) {
             var deferred = $q.defer();
@@ -153,22 +178,24 @@ angular.module("jobsConfig").factory("jobsConfig", function($http, $q, constants
                 return result;
             } else {
                 $http.get(url).then(function(resp) {
-                    var jobHistories = resp.data._embedded.jobHistoryDtoes;
-                    var links = resp.data._links;
-                    var page = resp.data.page;
+                    var resutl;
+                    if (resp.data && resp.data._embedded) {
+                        var jobHistories = resp.data._embedded.jobHistoryDtoes;
+                        var links = resp.data._links;
+                        var page = resp.data.page;
 
-                    var result = {
-                        jobHistories: jobHistories,
-                        links: links,
-                        page: page
-                    };
+                        result = {
+                            jobHistories: jobHistories,
+                            links: links,
+                            page: page
+                        };
+                    }
 
                     deferred.resolve(result);
                 });
                 return deferred.promise;
             }
         }
-
     };
     return jobsConfig;
 });

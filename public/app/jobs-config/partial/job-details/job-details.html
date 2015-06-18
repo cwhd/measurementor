@@ -17,7 +17,7 @@
 				<form name="jobDetailsForm">
 					<md-input-container md-is-error='formValidation.showJobNameValidation'>
 						<label>Job Name</label>
-						<input type="text" name="jobName" ng-model="jobDetailsData.jobName" ng-blur="onBlurFormElement($event)" ng-change="onChangeFormElement('jobName')">
+						<input type="text" name="jobName" ng-model="jobDetailsData.name" ng-blur="onBlurFormElement($event)" ng-change="onChangeFormElement('jobName')">
 						<div ng-messages="formValidation">
 					         <div ng-message="showJobNameValidation">This field is required</div>
 				        </div>						

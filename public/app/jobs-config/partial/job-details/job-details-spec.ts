@@ -7,10 +7,11 @@ describe("JobDetailsCtrl", function() {
     var rootScope, scope, ctrl, stateName, stateParams;
 
     beforeEach(module(function($provide) {
-        $provide.factory("jobsConfig", function() { //mocking factory
+        $provide.factory("jobsConfig", function($q) { //mocking factory
             return {
                 getJobConfig: function() {
-                    return {};
+                    var deferred = $q.defer();
+                    return deferred.promise;
                 },
                 saveJobConfig: function(data, onSuccess, onError, successForTesting) {
                     if (successForTesting) {
@@ -55,12 +56,12 @@ describe("JobDetailsCtrl", function() {
     it("Form validation checks (onBlur logic)", inject(function() {
         var event = {
             currentTarget: {
-                name: "jobName",
+                name: "name",
                 value: ""
             }
         };
         scope.onBlurFormElement(event);
-        expect(scope.formValidation.showJobNameValidation).toEqual(true);
+        expect(scope.formValidation.showNameValidation).toEqual(true);
 
         event = {
             currentTarget: {
@@ -82,12 +83,12 @@ describe("JobDetailsCtrl", function() {
 
         event = {
             currentTarget: {
-                name: "jobName",
+                name: "name",
                 value: "TestJob"
             }
         };
         scope.onBlurFormElement(event);
-        expect(scope.formValidation.showJobNameValidation).toEqual(false);
+        expect(scope.formValidation.showNameValidation).toEqual(false);
 
         event = {
             currentTarget: {
@@ -110,24 +111,24 @@ describe("JobDetailsCtrl", function() {
 
     it("Form validation checks (onChange logic)", inject(function() {
         scope.jobDetailsData = {
-            jobName: "",
+            name: "",
             cron: "",
             configAsString: ""
         };
-        scope.onChangeFormElement("jobName");
-        expect(scope.formValidation.showJobNameValidation).toEqual(true);
+        scope.onChangeFormElement("name");
+        expect(scope.formValidation.showNameValidation).toEqual(true);
         scope.onChangeFormElement("cron");
         expect(scope.formValidation.showCronValidation).toEqual(true);
         scope.onChangeFormElement("configAsString");
         expect(scope.formValidation.showConfigValidation).toEqual(true);
 
         scope.jobDetailsData = {
-            jobName: "TestJob",
+            name: "TestJob",
             cron: "123",
             configAsString: "test"
         };
-        scope.onChangeFormElement("jobName");
-        expect(scope.formValidation.showJobNameValidation).toEqual(false);
+        scope.onChangeFormElement("name");
+        expect(scope.formValidation.showNameValidation).toEqual(false);
         scope.onChangeFormElement("cron");
         expect(scope.formValidation.showCronValidation).toEqual(false);
         scope.onChangeFormElement("configAsString");
@@ -136,22 +137,22 @@ describe("JobDetailsCtrl", function() {
 
     it("Form validation checks (onSave logic)", inject(function() {
         scope.jobDetailsData = {
-            jobName: "",
+            name: "",
             cron: "",
             configAsString: ""
         };
         scope.onSave();
-        expect(scope.formValidation.showJobNameValidation).toEqual(true);
+        expect(scope.formValidation.showNameValidation).toEqual(true);
         expect(scope.formValidation.showCronValidation).toEqual(true);
         expect(scope.formValidation.showConfigValidation).toEqual(true);
 
         scope.jobDetailsData = {
-            jobName: "TestJob",
+            name: "TestJob",
             cron: "123",
             configAsString: "test"
         };
         scope.onSave(true);
-        expect(scope.formValidation.showJobNameValidation).toEqual(false);
+        expect(scope.formValidation.showNameValidation).toEqual(false);
         expect(scope.formValidation.showCronValidation).toEqual(false);
         expect(scope.formValidation.showConfigValidation).toEqual(false);
         expect(stateName).toEqual("app.jobs-list");

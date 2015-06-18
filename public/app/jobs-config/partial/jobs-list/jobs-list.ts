@@ -5,25 +5,13 @@ angular.module("jobsConfig").controller("JobsListCtrl", function($rootScope, $sc
     generalLayout.checkLogInStatus();
     generalLayout.data.viewTitle = "List of jobs";
 
-    $scope.jobs = [];
-    $scope.page = {};
-
-    var links = {
-        next: {
-            href: ""
-        },
-        prev: {
-            href: ""
-        }
-    };
-    var currentPage = "api/jobs-config?page=0&size=2&sort=name,asc";
+    var currentPage = "http://localhost:8080/api/jobs-config?page=0&size=3&sort=name,asc";
 
     var getData = function(url: string) {
         currentPage = url;
-        var jobsData = jobsConfig.getJobs(url);
-        $scope.jobs = jobsData.jobs;
-        links = angular.copy(jobsData.links);
-        $scope.page = angular.copy(jobsData.page);
+        jobsConfig.getJobs(url).then(function(data) {
+            $scope.jobsData = angular.copy(data);
+        });
     };
 
     getData(currentPage);
@@ -51,10 +39,10 @@ angular.module("jobsConfig").controller("JobsListCtrl", function($rootScope, $sc
     };
 
     $scope.onPrevious = function() {
-        getData(links.prev.href);
+        getData($scope.jobsData.links.prev.href);
     };
 
     $scope.onNext = function() {
-        getData(links.next.href);
+        getData($scope.jobsData.links.next.href);
     };
 });

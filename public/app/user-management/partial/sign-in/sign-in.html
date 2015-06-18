@@ -4,7 +4,7 @@
 		<div layout="row" style="width: 100%; padding-bottom: 64px;">
 			<md-content flex="0" flex-md="15" flex-gt-md="33"></md-content>
 			<md-content layout-padding flex="100" flex-md="70" flex-gt-md="33" style="overflow: visible;">
-				<form name="loginForm">
+				<form name="loginForm" autocomplete="off">
 					<md-input-container  md-is-error='formValidation.showUserNameValidation'>
 						<label>User Name</label>
 						<input id='UserName' type="text" name="userName" ng-model="loginData.userName" ng-blur="onBlurFormElement($event)" ng-change="onChangeFormElement('userName')">

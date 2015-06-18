@@ -7,20 +7,11 @@ describe("JobHistoryCtrl", function() {
     var rootScope, scope, ctrl, stateName;
 
     beforeEach(module(function($provide) {
-        $provide.factory("jobsConfig", function() { //mocking factory
+        $provide.factory("jobsConfig", function($q) { //mocking factory
             return {
                 getJobHistoryData: function() {
-                    return {
-                        jobHistories: [{
-                            id: 1,
-                            success: true,
-                            endDate: new Date().toDateString(),
-                            comments: "Some comments here...",
-                            isOpen: false
-                        }],
-                        links: {},
-                        page: {}
-                    };
+                    var deferred = $q.defer();
+                    return deferred.promise;
                 }
             };
         });
