@@ -58,7 +58,6 @@ class MeasureMentorRunFacade implements IMeasureMentorRunFacade {
             if (previousJh) {
                 mmcvDto.previousJobId = previousJh.id;
             }
-            if (!mmcvDto.errors.isEmpty()) {
                 this.jobHistoryBusiness.save([jobid: jobid, startDate: startDate, endDate: this.dateBusiness
                         .currentDateTime, success:
                         'false', status            : "error", comments: mmcvDto.getMessageAsString()] as JobHistory);

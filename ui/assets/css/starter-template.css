@@ -1,0 +1,69 @@
+.awesomeFontIcon {
+  color: #3f51b5;
+  outline: 0px;
+  font-size: 20px;
+}
+.awesomeFontIconWhite {
+  color: white;
+  cursor: pointer;
+  outline: 0px;
+}
+.successBackGroundColor {
+  background-color: #dff0d8 !important;
+}
+.errorBackGroundColor {
+  background-color: #fcf8e3 !important;
+}
+.borderBottom {
+  border-bottom: 1px solid silver;
+}
+.transparentBgd {
+  background-color: transparent !important;
+}
+.paddingLeft2X {
+  padding-left: 1rem;
+}
+.paddingRight2X {
+  padding-right: 1rem;
+}
+.paddingTop1X {
+  padding-top: 0.5rem;
+}
+.paddingBottom1X {
+  padding-bottom: 1rem;
+}
+.marginTop2X {
+  margin-top: 1rem;
+}
+.listItemExpandAnimation.ng-enter,
+.listItemExpandAnimation.ng-leave {
+  -webkit-transition: 0.2s linear all;
+  -moz-transition: 0.2s linear all;
+  -ms-transition: 0.2s linear all;
+  -o-transition: 0.2s linear all;
+  transition: 0.2s linear all;
+}
+/* du début de l'entrée */
+.listItemExpandAnimation.ng-enter {
+  max-height: 0;
+}
+/* à la fin de l'entrée */
+.listItemExpandAnimation.ng-enter.ng-enter-active {
+  max-height: 100px;
+}
+/* du début de la sortie */
+.listItemExpandAnimation.ng-leave {
+  max-height: 100px;
+}
+/* à la fin de la sortie */
+.listItemExpandAnimation.ng-leave.ng-leave-active {
+  max-height: 0;
+}
+md-list md-list-item button.md-button:not([disabled]):hover {
+  background-color: rgba(158, 158, 158, 0.2);
+}
+md-input-container label:not(.md-no-float),
+md-input-container .md-placeholder:not(.md-select-label) {
+  transition: transform 0.25s;
+}
+/*# sourceMappingURL=starter-template.css.map */
