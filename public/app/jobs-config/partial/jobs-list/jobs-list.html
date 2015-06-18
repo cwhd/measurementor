@@ -47,7 +47,7 @@
 									</md-content>
 									<md-content flex="25" flex-md="25" flex-gt-md="25" ng-class="job.lastbuildstatus ? 'successBackGroundColor' : 'errorBackGroundColor'" class="paddingRight2X">
 									<div ng-if=!job.jobRunning class="md-list-item-text">
-										<md-button ng-click="runJob(job.id)">
+										<md-button ng-click="onRunJob(job.id)">
 											 <md-icon md-font-icon="fa fa-play-circle" class="awesomeFontIcon" >
 											 </md-icon> 
 											 &nbsp;Run
@@ -59,8 +59,8 @@
 								</md-content>
 								<md-content flex="25" flex-md="25" flex-gt-md="25" ng-class="job.lastbuildstatus ? 'successBackGroundColor' : 'errorBackGroundColor'">
 									<div class="md-list-item-text">
-										<md-button 	>
-											 <md-icon md-font-icon="fa fa-power-off" class="awesomeFontIcon" ng-click="job.jobOn = !job.jobOn">
+										<md-button ng-click="onChangeJobStatus($index, job.id)">
+											 <md-icon md-font-icon="fa fa-power-off" class="awesomeFontIcon">
 											 </md-icon> 
 											 &nbsp;{{job.jobOn ? 'On': 'Off'}}
 										</md-button> 								
@@ -68,10 +68,10 @@
 								</md-content>
 							</div>
 							<div ng-if="job.isOpen" ng-class="job.lastbuildstatus ? 'successBackGroundColor' : 'errorBackGroundColor'" class="paddingLeft2X listItemExpandAnimation">
-								<md-button ng-click="onEdit(job.id)">
-									 <md-icon md-font-icon="fa fa-edit" class="awesomeFontIcon">
+								<md-button ng-click="onDetails(job.id)">
+									 <md-icon md-font-icon="fa fa-eye" class="awesomeFontIcon">
 									 </md-icon> 
-									 &nbsp;Edit
+									 &nbsp;Details
 								</md-button> 
 								<md-button ng-click="onHistory(job.id)">
 									 <md-icon md-font-icon="fa fa-list" class="awesomeFontIcon">

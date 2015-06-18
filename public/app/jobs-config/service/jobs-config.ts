@@ -72,7 +72,7 @@ angular.module("jobsConfig").factory("jobsConfig", function($http, $q, constants
             return;
         },
         runJob: function(jobId, onSuccess, onError) {
-            $http.post("http://localhost:8080/api/run-job/" + jobId, {}).
+            $http.post("api/run-job/" + jobId).
             success(function(data, status, headers, config) {
                 if (onSuccess) {
                     onSuccess();
@@ -84,9 +84,26 @@ angular.module("jobsConfig").factory("jobsConfig", function($http, $q, constants
                 }
             });
         },
+        changeJobStatus: function(jobId, status) {
+            var req = {
+                method: "POST",
+                url: "api/jobs-config",
+                data: {
+                    id: jobId,
+                    jobOn: status
+                }
+            };
+            $http(req).
+            success(function(data, status, headers, config) {
+                return;
+            }).
+            error(function(data, status, headers, config) {
+                return;
+            });
+        },
         getJobConfig: function(jobId) {
             var deferred = $q.defer();
-            $http.get("http://localhost:8080/api/jobs-config/" + jobId).then(function(data) {
+            $http.get("api/jobs-config/" + jobId).then(function(data) {
                 if (data) {
                     data.data.configAsString = JSON.stringify(data.data.config);
                     return deferred.resolve(data.data);
@@ -101,7 +118,7 @@ angular.module("jobsConfig").factory("jobsConfig", function($http, $q, constants
 
             var req = {
                 method: "POST",
-                url: "http://localhost:8080/api/jobs-config",
+                url: "api/jobs-config",
                 data: jobConfig
             };
             $http(req).

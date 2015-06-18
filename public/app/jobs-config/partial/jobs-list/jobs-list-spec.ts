@@ -45,7 +45,7 @@ describe("JobsListCtrl", function() {
             id: "-1"
         });
 
-        scope.onEdit("1");
+        scope.onDetails("1");
         expect(stateName).toEqual("app.job-details");
         expect(stateParams).toEqual({
             id: "1"

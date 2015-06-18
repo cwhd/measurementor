@@ -5,7 +5,7 @@ angular.module("jobsConfig").controller("JobsListCtrl", function($rootScope, $sc
     generalLayout.checkLogInStatus();
     generalLayout.data.viewTitle = "List of jobs";
 
-    var currentPage = "http://localhost:8080/api/jobs-config?page=0&size=3&sort=name,asc";
+    var currentPage = "api/jobs-config?page=0&size=3&sort=name,asc";
 
     var getData = function(url: string) {
         currentPage = url;
@@ -16,8 +16,13 @@ angular.module("jobsConfig").controller("JobsListCtrl", function($rootScope, $sc
 
     getData(currentPage);
 
-    $scope.runJob = function(id) {
-        jobsConfig.runJob(id, getData);
+    $scope.onRunJob = function(id) {
+        jobsConfig.runJob(id);
+    };
+
+    $scope.onChangeJobStatus = function(index, id) {
+         $scope.jobsData.jobs[index].jobOn = ! $scope.jobsData.jobs[index].jobOn;
+        jobsConfig.changeJobStatus(id,  $scope.jobsData.jobs[index].jobOn);
     };
 
     $scope.onAdd = function() {
@@ -26,7 +31,7 @@ angular.module("jobsConfig").controller("JobsListCtrl", function($rootScope, $sc
         });
     };
 
-    $scope.onEdit = function(id) {
+    $scope.onDetails = function(id) {
         $state.go("app.job-details", {
             id: id
         });
