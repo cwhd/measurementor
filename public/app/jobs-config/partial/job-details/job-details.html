@@ -24,7 +24,7 @@
 					</md-input-container>
 					<md-input-container md-is-error='formValidation.showCronValidation'>
 						<label>Cron</label>
-						<input type="password" name="cron" ng-model="jobDetailsData.cron" ng-blur="onBlurFormElement($event)" ng-change="onChangeFormElement('cron')">
+						<input type="text" name="cron" ng-model="jobDetailsData.cron" ng-blur="onBlurFormElement($event)" ng-change="onChangeFormElement('cron')">
 						<div ng-messages="formValidation">
 					         <div ng-message="showCronValidation">This field is required</div>
 				        </div>							

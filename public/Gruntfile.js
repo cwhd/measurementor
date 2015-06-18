@@ -40,12 +40,8 @@ module.exports = function(grunt) {
         connect: {
             main: {
                 options: {
-                    port: 9002
-                },
-
-                proxies: [{
-                    port: 9001,
-                }]
+                    port: 9001
+                }
             }
         },
         watch: {

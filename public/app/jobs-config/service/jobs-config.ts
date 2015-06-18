@@ -71,16 +71,17 @@ angular.module("jobsConfig").factory("jobsConfig", function($http, $q, constants
         jobsConfig: function() {
             return;
         },
-        runJob: function(jobId, onSuccess) {
-            console.log("Running: " + jobId);
-            $http.get(("/api/run-job/" + jobId)).
+        runJob: function(jobId, onSuccess, onError) {
+            $http.post("http://localhost:8080/api/run-job/" + jobId, {}).
             success(function(data, status, headers, config) {
                 if (onSuccess) {
                     onSuccess();
                 }
             }).
             error(function(data, status, headers, config) {
-                console.log("ERROR!!!!!!!!!!!!!!!!!!!");
+                if (onError) {
+                    onError();
+                }
             });
         },
         getJobConfig: function(jobId) {
@@ -101,9 +102,6 @@ angular.module("jobsConfig").factory("jobsConfig", function($http, $q, constants
             var req = {
                 method: "POST",
                 url: "http://localhost:8080/api/jobs-config",
-                headers: {
-                    "Access-Control-Allow-Origin": "*"
-                },
                 data: jobConfig
             };
             $http(req).
@@ -118,18 +116,6 @@ angular.module("jobsConfig").factory("jobsConfig", function($http, $q, constants
                     onError();
                 }
             });
-            // $http.post("http://localhost:8080/api/jobs-config", jobConfig).
-            // success(function(data, status, headers, config) {
-            //     if (onSuccess) {
-            //         onSuccess();
-            //     }
-
-            // }).
-            // error(function(data, status, headers, config) {
-            //     if (onError) {
-            //         onError();
-            //     }
-            // });
         },
         getJobHistoryData: function(url, mockData) {
             var deferred = $q.defer();
