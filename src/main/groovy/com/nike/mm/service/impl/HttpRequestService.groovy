@@ -1,12 +1,8 @@
 package com.nike.mm.service.impl
 
-import static groovyx.net.http.ContentType.HTML
 import static groovyx.net.http.ContentType.JSON
-import static groovyx.net.http.ContentType.URLENC
 import static groovyx.net.http.Method.GET
-import static groovyx.net.http.Method.POST
 import lombok.extern.java.Log;
-import groovy.json.*
 import groovyx.net.http.HTTPBuilder
 
 import org.springframework.beans.factory.annotation.Value
@@ -26,11 +22,14 @@ class HttpRequestService implements IHttpRequestService {
 	private String proxyUrl;
 	
 	@Value('${mm.proxy.port}')
-	private String proxyPort;
+	private int proxyPort;
 	
 	Object callRestfulUrl(HttpRequestDto httpRequestDto) {
 		
 		def http = new HTTPBuilder( httpRequestDto.url )
+
+		http.ignoreSSLIssues()
+
 		if(this.setProxy) {
 			http.setProxy(this.proxyUrl, this.proxyPort,null)
 		}

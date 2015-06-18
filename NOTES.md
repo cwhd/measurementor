@@ -18,3 +18,5 @@ All done.
 
 need to do the dynamic newrelic stuff.
    http://jdpgrailsdev.github.io/blog/2014/04/08/spring_boot_gradle_newrelic.html
+
+SSL Article: http://blog.nerdability.com/2013/01/tech-how-to-fix-sslpeerunverifiedexcept.html
