@@ -71,13 +71,11 @@ class MeasureMentorJobsConfigFacadeUnitSpec extends Specification {
         then:
         1 * this.measureMentorJobsConfigBusiness.findAll(_) >> new PageImpl(dtos, null, 1)
         1 * this.jobHistoryBusiness.findJobsLastBuildStatus(_) >> null
-        0 * this.measureMentorRunBusiness.isJobRunning(_)
         rlist.size()        == 1
         rlist[0].id         == "testId"
         rlist[0].name       == "name"
         rlist[0].jobOn      == true
         rlist[0].cron       == "* * * * *"
-        rlist[0].jobRunning == false
     }
 
     def "ensure that the list is converted and job history exists" () {
@@ -92,13 +90,11 @@ class MeasureMentorJobsConfigFacadeUnitSpec extends Specification {
         then:
         1 * this.measureMentorJobsConfigBusiness.findAll(_) >> new PageImpl(dtos, null, 1)
         1 * this.jobHistoryBusiness.findJobsLastBuildStatus(_) >> jh
-        1 * this.measureMentorRunBusiness.isJobRunning(_) >> true
         rlist.size()                == 1
         rlist[0].id                 == "testId"
         rlist[0].name               == "name"
         rlist[0].jobOn              == true
         rlist[0].cron               == "* * * * *"
-        rlist[0].jobRunning         == true
         rlist[0].lastbuildstatus    == true
         rlist[0].lastBuildDate      != null
     }

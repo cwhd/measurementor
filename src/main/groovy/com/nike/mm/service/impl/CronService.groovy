@@ -1,55 +1,76 @@
 package com.nike.mm.service.impl
 
 import com.google.common.collect.Maps
+import com.nike.mm.dto.MeasureMentorJobsConfigDto
 import com.nike.mm.entity.MeasureMentorJobsConfig
+import com.nike.mm.facade.IMeasureMentorJobsConfigFacade
+import com.nike.mm.facade.IMeasureMentorRunFacade
 import com.nike.mm.repository.es.internal.IMeasureMentorJobsConfigRepository
 import com.nike.mm.service.ICronService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.scheduling.Trigger
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler
 import org.springframework.scheduling.support.CronTrigger
 import org.springframework.stereotype.Service
 
+import java.text.MessageFormat
 import java.util.concurrent.ScheduledFuture
 
 @Service
 class CronService implements ICronService {
 
-//    static final String LOG_JOB_NOT_FOUND = "Unable to find job with ID {0}"
-//    static final String LOG_UNABLE_TO_CANCEL_JOB = "Found but could not cancel job with ID {0}"
-//    static final String LOG_JOB_CANCELED = "Found and canceled job with ID {0}"
-//    static final String LOG_PREPARING_TO_ADD_CRON = "Preparing to add new cron job ID {0}"
-//    static final String LOG_ADDING_NEW_CRON = "Adding new job ID {0}"
-//    static final String LOG_ACTIVE_CRON_COUNT = "Number of cron jobs is {0}"
+    static final String LOG_JOB_CONFIG_NOT_FOUND = "Unable to find configuration for job ID {0}"
+    static final String LOG_INVALID_JOB_STATE = "Job ID {0} is not suitable for CRON processing"
+//    static final String LOG_ADDING_NEW_JOB = "Added new job ID {0} in queue: {1} jobs active"
+    static final String LOG_JOB_NOT_FOUND = "Unable to find job with ID {0}"
+    static final String LOG_UNABLE_TO_CANCEL_JOB = "Found but could not cancel job with ID {0}"
+
     static private final Map<String, ScheduledFuture> SCHEDULED_TASKS = Maps.newHashMap();
 
     @Autowired
     IMeasureMentorJobsConfigRepository measureMentorJobsConfigRepository
 
     @Autowired
-    ThreadPoolTaskExecutor serviceTaskExecutor
-
-    @Autowired
     ThreadPoolTaskScheduler threadPoolTaskScheduler
 
+    @Autowired
+    IMeasureMentorRunFacade measureMentorRunFacade
+
+    @Autowired
+    IMeasureMentorJobsConfigFacade measureMentorJobsConfigFacade
+
     @Override
-    boolean addJob(final String jobId) {
-        boolean result = false
-        MeasureMentorJobsConfig mmJConfig = this.getJobConfigFromId(jobId)
-        if (null != mmJConfig) {
-//            log.log(Level.FINE, MessageFormat.format(LOG_PREPARING_TO_ADD_CRON, jobId))
-            final String cron = mmJConfig.getCron()
-            if (cron) {
-                final MMJob mmJob = MMJob.createInstance(jobId, cron)
-                Trigger trigger = new CronTrigger(cron);
-//                log.log(Level.FINE, MessageFormat.format(LOG_ADDING_NEW_CRON, jobId))
-                SCHEDULED_TASKS.put(jobId, this.threadPoolTaskScheduler.schedule(mmJob, trigger))
-//                log.log(Level.FINE, MessageFormat.format(LOG_ACTIVE_CRON_COUNT, SCHEDULED_TASKS.size()))
-                result = true
+    void addJob(final String jobId) {
+
+        MeasureMentorJobsConfigDto mmJConfigDto = this.measureMentorJobsConfigFacade.findById(jobId)
+        if (null == mmJConfigDto) {
+            throw new CronJobRuntimeException(MessageFormat.format(LOG_JOB_CONFIG_NOT_FOUND, jobId))
+        }
+
+        if (!(mmJConfigDto.cron && mmJConfigDto.jobOn)) {
+            throw new CronJobBusinessException(MessageFormat.format(LOG_INVALID_JOB_STATE, jobId))
+        }
+
+        Trigger trigger = new CronTrigger(mmJConfigDto.cron);
+        SCHEDULED_TASKS.put(jobId, this.threadPoolTaskScheduler.schedule({
+            this.measureMentorRunFacade.runJobId(jobId)
+        }, trigger))
+//        log.log(Log.Level.DEBUG, MessageFormat.format(LOG_ADDING_NEW_JOB, jobId, SCHEDULED_TASKS.size()))
+    }
+
+    @Override
+    void removeJob(final String jobId) {
+
+        if (!SCHEDULED_TASKS.containsKey(jobId)) {
+            throw new CronJobRuntimeException(MessageFormat.format(LOG_JOB_NOT_FOUND, jobId))
+        } else {
+            final ScheduledFuture future = SCHEDULED_TASKS.get(jobId)
+            if (future.cancel(false)) {
+                SCHEDULED_TASKS.remove(jobId)
+            } else {
+                throw new CronJobRuntimeException(MessageFormat.format(LOG_UNABLE_TO_CANCEL_JOB, jobId))
             }
         }
-        return result
     }
 
     /**
@@ -62,29 +83,7 @@ class CronService implements ICronService {
         final MeasureMentorJobsConfig mmJConfig = new MeasureMentorJobsConfig();
         mmJConfig.setId(jobId)
         mmJConfig.setCron("0 * * * * MON-FRI")
-        mmJConfig
+        mmJConfig.jobOn = true
     }
 
-    @Override
-    void resetJobs() {
-        throw new RuntimeException("Not implemented yet")
-    }
-
-    @Override
-    boolean removeJob(final String jobId) {
-        boolean removalSuccessful = false
-        if (!SCHEDULED_TASKS.containsKey(jobId)) {
-//            log.log(Level.FINE, MessageFormat.format(LOG_JOB_NOT_FOUND, jobId))
-        } else {
-            final ScheduledFuture future = SCHEDULED_TASKS.get(jobId)
-            removalSuccessful = future.cancel(false)
-            if (removalSuccessful) {
-                SCHEDULED_TASKS.remove(jobId)
-//                log.log(Level.FINE, MessageFormat.format(LOG_JOB_CANCELED, jobId))
-//            } else {
-//                log.log(Level.FINE, MessageFormat.format(LOG_UNABLE_TO_CANCEL_JOB, jobId))
-            }
-        }
-        return removalSuccessful
-    }
 }

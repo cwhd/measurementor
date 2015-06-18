@@ -16,7 +16,7 @@ import com.nike.mm.rest.IJobHistoryRest
 import com.nike.mm.rest.assembler.JobHistoryResourceAssembler
 
 @RestController
-@RequestMapping("/api/jobs-hostory")
+@RequestMapping("/api/jobs-history")
 class JobHistoryRest implements IJobHistoryRest {
 	
 	@Autowired IJobHistoryFacade jobHistoryFacade

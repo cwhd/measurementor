@@ -34,18 +34,6 @@ class MeasureMentorRunFacadeUnitSpec  extends Specification {
         this.measureMentorRunFacade.dateService = this.dateService
     }
 
-    def "run job id throw exception because it is already running" () {
-
-        when:
-        this.measureMentorRunFacade.runJobId("anyid")
-
-        then:
-        2 * this.dateService.getCurrentDateTime()
-        1 * this.measureMentorRunBusiness.isJobRunning(_)               >> true
-        1 * this.jobHistoryBusiness.save(_)
-        thrown(RuntimeException)
-    }
-
     def "run the job no previous job history and has no config so it should go right through" ()  {
 
         setup:
@@ -56,7 +44,6 @@ class MeasureMentorRunFacadeUnitSpec  extends Specification {
         this.measureMentorRunFacade.runJobId("anyid")
 
         then:
-        1 * this.measureMentorRunBusiness.isJobRunning(_)               >> false
         1 * this.measureMentorRunBusiness.startJob(_)
         1 * this.measureMentorConfigBusiness.findById(_)                >> configDto
         1 * this.jobHistoryBusiness.findLastSuccessfulJobRanForJobid(_) >> null
@@ -75,7 +62,6 @@ class MeasureMentorRunFacadeUnitSpec  extends Specification {
         this.measureMentorRunFacade.runJobId("anyid")
 
         then:
-        1 * this.measureMentorRunBusiness.isJobRunning(_)               >> false
         1 * this.measureMentorRunBusiness.startJob(_)
         1 * this.measureMentorConfigBusiness.findById(_)                >> configDto
         1 * this.jobHistoryBusiness.findLastSuccessfulJobRanForJobid(_) >> previousJobHistory
@@ -93,7 +79,6 @@ class MeasureMentorRunFacadeUnitSpec  extends Specification {
         this.measureMentorRunFacade.runJobId("anyid")
 
         then:
-        1 * this.measureMentorRunBusiness.isJobRunning(_)               >> false
         1 * this.measureMentorRunBusiness.startJob(_)
         1 * this.measureMentorConfigBusiness.findById(_)                >> configDto
         1 * this.jobHistoryBusiness.findLastSuccessfulJobRanForJobid(_) >> null
@@ -113,7 +98,6 @@ class MeasureMentorRunFacadeUnitSpec  extends Specification {
 
         then:
         2 * this.dateService.getCurrentDateTime()
-        1 * this.measureMentorRunBusiness.isJobRunning(_)               >> false
         1 * this.measureMentorRunBusiness.startJob(_)
         1 * this.measureMentorConfigBusiness.findById(_)                >> configDto
         1 * this.jobHistoryBusiness.findLastSuccessfulJobRanForJobid(_) >> null
@@ -138,7 +122,6 @@ class MeasureMentorRunFacadeUnitSpec  extends Specification {
 
         then:
         2 * this.dateService.getCurrentDateTime()
-        1 * this.measureMentorRunBusiness.isJobRunning(_)               >> false
         1 * this.measureMentorRunBusiness.startJob(_)
         1 * this.measureMentorConfigBusiness.findById(_)                >> configDto
         1 * this.jobHistoryBusiness.findLastSuccessfulJobRanForJobid(_) >> null

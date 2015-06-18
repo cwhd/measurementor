@@ -24,7 +24,7 @@ angular.module("jobsConfig").controller("JobHistoryCtrl", function($scope, $stat
         $scope.page = angular.copy(jobHistoryData.page);
     };
 
-    getData("api/jobs-hostory/" + $scope.jobid + "?page=0&size=2&sort=endDate,desc");
+    getData("api/jobs-history/" + $scope.jobid + "?page=0&size=2&sort=endDate,desc");
 
     $scope.onPrevious = function() {
         getData(links.prev.href);

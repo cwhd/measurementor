@@ -38,15 +38,8 @@ class MeasureMentorRunFacade implements IMeasureMentorRunFacade {
     @Override
     @Async
     void runJobId(String jobid) {
+
         def startDate = this.dateService.currentDateTime;
-        if (this.measureMentorRunBusiness.isJobRunning(jobid)) {
-            this.jobHistoryBusiness.save([jobid : jobid, startDate: startDate, endDate: this.dateService
-                    .currentDateTime, success: 'false',
-                                          status: "jobrunning", comments: ('Job already running for the jobid:' +
-                    jobid)] as JobHistory);
-            //TODO Make this polling... shouldn't be hard...
-            throw new RuntimeException("Job already running: " + jobid);
-        }
         try {
             this.measureMentorRunBusiness.startJob(jobid);
             def configDto = this.measureMentorConfigBusiness.findById(jobid);

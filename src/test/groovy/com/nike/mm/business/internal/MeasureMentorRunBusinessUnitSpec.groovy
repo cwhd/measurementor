@@ -14,46 +14,6 @@ class MeasureMentorRunBusinessUnitSpec extends Specification {
         this.measureMentorRunBusiness = new MeasureMentorRunBusiness()
     }
 
-    def "job is not running" () {
-
-        when:
-        boolean jobRunning = this.measureMentorRunBusiness.isJobRunning("id")
-
-        then:
-        !jobRunning
-    }
-
-    def "job is running"() {
-
-        setup:
-        this.measureMentorRunBusiness.startJob("id")
-
-        when:
-        boolean jobRunning = this.measureMentorRunBusiness.isJobRunning("id")
-
-        then:
-        jobRunning
-    }
-
-    def "turn the job off"() {
-
-        setup:
-        this.measureMentorRunBusiness.startJob("id")
-
-        when:
-        boolean jobRunning = this.measureMentorRunBusiness.isJobRunning("id")
-
-        then:
-        jobRunning
-
-        when:
-        this.measureMentorRunBusiness.stopJob("id")
-        jobRunning = this.measureMentorRunBusiness.isJobRunning("id")
-
-        then:
-        !jobRunning
-    }
-
     def "running the same job twice throws an exception" () {
 
         setup:

@@ -43,5 +43,5 @@ class MeasureMentorJobsConfigRest implements IMeasureMentorJobsConfigRest{
 	@RequestMapping(method = RequestMethod.POST)
 	public Object save(@RequestBody MeasureMentorJobsConfigDto dto) {
 		return this.measureMentorJobsConfigFacade.saveJobsConfig(dto);
-	} 
+	}
 }

@@ -4,9 +4,6 @@ import com.nike.mm.facade.IMeasureMentorRunFacade
 import com.nike.mm.rest.impl.MeasureMentorRunRest
 import spock.lang.Specification
 
-/**
- * Created by rparr2 on 6/13/15.
- */
 class MeasureMentorRunRestUnitSpec extends Specification {
 
     IMeasureMentorRunRest measureMentorRunRest
