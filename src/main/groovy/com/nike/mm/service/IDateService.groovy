@@ -1,9 +1,9 @@
-package com.nike.mm.business.internal
+package com.nike.mm.service
 
 import org.joda.time.DateTime
 
 
-interface IDateBusiness {
+interface IDateService {
 
     DateTime getCurrentDateTime()
 }

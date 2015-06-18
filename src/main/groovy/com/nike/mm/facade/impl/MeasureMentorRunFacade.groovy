@@ -1,6 +1,6 @@
 package com.nike.mm.facade.impl
 
-import com.nike.mm.business.internal.IDateBusiness
+import com.nike.mm.service.IDateService
 import com.nike.mm.business.internal.IJobHistoryBusiness
 import com.nike.mm.business.internal.IMeasureMentorJobsConfigBusiness
 import com.nike.mm.business.internal.IMeasureMentorRunBusiness
@@ -33,14 +33,14 @@ class MeasureMentorRunFacade implements IMeasureMentorRunFacade {
     IJobHistoryBusiness jobHistoryBusiness
 
     @Autowired
-    IDateBusiness dateBusiness
+    IDateService dateService
 
     @Override
     @Async
     void runJobId(String jobid) {
-        def startDate = this.dateBusiness.currentDateTime;
+        def startDate = this.dateService.currentDateTime;
         if (this.measureMentorRunBusiness.isJobRunning(jobid)) {
-            this.jobHistoryBusiness.save([jobid : jobid, startDate: startDate, endDate: this.dateBusiness
+            this.jobHistoryBusiness.save([jobid : jobid, startDate: startDate, endDate: this.dateService
                     .currentDateTime, success: 'false',
                                           status: "jobrunning", comments: ('Job already running for the jobid:' +
                     jobid)] as JobHistory);
@@ -58,14 +58,15 @@ class MeasureMentorRunFacade implements IMeasureMentorRunFacade {
             if (previousJh) {
                 mmcvDto.previousJobId = previousJh.id;
             }
-                this.jobHistoryBusiness.save([jobid: jobid, startDate: startDate, endDate: this.dateBusiness
+            if (!mmcvDto.errors.isEmpty()) {
+                this.jobHistoryBusiness.save([jobid: jobid, startDate: startDate, endDate: this.dateService
                         .currentDateTime, success:
                         'false', status            : "error", comments: mmcvDto.getMessageAsString()] as JobHistory);
             } else {
                 //TODO We need to get agreeget data as well as success monicers from this.
                 this.runMmbs(getLastRunDateOrDefault(previousJh), mmcvDto);
                 //TODO: Error handling.
-                this.jobHistoryBusiness.save([jobid: jobid, startDate: startDate, endDate: this.dateBusiness
+                this.jobHistoryBusiness.save([jobid: jobid, startDate: startDate, endDate: this.dateService
                         .currentDateTime, success:
                         false, status              : "success", comments: ("Success for jobid: " + jobid)] as
                         JobHistory);

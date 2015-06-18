@@ -1,12 +1,12 @@
-package com.nike.mm.business.internal.impl
+package com.nike.mm.service.impl
 
-import com.nike.mm.business.internal.IDateBusiness
+import com.nike.mm.service.IDateService
 import org.joda.time.DateTime
 import org.springframework.stereotype.Service
 
 
 @Service
-class DateBusiness implements IDateBusiness {
+class DateService implements IDateService {
 
     DateTime getCurrentDateTime() {
         return new DateTime()

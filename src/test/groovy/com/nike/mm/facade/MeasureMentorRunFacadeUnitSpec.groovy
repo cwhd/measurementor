@@ -1,6 +1,6 @@
 package com.nike.mm.facade
 
-import com.nike.mm.business.internal.IDateBusiness
+import com.nike.mm.service.IDateService
 import com.nike.mm.business.internal.IJobHistoryBusiness
 import com.nike.mm.business.internal.IMeasureMentorJobsConfigBusiness
 import com.nike.mm.business.internal.IMeasureMentorRunBusiness
@@ -20,18 +20,18 @@ class MeasureMentorRunFacadeUnitSpec  extends Specification {
 
     IMeasureMentorJobsConfigBusiness measureMentorConfigBusiness
 
-    IDateBusiness dateBusiness
+    IDateService dateService
 
     def setup() {
         this.measureMentorRunFacade                             = new MeasureMentorRunFacade()
         this.measureMentorRunBusiness                           = Mock(IMeasureMentorRunBusiness)
         this.jobHistoryBusiness                                 = Mock(IJobHistoryBusiness)
         this.measureMentorConfigBusiness                        = Mock(IMeasureMentorJobsConfigBusiness)
-        this.dateBusiness = Mock(IDateBusiness)
+        this.dateService = Mock(IDateService)
         this.measureMentorRunFacade.measureMentorRunBusiness    = this.measureMentorRunBusiness
         this.measureMentorRunFacade.jobHistoryBusiness          = this.jobHistoryBusiness
         this.measureMentorRunFacade.measureMentorConfigBusiness = this.measureMentorConfigBusiness
-        this.measureMentorRunFacade.dateBusiness = this.dateBusiness
+        this.measureMentorRunFacade.dateService = this.dateService
     }
 
     def "run job id throw exception because it is already running" () {
@@ -40,7 +40,7 @@ class MeasureMentorRunFacadeUnitSpec  extends Specification {
         this.measureMentorRunFacade.runJobId("anyid")
 
         then:
-        2 * this.dateBusiness.getCurrentDateTime()
+        2 * this.dateService.getCurrentDateTime()
         1 * this.measureMentorRunBusiness.isJobRunning(_)               >> true
         1 * this.jobHistoryBusiness.save(_)
         thrown(RuntimeException)
@@ -112,7 +112,7 @@ class MeasureMentorRunFacadeUnitSpec  extends Specification {
         this.measureMentorRunFacade.runJobId("anyid")
 
         then:
-        2 * this.dateBusiness.getCurrentDateTime()
+        2 * this.dateService.getCurrentDateTime()
         1 * this.measureMentorRunBusiness.isJobRunning(_)               >> false
         1 * this.measureMentorRunBusiness.startJob(_)
         1 * this.measureMentorConfigBusiness.findById(_)                >> configDto
@@ -137,7 +137,7 @@ class MeasureMentorRunFacadeUnitSpec  extends Specification {
         this.measureMentorRunFacade.runJobId("anyid")
 
         then:
-        2 * this.dateBusiness.getCurrentDateTime()
+        2 * this.dateService.getCurrentDateTime()
         1 * this.measureMentorRunBusiness.isJobRunning(_)               >> false
         1 * this.measureMentorRunBusiness.startJob(_)
         1 * this.measureMentorConfigBusiness.findById(_)                >> configDto
