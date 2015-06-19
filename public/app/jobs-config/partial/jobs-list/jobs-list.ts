@@ -14,7 +14,7 @@ angular.module("jobsConfig").controller("JobsListCtrl", function($rootScope, $sc
         });
     };
 
-    $scope.getData(currentPage);
+    $scope.getData(currentPage); 
 
     $scope.onRunJob = function(id) {
         jobsConfig.runJob(id);

@@ -72,19 +72,11 @@ describe("JobsListCtrl", function() {
         scope.onRunJob("123");
         expect(jobsConfig.runJob).toHaveBeenCalled();
     }));
-    // it("JobsListCtrl onChangeJobStatus function checks", inject(function(jobsConfig) {
-    //     spyOn(jobsConfig, "changeJobStatus");
-    //     httpBackend.expect("POST", "api/jobs-config").respond(200, {});
 
-    //     //scope.getData("api/jobs-config?page=0&size=2&sort=name,asc");
-    //     //jobsConfig.getJobs("api/jobs-config?page=0&size=2&sort=name,asc")
-    //     scope.jobsData = [{
-    //         id: "1",
-    //         jobOn: false
-    //     }];
-    //     scope.onChangeJobStatus(0, "123");
-
-    //     expect(jobsConfig.changeJobStatus).toHaveBeenCalled();
-    //     // expect(scope.jobsData[0].jobOn === true).toBeTruthy();
-    // }));
+    it("JobsListCtrl onChangeJobStatus function checks", inject(function(jobsConfig) {
+        spyOn(jobsConfig, "changeJobStatus");
+        //httpBackend.expect("POST", "api/jobs-config").respond(200, {});
+        scope.onChangeJobStatus(0, "123");
+        expect(jobsConfig.changeJobStatus).toHaveBeenCalled();
+    }));
 });
