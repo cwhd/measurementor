@@ -1,9 +1,9 @@
 var angular, describe, beforeEach, module, inject, spyOn, it, expect;
 
 describe("JobsListCtrl", function() {
-    var rootScope, scope, ctrl, stateName, stateParams;
+    var rootScope, scope, ctrl, stateName, stateParams, httpBackend;
 
-    beforeEach(module("jobsConfig")); 
+    beforeEach(module("jobsConfig"));
 
     beforeEach(module(function($provide) {
         $provide.factory("constants", function() { //mocking factory
@@ -22,7 +22,8 @@ describe("JobsListCtrl", function() {
         });
     }));
 
-    beforeEach(inject(function($state) {
+    beforeEach(inject(function($state, _$httpBackend_) {
+        httpBackend = _$httpBackend_;
         spyOn($state, "go").andCallFake(function(state, params) {
             stateName = state;
             stateParams = angular.copy(params);
@@ -57,4 +58,33 @@ describe("JobsListCtrl", function() {
             id: "1"
         });
     }));
+
+    it("JobsListCtrl onRunJob function checks", inject(function(jobsConfig) {
+        spyOn(jobsConfig, "runJob");
+
+        scope.onRunJob("123");
+        expect(jobsConfig.runJob).toHaveBeenCalled();
+    }));
+
+    it("JobsListCtrl onRunJob function checks", inject(function(jobsConfig) {
+        spyOn(jobsConfig, "runJob");
+
+        scope.onRunJob("123");
+        expect(jobsConfig.runJob).toHaveBeenCalled();
+    }));
+    // it("JobsListCtrl onChangeJobStatus function checks", inject(function(jobsConfig) {
+    //     spyOn(jobsConfig, "changeJobStatus");
+    //     httpBackend.expect("POST", "api/jobs-config").respond(200, {});
+
+    //     //scope.getData("api/jobs-config?page=0&size=2&sort=name,asc");
+    //     //jobsConfig.getJobs("api/jobs-config?page=0&size=2&sort=name,asc")
+    //     scope.jobsData = [{
+    //         id: "1",
+    //         jobOn: false
+    //     }];
+    //     scope.onChangeJobStatus(0, "123");
+
+    //     expect(jobsConfig.changeJobStatus).toHaveBeenCalled();
+    //     // expect(scope.jobsData[0].jobOn === true).toBeTruthy();
+    // }));
 });

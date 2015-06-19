@@ -68,9 +68,6 @@ angular.module("jobsConfig").factory("jobsConfig", function($http, $q, constants
                 return deferred.promise;
             }
         },
-        jobsConfig: function() {
-            return;
-        },
         runJob: function(jobId, onSuccess, onError) {
             $http.post("api/run-job/" + jobId).
             success(function(data, status, headers, config) {
@@ -84,7 +81,7 @@ angular.module("jobsConfig").factory("jobsConfig", function($http, $q, constants
                 }
             });
         },
-        changeJobStatus: function(jobId, status) {
+        changeJobStatus: function(jobId, status, onSuccess, onError) {
             var req = {
                 method: "POST",
                 url: "api/jobs-config",
@@ -95,10 +92,14 @@ angular.module("jobsConfig").factory("jobsConfig", function($http, $q, constants
             };
             $http(req).
             success(function(data, status, headers, config) {
-                return;
+                if (onSuccess) {
+                    onSuccess();
+                }
             }).
             error(function(data, status, headers, config) {
-                return;
+                if (onError) {
+                    onError();
+                }
             });
         },
         getJobConfig: function(jobId) {
