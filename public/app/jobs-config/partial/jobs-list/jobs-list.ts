@@ -7,22 +7,25 @@ angular.module("jobsConfig").controller("JobsListCtrl", function($rootScope, $sc
 
     var currentPage = "api/jobs-config?page=0&size=3&sort=name,asc";
 
-    var getData = function(url: string) {
+    $scope.getData = function(url: string) {
         currentPage = url;
         jobsConfig.getJobs(url).then(function(data) {
             $scope.jobsData = angular.copy(data);
         });
     };
 
-    getData(currentPage);
+    $scope.getData(currentPage); 
 
     $scope.onRunJob = function(id) {
         jobsConfig.runJob(id);
     };
 
     $scope.onChangeJobStatus = function(index, id) {
-         $scope.jobsData.jobs[index].jobOn = ! $scope.jobsData.jobs[index].jobOn;
-        jobsConfig.changeJobStatus(id,  $scope.jobsData.jobs[index].jobOn);
+        var onSuccess = function() {
+            $scope.jobsData.jobs[index].jobOn = !$scope.jobsData.jobs[index].jobOn;
+        };
+
+        jobsConfig.changeJobStatus(id, !$scope.jobsData.jobs[index].jobOn, onSuccess);
     };
 
     $scope.onAdd = function() {
@@ -44,10 +47,10 @@ angular.module("jobsConfig").controller("JobsListCtrl", function($rootScope, $sc
     };
 
     $scope.onPrevious = function() {
-        getData($scope.jobsData.links.prev.href);
+        $scope.getData($scope.jobsData.links.prev.href);
     };
 
     $scope.onNext = function() {
-        getData($scope.jobsData.links.next.href);
+        $scope.getData($scope.jobsData.links.next.href);
     };
 });

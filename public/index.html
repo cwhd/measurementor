@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html ng-app="measurementor">
+<head>
+  <title>MeasureMentor</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="stylesheet" href="bower_components/font-awesome/css/font-awesome.min.css">
+  <link rel="stylesheet" type="text/css" href="bower_components/angular-material/angular-material.css">  
+  <link href="app.less" type="text/css" rel="stylesheet/less">
+  <link rel="stylesheet" href="assets/css/starter-template.css">
+</head>
+<body>
+  <!-- JS from Bower Components -->
+  <script src="bower_components/angular/angular.min.js"></script>
+  <script type="text/javascript" src="bower_components/angular-messages/angular-messages.min.js"></script>
+  <script type="text/javascript" src="bower_components/angular-animate/angular-animate.min.js"></script>
+  <script type="text/javascript" src="bower_components/angular-aria/angular-aria.min.js"></script>
+  <script type="text/javascript" src="bower_components/angular-material/angular-material.min.js"></script>
+
+  <script src="bower_components/angular-ui-router/release/angular-ui-router.min.js"></script>
+  <script src="bower_components/angular-resource/angular-resource.min.js"></script>
+  <script src="bower_components/angular-ui-utils/ui-utils.min.js"></script>
+  <!-- Add New Bower Component JS Above -->
+  
+
+  <!-- Main App JS -->
+  <script src="build/app.js"></script>  
+  <script src="build/app/general-layout/general-layout.js"></script>
+  <script src="build/app/general-layout/partial/general-wrapper/general-wrapper.js"></script>
+  <script src="build/app/general-layout/service/general-layout.js"></script>
+  <script src="build/app/user-management/user-management.js"></script>
+  <script src="build/app/user-management/service/user-management.js"></script>
+  <script src="build/app/user-management/partial/sign-in/sign-in.js"></script>
+  <script src="build/app/jobs-config/jobs-config.js"></script>
+  <script src="build/app/jobs-config/service/jobs-config.js"></script>
+  <script src="build/app/jobs-config/partial/jobs-list/jobs-list.js"></script>
+  <script src="build/app/general-layout/service/constants.js"></script>
+  <script src="build/app/jobs-config/partial/job-details/job-details.js"></script>
+  <script src="build/app/jobs-config/partial/job-history/job-history.js"></script>
+
+  <!-- Add New Component JS Above -->
+    <div ui-view style="height: 100%;"></div>
+</body>
+</html>

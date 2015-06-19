@@ -9,7 +9,7 @@ angular.module("jobsConfig").controller("JobHistoryCtrl", function($scope, $stat
 
     var getData = function(url) {
         jobsConfig.getJobHistoryData(url).then(function(data) {
-            $scope.jobHistoryData.angular.copy(data);
+            $scope.jobHistoryData = angular.copy(data);
         });
     };
 

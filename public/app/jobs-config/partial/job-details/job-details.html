@@ -15,11 +15,11 @@
 			<md-content flex="0" flex-md="15" flex-gt-md="33"></md-content>					
 			<md-content layout-padding flex="100" flex-md="70" flex-gt-md="33" style="overflow: visible;">
 				<form name="jobDetailsForm">
-					<md-input-container md-is-error='formValidation.showJobNameValidation'>
+					<md-input-container md-is-error='formValidation.showNameValidation'>
 						<label>Job Name</label>
-						<input type="text" name="jobName" ng-model="jobDetailsData.name" ng-blur="onBlurFormElement($event)" ng-change="onChangeFormElement('jobName')">
+						<input type="text" name="name" ng-model="jobDetailsData.name" ng-blur="onBlurFormElement($event)" ng-change="onChangeFormElement('name')">
 						<div ng-messages="formValidation">
-					         <div ng-message="showJobNameValidation">This field is required</div>
+					         <div ng-message="showNameValidation">This field is required</div>
 				        </div>						
 					</md-input-container>
 					<md-input-container md-is-error='formValidation.showCronValidation'>
