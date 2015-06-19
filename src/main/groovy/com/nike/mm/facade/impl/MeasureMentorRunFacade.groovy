@@ -38,8 +38,8 @@ class MeasureMentorRunFacade implements IMeasureMentorRunFacade {
     @Override
     @Async
     void runJobId(String jobid) {
-
-        def startDate = this.dateService.currentDateTime;
+        println "Running job " + jobid
+        def startDate = this.dateService.currentDateTime.toDate();
         try {
             this.measureMentorRunBusiness.startJob(jobid);
             def configDto = this.measureMentorConfigBusiness.findById(jobid);
@@ -52,17 +52,28 @@ class MeasureMentorRunFacade implements IMeasureMentorRunFacade {
                 mmcvDto.previousJobId = previousJh.id;
             }
             if (!mmcvDto.errors.isEmpty()) {
-                this.jobHistoryBusiness.save([jobid: jobid, startDate: startDate, endDate: this.dateService
-                        .currentDateTime, success:
-                        'false', status            : "error", comments: mmcvDto.getMessageAsString()] as JobHistory);
+                this.jobHistoryBusiness.save(
+                        [
+                            jobid: jobid,
+                            startDate: startDate,
+                            endDate: this.dateService.currentDateTime.toDate(),
+                            success: 'false',
+                            status: "error",
+                            comments: mmcvDto.getMessageAsString()
+                ] as JobHistory);
             } else {
                 //TODO We need to get agreeget data as well as success monicers from this.
                 this.runMmbs(getLastRunDateOrDefault(previousJh), mmcvDto);
                 //TODO: Error handling.
-                this.jobHistoryBusiness.save([jobid: jobid, startDate: startDate, endDate: this.dateService
-                        .currentDateTime, success:
-                        false, status              : "success", comments: ("Success for jobid: " + jobid)] as
-                        JobHistory);
+                this.jobHistoryBusiness.save(
+                        [
+                                jobid    : jobid,
+                                startDate: startDate,
+                                endDate  : this.dateService.currentDateTime.toDate(),
+                                success  : false,
+                                status   : "success",
+                                comments : ("Success for jobid: " + jobid)
+                        ] as JobHistory);
             }
         } finally {
             this.measureMentorRunBusiness.stopJob(jobid);

@@ -30,19 +30,27 @@ class MeasureMentorJobsConfigBusiness implements IMeasureMentorJobsConfigBusines
 		MeasureMentorJobsConfigDto rdto = null
 		if (rmmc) {
 			String configString = this.strongTextEncryptor.decrypt(new String(Base64.getDecoder().decode(rmmc.encryptedConfig)))
-			rdto = [id: rmmc.id, name: rmmc.name, jobOn: rmmc.jobOn, config: new JsonSlurper().parseText(configString)] as MeasureMentorJobsConfigDto
+			rdto = [
+					id: rmmc.id,
+					name: rmmc.name,
+					cron: rmmc.cron,
+					jobOn: rmmc.jobOn,
+					config: new JsonSlurper().parseText(configString)
+			] as MeasureMentorJobsConfigDto
 		}
 		return rdto
 	}
 
 	@Override Object saveConfig(MeasureMentorJobsConfigDto dto) {
 		String configString = new JsonBuilder(dto.config).toPrettyString();
-		MeasureMentorJobsConfig mmjc = null;
-		if ( dto.id ) {//jobOn
-			mmjc = [id: dto.id, cron: dto.cron, name:dto.name, jobOn:dto.jobOn, encryptedConfig: Base64.getEncoder().encodeToString(this.strongTextEncryptor.encrypt(configString).getBytes())] as MeasureMentorJobsConfig
-			
-		} else {
-			mmjc = [name:dto.name, cron: dto.cron, jobOn:dto.jobOn, encryptedConfig: Base64.getEncoder().encodeToString(this.strongTextEncryptor.encrypt(configString).getBytes())] as MeasureMentorJobsConfig
+		MeasureMentorJobsConfig mmjc = [
+				name:dto.name,
+				cron: dto.cron,
+				jobOn:dto.jobOn,
+				encryptedConfig: Base64.getEncoder().encodeToString(this.strongTextEncryptor.encrypt(configString).getBytes())
+		] as MeasureMentorJobsConfig
+		if ( dto.id ) {
+			mmjc.id = dto.id
 		}
 		return this.measureMentorConfigRepository.save(mmjc)
 	}

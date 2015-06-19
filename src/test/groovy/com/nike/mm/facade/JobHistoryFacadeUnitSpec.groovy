@@ -6,9 +6,6 @@ import com.nike.mm.facade.impl.JobHistoryFacade
 import org.springframework.data.domain.PageImpl
 import spock.lang.Specification
 
-/**
- * Created by rparr2 on 6/11/15.
- */
 class JobHistoryFacadeUnitSpec extends Specification {
 
     IJobHistoryFacade jobHistoryFacade

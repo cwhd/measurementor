@@ -14,35 +14,41 @@ import com.nike.mm.repository.es.internal.IJobHistoryRepository
 @Service
 class JobHistoryBusiness implements IJobHistoryBusiness {
 
-	@Autowired IJobHistoryRepository jobHistoryRepository;
-	
-	@Override JobHistory save(JobHistory jobHistory) {
-		this.jobHistoryRepository.save(jobHistory);
-	}
-	
-	@Override JobHistory findLastSuccessfulJobRanForJobid(String jobid) {
-		Page<JobHistory> rpage = this.jobHistoryRepository.findByJobidAndSuccess(jobid, true, this.getDefaultDescEndDatePagerequest())
-		JobHistory rjh = null;
-		if (rpage.content.size() > 0) {
-			rjh = rpage.content[0];
-		}
-		return rjh;
-	}
-	
-	@Override JobHistory findJobsLastBuildStatus(String jobid) {
-		Page<JobHistory> rpage = this.jobHistoryRepository.findByJobid(jobid, this.getDefaultDescEndDatePagerequest())
-		JobHistory rjh = null;
-		if (rpage.content.size() > 0) {
-			rjh = rpage.content[0];
-		}
-		return rjh;
-	}
-	
-	@Override Page<JobHistory> findByJobIdAndPage(String jobid, Pageable pageable) {
-		return this.jobHistoryRepository.findByJobid(jobid, pageable)
-	}
-	
-	PageRequest getDefaultDescEndDatePagerequest() {
-		new PageRequest(0, 1, new Sort(Sort.Direction.DESC, "endDate"))
-	}
+    @Autowired
+    IJobHistoryRepository jobHistoryRepository;
+
+    @Override
+    JobHistory save(JobHistory jobHistory) {
+        this.jobHistoryRepository.save(jobHistory);
+    }
+
+    @Override
+    JobHistory findLastSuccessfulJobRanForJobid(String jobid) {
+        Page<JobHistory> rpage = this.jobHistoryRepository.findByJobidAndSuccess(jobid, true, this
+                .getDefaultDescEndDatePagerequest())
+        JobHistory rjh = null;
+        if (rpage.content.size() > 0) {
+            rjh = rpage.content[0];
+        }
+        return rjh;
+    }
+
+    @Override
+    JobHistory findJobsLastBuildStatus(String jobid) {
+        Page<JobHistory> rpage = this.jobHistoryRepository.findByJobid(jobid, this.getDefaultDescEndDatePagerequest())
+        JobHistory rjh = null;
+        if (rpage.content.size() > 0) {
+            rjh = rpage.content[0];
+        }
+        return rjh;
+    }
+
+    @Override
+    Page<JobHistory> findByJobIdAndPage(String jobid, Pageable pageable) {
+        return this.jobHistoryRepository.findByJobid(jobid, pageable)
+    }
+
+    static PageRequest getDefaultDescEndDatePagerequest() {
+        new PageRequest(0, 1, new Sort(Sort.Direction.DESC, "endDate"))
+    }
 }

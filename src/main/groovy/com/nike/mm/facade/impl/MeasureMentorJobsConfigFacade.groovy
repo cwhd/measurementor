@@ -39,12 +39,6 @@ class MeasureMentorJobsConfigFacade implements IMeasureMentorJobsConfigFacade {
     Object saveJobsConfig(MeasureMentorJobsConfigDto dto) {
         Object result = this.measureMentorJobsConfigBusiness.saveConfig(dto)
         this.cronService.processJob(dto.id)
-//        if (dto.cron && dto.jobOn) {
-//            this.cronService.addJob(dto.id)
-//        } else {
-//            this.cronService.removeJob(dto.id)
-//        }
-
         return result
     }
 

@@ -1,5 +1,6 @@
 package com.nike.mm.repository.es
 
+import com.nike.mm.business.internal.impl.JobHistoryBusiness
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
@@ -41,12 +42,12 @@ class JobHistoryRepositoryItSpec extends Specification {
 	}
 	
 	@Test
-	def "get the latest" () {
+	def "get the most recent" () {
 		
 		setup:
 		this.jobHistoryRepository.deleteAll()
-		JobHistory latest = this.jobHistoryRepository.save([jobid:"test-job-id", startDate: new Date(), endDate: new Date(), status:"Done"] as JobHistory)
-		JobHistory early  = this.jobHistoryRepository.save([jobid:"test-job-id", startDate: new Date(), endDate: new Date((new Date().getTime() - 10000)), status:"Done"] as JobHistory)
+		JobHistory mostRecent = this.jobHistoryRepository.save([jobid:"test-job-id", startDate: new Date(), endDate: new Date(), status:"Done"] as JobHistory)
+		JobHistory leastRecent  = this.jobHistoryRepository.save([jobid:"test-job-id", startDate: new Date(), endDate: new Date((new Date().getTime() - 10000)), status:"Done"] as JobHistory)
 		
 		when:
 		Page<JobHistory> rpage = this.jobHistoryRepository.findByJobidAndStatus("test-job-id", "Done", new PageRequest(1, 1, new Sort(Sort.Direction.ASC, "endDate")))
@@ -54,8 +55,29 @@ class JobHistoryRepositoryItSpec extends Specification {
 		then:
 		rpage.content.size()	== 1
 		rpage.getTotalPages() 	== 2
-		rpage.content[0].id 	== latest.id
+		rpage.content[0].id 	== mostRecent.id
 		
+		cleanup:
+		this.jobHistoryRepository.deleteAll()
+	}
+
+	@Test
+	def "get history" () {
+
+		setup:
+		this.jobHistoryRepository.deleteAll()
+		JobHistory mostRecent = this.jobHistoryRepository.save([jobid:"test-job-id", startDate: new Date(), endDate: new Date(), status:"Done"] as JobHistory)
+		JobHistory leastRecent  = this.jobHistoryRepository.save([jobid:"test-job-id", startDate: new Date(), endDate: new Date((new Date().getTime() - 10000)), status:"Done"] as JobHistory)
+
+		when:
+		Page<JobHistory> rpage = this.jobHistoryRepository.findByJobid("test-job-id", new PageRequest(0, 20, new Sort(Sort.Direction.DESC, "endDate")))
+
+		then:
+		rpage.content.size()	== 2
+		rpage.getTotalPages() 	== 1
+		rpage.content[0].id 	== mostRecent.id
+		rpage.content[1].id 	== leastRecent.id
+
 		cleanup:
 		this.jobHistoryRepository.deleteAll()
 	}

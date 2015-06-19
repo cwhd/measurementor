@@ -1,10 +1,7 @@
 package com.nike.mm.business.plugins.impl
 
-import java.util.Date;
-
+import com.nike.mm.business.plugins.IJenkinsBusiness
 import org.springframework.stereotype.Service
-
-import com.nike.mm.business.plugins.IJenkinsBusiness;
 
 @Service
 class JenkinsBusiness implements IJenkinsBusiness {
