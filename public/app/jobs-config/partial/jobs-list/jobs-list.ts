@@ -14,18 +14,26 @@ angular.module("jobsConfig").controller("JobsListCtrl", function($rootScope, $sc
         });
     };
 
-    $scope.getData(currentPage); 
+    $scope.getData(currentPage);
 
     $scope.onRunJob = function(id) {
         jobsConfig.runJob(id);
     };
 
-    $scope.onChangeJobStatus = function(index, id, status) {
+    $scope.onChangeJobStatus = function(index, job) {
         var onSuccess = function() {
             $scope.jobsData.jobs[index].jobOn = !$scope.jobsData.jobs[index].jobOn;
         };
 
-        jobsConfig.changeJobStatus(id, !status, onSuccess);
+        var jobData = {
+            id: job.id,
+            name: job.name,
+            jobOn: !job.jobOn,
+            cron: job.cron,
+            config: job.config
+        };
+
+        jobsConfig.changeJobStatus(jobData, onSuccess);
     };
 
     $scope.onAdd = function() {

@@ -92,14 +92,14 @@ describe("jobsConfig", function() {
 
         var onSuccess = jasmine.createSpy();
         var onError = jasmine.createSpy();
-        jobsConfig.changeJobStatus("123", false, onSuccess, onError);
+        jobsConfig.changeJobStatus({id: "1"}, onSuccess, onError);
         $httpBackend.flush();
         expect(onSuccess).toHaveBeenCalled();
 
         $httpBackend.resetExpectations();
 
         $httpBackend.expect("POST", "api/jobs-config").respond(500, {});
-        jobsConfig.changeJobStatus("123", false, onSuccess, onError);
+        jobsConfig.changeJobStatus({id: "1"}, onSuccess, onError);
         $httpBackend.flush();
         expect(onError).toHaveBeenCalled();
     }));

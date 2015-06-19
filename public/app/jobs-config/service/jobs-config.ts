@@ -81,14 +81,11 @@ angular.module("jobsConfig").factory("jobsConfig", function($http, $q, constants
                 }
             });
         },
-        changeJobStatus: function(jobId, status, onSuccess, onError) {
+        changeJobStatus: function(jobData, onSuccess, onError) {
             var req = {
                 method: "POST",
                 url: "api/jobs-config",
-                data: {
-                    id: jobId,
-                    jobOn: status
-                }
+                data: jobData
             };
             $http(req).
             success(function(data, status, headers, config) {

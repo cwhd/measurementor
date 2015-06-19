@@ -75,7 +75,7 @@ describe("JobsListCtrl", function() {
 
     it("JobsListCtrl onChangeJobStatus function checks", inject(function(jobsConfig) {
         spyOn(jobsConfig, "changeJobStatus");
-        scope.onChangeJobStatus(0, "123");
+        scope.onChangeJobStatus(0, {id: "1"});
         expect(jobsConfig.changeJobStatus).toHaveBeenCalled();
     }));
 });
