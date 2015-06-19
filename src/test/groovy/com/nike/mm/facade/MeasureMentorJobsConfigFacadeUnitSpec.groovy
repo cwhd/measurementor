@@ -8,6 +8,7 @@ import com.nike.mm.entity.JobHistory
 import com.nike.mm.entity.MeasureMentorJobsConfig
 import com.nike.mm.facade.impl.MeasureMentorJobsConfigFacade
 import com.nike.mm.service.ICronService
+import org.jasypt.util.text.StrongTextEncryptor
 import org.springframework.data.domain.PageImpl
 import spock.lang.Specification
 
@@ -26,16 +27,20 @@ class MeasureMentorJobsConfigFacadeUnitSpec extends Specification {
 
     ICronService cronService
 
+    StrongTextEncryptor strongTextEncryptor
+
     def setup() {
         this.measureMentorJobsConfigFacade                                  = new MeasureMentorJobsConfigFacade()
         this.measureMentorJobsConfigBusiness                                = Mock(IMeasureMentorJobsConfigBusiness)
         this.jobHistoryBusiness                                             = Mock(IJobHistoryBusiness)
         this.measureMentorRunBusiness                                       = Mock(IMeasureMentorRunBusiness)
         this.cronService                                                    = Mock(ICronService)
+        this.strongTextEncryptor                                            = new StrongTextEncryptor()
         this.measureMentorJobsConfigFacade.measureMentorJobsConfigBusiness  = this.measureMentorJobsConfigBusiness
         this.measureMentorJobsConfigFacade.jobHistoryBusiness               = this.jobHistoryBusiness
         this.measureMentorJobsConfigFacade.measureMentorRunBusiness         = this.measureMentorRunBusiness
         this.measureMentorJobsConfigFacade.cronService                      = this.cronService
+        this.measureMentorJobsConfigFacade.strongTextEncryptor              = this.strongTextEncryptor
     }
 
     def "find an individual record"() {
@@ -69,14 +74,14 @@ class MeasureMentorJobsConfigFacadeUnitSpec extends Specification {
     def "ensure that the list is converted to the appropriate dto with null job history"() {
 
         setup:
-        def dtos = [[id: "testId", name:"name", jobOn:true, cron:"* * * * *"] as MeasureMentorJobsConfig]
+        def dtos = [[id: "testId", name:"name", jobOn:true, cron:"* * * * *", encryptedConfig: null] as MeasureMentorJobsConfig]
 
         when:
         def rlist = this.measureMentorJobsConfigFacade.findListOfJobs(null)
 
         then:
         1 * this.measureMentorJobsConfigBusiness.findAll(_) >> new PageImpl(dtos, null, 1)
-        1 * this.jobHistoryBusiness.findJobsLastBuildStatus(_) >> null
+        1 * this.jobHistoryBusiness.findJobsLastBuildStatus(_) >> []
         rlist.size()        == 1
         rlist[0].id         == "testId"
         rlist[0].name       == "name"
@@ -87,15 +92,15 @@ class MeasureMentorJobsConfigFacadeUnitSpec extends Specification {
     def "ensure that the list is converted and job history exists" () {
 
         setup:
-        def dtos = [[id: "testId", name:"name", jobOn:true, cron:"* * * * *"] as MeasureMentorJobsConfig]
+        def dtos = [[id: "testId", name:"name", jobOn:true, cron:"* * * * *", encryptedConfig: null] as MeasureMentorJobsConfig]
         def jh = [id: "id", jobid:"jid", startDate: new Date(), endDate: new Date(), status: JobHistory.Status.success, comments:"listing of comments"] as JobHistory
 
         when:
         def rlist = this.measureMentorJobsConfigFacade.findListOfJobs(null)
 
         then:
-        1 * this.measureMentorJobsConfigBusiness.findAll(_) >> new PageImpl(dtos, null, 1)
-        1 * this.jobHistoryBusiness.findJobsLastBuildStatus(_) >> jh
+        1 * this.measureMentorJobsConfigBusiness.findAll(_)         >> new PageImpl(dtos, null, 1)
+        1 * this.jobHistoryBusiness.findJobsLastBuildStatus(_)      >> jh
         rlist.size()                == 1
         rlist[0].id                 == "testId"
         rlist[0].name               == "name"

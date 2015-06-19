@@ -1,6 +1,7 @@
 package com.nike.mm.facade.impl
 
 import com.nike.mm.service.ICronService
+import org.jasypt.util.text.StrongTextEncryptor
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
@@ -30,6 +31,8 @@ class MeasureMentorJobsConfigFacade implements IMeasureMentorJobsConfigFacade {
     @Autowired
     ICronService cronService
 
+    @Autowired StrongTextEncryptor strongTextEncryptor;
+
     @Override
     MeasureMentorJobsConfigDto findById(final String id) {
         return this.measureMentorJobsConfigBusiness.findById(id);
@@ -47,16 +50,23 @@ class MeasureMentorJobsConfigFacade implements IMeasureMentorJobsConfigFacade {
         Page rpage = this.measureMentorJobsConfigBusiness.findAll(pageable);
         List<MeasureMentorJobsConfigDto> dtos = [];
         for (MeasureMentorJobsConfig entity : rpage.content) {
+
+            String configString = ""
+            if (entity.encryptedConfig) {
+                this.strongTextEncryptor.decrypt(new String(Base64.getDecoder().decode(entity.encryptedConfig)))
+            }
+            MeasureMentorJobsConfigDto dto = [
+                    id: entity.id,
+                    name: entity.name,
+                    jobOn: entity.jobOn,
+                    cron: entity.cron,
+                    config: configString
+            ] as MeasureMentorJobsConfigDto
+
             JobHistory jh = jobHistoryBusiness.findJobsLastBuildStatus(entity.id);
-            MeasureMentorJobsConfigDto dto = null;
             if (jh != null) {
-                dto = [id                      : entity.id, name: entity.name, jobOn:
-                        entity.jobOn, cron     : entity.cron, lastbuildstatus: jh
-                        .status, lastBuildDate: jh.endDate] as
-                        MeasureMentorJobsConfigDto
-            } else {
-                dto = [id: entity.id, name: entity.name, jobOn: entity.jobOn, cron: entity.cron] as
-                        MeasureMentorJobsConfigDto
+                dto.lastbuildstatus = jh.status.toString()
+                dto.lastBuildDate = jh.endDate
             }
             dtos.add(dto)
         }
