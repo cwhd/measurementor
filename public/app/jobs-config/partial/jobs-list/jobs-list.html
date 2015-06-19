@@ -59,7 +59,7 @@
 								</md-content>
 								<md-content flex="25" flex-md="25" flex-gt-md="25" ng-class="job.lastbuildstatus ? 'successBackGroundColor' : 'errorBackGroundColor'">
 									<div class="md-list-item-text">
-										<md-button ng-click="onChangeJobStatus($index, job.id)">
+										<md-button ng-click="onChangeJobStatus($index, job.id, job.jobOn)">
 											 <md-icon md-font-icon="fa fa-power-off" class="awesomeFontIcon">
 											 </md-icon> 
 											 &nbsp;{{job.jobOn ? 'On': 'Off'}}

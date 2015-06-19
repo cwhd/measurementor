@@ -18,11 +18,11 @@ angular.module("jobsConfig").controller("JobHistoryCtrl", function($scope, $stat
     getData(url);
 
     $scope.onPrevious = function() {
-        getData($scope.links.prev.href);
+        getData($scope.jobHistoryData.links.prev.href);
     };
 
     $scope.onNext = function() {
-        getData($scope.links.next.href);
+        getData($scope.jobHistoryData.links.next.href);
     };
 
     $scope.onBack = function() {
