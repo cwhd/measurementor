@@ -29,7 +29,7 @@
 					<md-list-item class="md-3-line" ng-repeat="job in jobsData.jobs">
 						<div class="borderBottom" style="width: 100%;">	
 							<div layout="row" style="width: 100%; outline: 0px;">
-								<md-content flex="25" flex-md="25" flex-gt-md="25" ng-class="job.lastbuildstatus ? 'successBackGroundColor' : 'errorBackGroundColor'" class="paddingLeft2X">
+								<md-content flex="25" flex-md="25" flex-gt-md="25" ng-class="job.lastbuildstatus == 'success' ? 'successBackGroundColor' : 'errorBackGroundColor'" class="paddingLeft2X">
 									<div class="md-list-item-text">
 										<md-button ng-click="job.isOpen = !job.isOpen">
 											 <md-icon ng-if="!job.isOpen" md-font-icon="fa fa-folder" class="awesomeFontIcon"style="width: 20px;">
@@ -40,12 +40,12 @@
 										</md-button> 	
 									</div>
 								</md-content>
-								<md-content flex="25" flex-md="25" flex-gt-md="25" ng-class="job.lastbuildstatus ? 'successBackGroundColor' : 'errorBackGroundColor'" layout="row" layout-align="center center">
+								<md-content flex="25" flex-md="25" flex-gt-md="25" ng-class="job.lastbuildstatus == 'success' ? 'successBackGroundColor' : 'errorBackGroundColor'" layout="row" layout-align="center center">
 									<div class="md-list-item-text">
 										Last Build: {{job.lastBuildDate? job.lastBuildDate: 'Never Been Built'}}
 									</div>
 									</md-content>
-									<md-content flex="25" flex-md="25" flex-gt-md="25" ng-class="job.lastbuildstatus ? 'successBackGroundColor' : 'errorBackGroundColor'" class="paddingRight2X">
+									<md-content flex="25" flex-md="25" flex-gt-md="25" ng-class="job.lastbuildstatus == 'success' ? 'successBackGroundColor' : 'errorBackGroundColor'" class="paddingRight2X">
 									<div ng-if=!job.jobRunning class="md-list-item-text">
 										<md-button ng-click="onRunJob(job.id)">
 											 <md-icon md-font-icon="fa fa-play-circle" class="awesomeFontIcon" >
@@ -57,9 +57,9 @@
 										Running...
 									</div>						
 								</md-content>
-								<md-content flex="25" flex-md="25" flex-gt-md="25" ng-class="job.lastbuildstatus ? 'successBackGroundColor' : 'errorBackGroundColor'">
+								<md-content flex="25" flex-md="25" flex-gt-md="25" ng-class="job.lastbuildstatus == 'success' ? 'successBackGroundColor' : 'errorBackGroundColor'">
 									<div class="md-list-item-text">
-										<md-button ng-click="onChangeJobStatus($index, job.id, job.jobOn)">
+										<md-button ng-click="onChangeJobStatus($index, job)">
 											 <md-icon md-font-icon="fa fa-power-off" class="awesomeFontIcon">
 											 </md-icon> 
 											 &nbsp;{{job.jobOn ? 'On': 'Off'}}
@@ -67,7 +67,7 @@
 									</div>
 								</md-content>
 							</div>
-							<div ng-if="job.isOpen" ng-class="job.lastbuildstatus ? 'successBackGroundColor' : 'errorBackGroundColor'" class="paddingLeft2X listItemExpandAnimation">
+							<div ng-if="job.isOpen" ng-class="job.lastbuildstatus == 'success' ? 'successBackGroundColor' : 'errorBackGroundColor'" class="paddingLeft2X listItemExpandAnimation">
 								<md-button ng-click="onDetails(job.id)">
 									 <md-icon md-font-icon="fa fa-eye" class="awesomeFontIcon">
 									 </md-icon> 
