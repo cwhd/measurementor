@@ -34,7 +34,7 @@
 						<div class="borderBottom" style="width: 100%;">	
 							<div layout="row" style="width: 100%; outline: 0px; cursor: pointer;" ng-click="history.isOpen = !history.isOpen">
 								<md-content flex="50" flex-md="50" flex-gt-md="50" class="paddingLeft2X">
-									<img alt="Build Status" style="padding-top:0.5rem" ng-src="{{history.success? 'images/sunny.jpg': 'images/storm.jpg'}}" height="40">
+									<img alt="Build Status" style="padding-top:0.5rem" ng-src="{{history.status == 'success'? 'images/sunny.jpg': 'images/storm.jpg'}}" height="40">
 								</md-content>
 								<md-content flex="50" flex-md="50" flex-gt-md="50">
 									<div class="md-list-item-text">
