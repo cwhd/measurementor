@@ -75,7 +75,6 @@ describe("JobsListCtrl", function() {
 
     it("JobsListCtrl onChangeJobStatus function checks", inject(function(jobsConfig) {
         spyOn(jobsConfig, "changeJobStatus");
-        //httpBackend.expect("POST", "api/jobs-config").respond(200, {});
         scope.onChangeJobStatus(0, "123");
         expect(jobsConfig.changeJobStatus).toHaveBeenCalled();
     }));

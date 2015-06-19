@@ -20,12 +20,12 @@ angular.module("jobsConfig").controller("JobsListCtrl", function($rootScope, $sc
         jobsConfig.runJob(id);
     };
 
-    $scope.onChangeJobStatus = function(index, id) {
+    $scope.onChangeJobStatus = function(index, id, status) {
         var onSuccess = function() {
             $scope.jobsData.jobs[index].jobOn = !$scope.jobsData.jobs[index].jobOn;
         };
 
-        jobsConfig.changeJobStatus(id, !$scope.jobsData.jobs[index].jobOn, onSuccess);
+        jobsConfig.changeJobStatus(id, !status, onSuccess);
     };
 
     $scope.onAdd = function() {
