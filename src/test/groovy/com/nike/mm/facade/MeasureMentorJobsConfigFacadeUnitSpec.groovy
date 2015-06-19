@@ -62,7 +62,7 @@ class MeasureMentorJobsConfigFacadeUnitSpec extends Specification {
 
         then:
         1 * this.measureMentorJobsConfigBusiness.saveConfig(_) >> entity
-        1 * this.cronService.removeJob("not a real id")
+        1 * this.cronService.processJob("not a real id")
         rentity.id == dto.id
     }
 

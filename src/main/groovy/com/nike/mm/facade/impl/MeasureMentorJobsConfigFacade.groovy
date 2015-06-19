@@ -38,11 +38,12 @@ class MeasureMentorJobsConfigFacade implements IMeasureMentorJobsConfigFacade {
     @Override
     Object saveJobsConfig(MeasureMentorJobsConfigDto dto) {
         Object result = this.measureMentorJobsConfigBusiness.saveConfig(dto)
-        if (dto.cron && dto.jobOn) {
-            this.cronService.addJob(dto.id)
-        } else {
-            this.cronService.removeJob(dto.id)
-        }
+        this.cronService.processJob(dto.id)
+//        if (dto.cron && dto.jobOn) {
+//            this.cronService.addJob(dto.id)
+//        } else {
+//            this.cronService.removeJob(dto.id)
+//        }
 
         return result
     }
