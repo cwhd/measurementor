@@ -30,7 +30,7 @@ class MeasureMentorJobsConfigBusiness implements IMeasureMentorJobsConfigBusines
 		MeasureMentorJobsConfigDto rdto = null
 		if (rmmc) {
 			String configString = this.strongTextEncryptor.decrypt(new String(Base64.getDecoder().decode(rmmc.encryptedConfig)))
-			rdto = [id: rmmc.id, name: rmmc.name, jobOn: rmmc.jobOn, config: new JsonSlurper().parseText(configString)] as MeasureMentorJobsConfigDto
+			rdto = [id: rmmc.id, name: rmmc.name, jobOn: rmmc.jobOn, config: new JsonSlurper().parseText(configString), cron: rmmc.cron] as MeasureMentorJobsConfigDto
 		}
 		return rdto
 	}
