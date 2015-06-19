@@ -6,7 +6,6 @@ class JobHistoryDto {
     String jobid
     Date startDate
     Date endDate
-    boolean success
     String status
     String comments
 }

@@ -13,7 +13,11 @@ class JobHistory {
 	String jobid
 	Date startDate
 	Date endDate
-	boolean success
-	String status
+	Status status
 	String comments
+
+	enum Status {
+		success,
+		error
+	}
 }

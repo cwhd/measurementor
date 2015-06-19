@@ -57,8 +57,7 @@ class MeasureMentorRunFacade implements IMeasureMentorRunFacade {
                             jobid: jobid,
                             startDate: startDate,
                             endDate: this.dateService.currentDateTime,
-                            success: 'false',
-                            status: "error",
+                            status: JobHistory.Status.error,
                             comments: mmcvDto.getMessageAsString()
                 ] as JobHistory);
             } else {
@@ -70,8 +69,7 @@ class MeasureMentorRunFacade implements IMeasureMentorRunFacade {
                                 jobid    : jobid,
                                 startDate: startDate,
                                 endDate  : this.dateService.currentDateTime,
-                                success  : false,
-                                status   : "success",
+                                status   : JobHistory.Status.success,
                                 comments : ("Success for jobid: " + jobid)
                         ] as JobHistory);
             }

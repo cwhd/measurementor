@@ -10,7 +10,7 @@ public interface IJobHistoryRepository extends ElasticsearchRepository<JobHistor
 
     Page<JobHistory> findByJobidAndStatus(String jobid, String status, Pageable pageable);
 
-    Page<JobHistory> findByJobidAndSuccess(String jobid, boolean success, Pageable pageable);
+    Page<JobHistory> findByJobidAndStatus(String jobid, JobHistory.Status status, Pageable pageable);
 
     Page<JobHistory> findByJobid(String jobid, Pageable pageable);
 }

@@ -52,7 +52,7 @@ class MeasureMentorJobsConfigFacade implements IMeasureMentorJobsConfigFacade {
             if (jh != null) {
                 dto = [id                      : entity.id, name: entity.name, jobOn:
                         entity.jobOn, cron     : entity.cron, lastbuildstatus: jh
-                        .success, lastBuildDate: jh.endDate] as
+                        .status, lastBuildDate: jh.endDate] as
                         MeasureMentorJobsConfigDto
             } else {
                 dto = [id: entity.id, name: entity.name, jobOn: entity.jobOn, cron: entity.cron] as

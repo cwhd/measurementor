@@ -21,7 +21,8 @@ class JobHistoryFacadeUnitSpec extends Specification {
     def "test that the facade converts from an entity to a dto"() {
 
         setup:
-        def dtos = [[id:"ThisId", jobid:"SomeJobId", startDate: new Date(), endDate: new Date(), success:true, status:"Healthy", comments: "Comments"] as  JobHistory]
+        def dtos = [[id:"ThisId", jobid:"SomeJobId", startDate: new Date(), endDate: new Date(), status: JobHistory
+                .Status.success, comments: "Comments"] as  JobHistory]
 
         when:
         def rdtos = this.jobHistoryFacade.findAllByJobid("", null);
@@ -33,7 +34,7 @@ class JobHistoryFacadeUnitSpec extends Specification {
         rdtos[0].jobid      == "SomeJobId"
         rdtos[0].startDate  != null
         rdtos[0].endDate    != null
-        rdtos[0].success    == true
+        rdtos[0].status     == JobHistory.Status.success.toString()
         rdtos[0].comments   == "Comments"
     }
 }

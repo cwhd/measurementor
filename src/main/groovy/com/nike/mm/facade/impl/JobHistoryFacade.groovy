@@ -25,7 +25,6 @@ class JobHistoryFacade implements IJobHistoryFacade {
                       jobid    : jh.jobid,
                       startDate: jh.startDate,
                       endDate  : jh.endDate,
-                      success  : jh.success,
                       status   : jh.status,
                       comments : jh.comments
             ] as JobHistoryDto)

@@ -24,8 +24,8 @@ class JobHistoryBusiness implements IJobHistoryBusiness {
 
     @Override
     JobHistory findLastSuccessfulJobRanForJobid(String jobid) {
-        Page<JobHistory> rpage = this.jobHistoryRepository.findByJobidAndSuccess(jobid, true, this
-                .getDefaultDescEndDatePagerequest())
+        Page<JobHistory> rpage = this.jobHistoryRepository.findByJobidAndStatus(jobid, JobHistory.Status.success,
+                getDefaultDescEndDatePagerequest())
         JobHistory rjh = null;
         if (rpage.content.size() > 0) {
             rjh = rpage.content[0];
@@ -35,7 +35,7 @@ class JobHistoryBusiness implements IJobHistoryBusiness {
 
     @Override
     JobHistory findJobsLastBuildStatus(String jobid) {
-        Page<JobHistory> rpage = this.jobHistoryRepository.findByJobid(jobid, this.getDefaultDescEndDatePagerequest())
+        Page<JobHistory> rpage = this.jobHistoryRepository.findByJobid(jobid, getDefaultDescEndDatePagerequest())
         JobHistory rjh = null;
         if (rpage.content.size() > 0) {
             rjh = rpage.content[0];

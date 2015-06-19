@@ -88,7 +88,7 @@ class MeasureMentorJobsConfigFacadeUnitSpec extends Specification {
 
         setup:
         def dtos = [[id: "testId", name:"name", jobOn:true, cron:"* * * * *"] as MeasureMentorJobsConfig]
-        def jh = [id: "id", jobid:"jid", startDate: new Date(), endDate: new Date(), success: true,  status: "Healthy", comments:"listing of comments"] as JobHistory
+        def jh = [id: "id", jobid:"jid", startDate: new Date(), endDate: new Date(), status: JobHistory.Status.success, comments:"listing of comments"] as JobHistory
 
         when:
         def rlist = this.measureMentorJobsConfigFacade.findListOfJobs(null)

@@ -3,13 +3,9 @@ package com.nike.mm.business.internal
 import com.nike.mm.business.internal.impl.JobHistoryBusiness
 import com.nike.mm.entity.JobHistory
 import com.nike.mm.repository.es.internal.IJobHistoryRepository
-import org.mockito.Mock
 import org.springframework.data.domain.PageImpl
 import spock.lang.Specification
 
-/**
- * Created by rparr2 on 6/11/15.
- */
 class JobHistoryBusinessUnitSpec extends Specification {
 
     IJobHistoryBusiness jobHistoryBusiness
@@ -44,7 +40,7 @@ class JobHistoryBusinessUnitSpec extends Specification {
         def rjh = this.jobHistoryBusiness.findLastSuccessfulJobRanForJobid("id");
 
         then:
-        1 * this.jobHistoryRepository.findByJobidAndSuccess(_, _ , _) >> new PageImpl(dtos, null, 1)
+        1 * this.jobHistoryRepository.findByJobidAndStatus(_, _ , _) >> new PageImpl(dtos, null, 1)
         rjh != null
     }
 
@@ -54,7 +50,7 @@ class JobHistoryBusinessUnitSpec extends Specification {
         def rjh = this.jobHistoryBusiness.findLastSuccessfulJobRanForJobid("id");
 
         then:
-        1 * this.jobHistoryRepository.findByJobidAndSuccess(_, _ , _) >> new PageImpl([], null, 1)
+        1 * this.jobHistoryRepository.findByJobidAndStatus(_, _ , _) >> new PageImpl([], null, 1)
         rjh == null
     }
 

@@ -1,6 +1,8 @@
 package com.nike.mm.repository.es
 
-import com.nike.mm.business.internal.impl.JobHistoryBusiness
+import com.nike.mm.MeasurementorApplication
+import com.nike.mm.entity.JobHistory
+import com.nike.mm.repository.es.internal.IJobHistoryRepository
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
@@ -10,12 +12,7 @@ import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner
 import org.springframework.test.context.web.WebAppConfiguration
-
 import spock.lang.Specification
-
-import com.nike.mm.MeasurementorApplication
-import com.nike.mm.entity.JobHistory
-import com.nike.mm.repository.es.internal.IJobHistoryRepository;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = MeasurementorApplication.class)
@@ -46,15 +43,15 @@ class JobHistoryRepositoryItSpec extends Specification {
 		
 		setup:
 		this.jobHistoryRepository.deleteAll()
-		JobHistory mostRecent = this.jobHistoryRepository.save([jobid:"test-job-id", startDate: new Date(), endDate: new Date(), status:"Done"] as JobHistory)
-		JobHistory leastRecent  = this.jobHistoryRepository.save([jobid:"test-job-id", startDate: new Date(), endDate: new Date((new Date().getTime() - 10000)), status:"Done"] as JobHistory)
+		JobHistory mostRecent = this.jobHistoryRepository.save([jobid:"test-job-id", startDate: new Date(), endDate: new Date(), status: JobHistory.Status.success] as JobHistory)
+		JobHistory leastRecent  = this.jobHistoryRepository.save([jobid:"test-job-id", startDate: new Date(), endDate: new Date((new Date().getTime() - 10000)), status: JobHistory.Status.error] as JobHistory)
 		
 		when:
-		Page<JobHistory> rpage = this.jobHistoryRepository.findByJobidAndStatus("test-job-id", "Done", new PageRequest(1, 1, new Sort(Sort.Direction.ASC, "endDate")))
+		Page<JobHistory> rpage = this.jobHistoryRepository.findByJobidAndStatus("test-job-id", JobHistory.Status.success, new PageRequest(0, 1, new Sort(Sort.Direction.ASC, "endDate")))
 		
 		then:
 		rpage.content.size()	== 1
-		rpage.getTotalPages() 	== 2
+		rpage.getTotalPages() 	== 1
 		rpage.content[0].id 	== mostRecent.id
 		
 		cleanup:
@@ -66,8 +63,8 @@ class JobHistoryRepositoryItSpec extends Specification {
 
 		setup:
 		this.jobHistoryRepository.deleteAll()
-		JobHistory mostRecent = this.jobHistoryRepository.save([jobid:"test-job-id", startDate: new Date(), endDate: new Date(), status:"Done"] as JobHistory)
-		JobHistory leastRecent  = this.jobHistoryRepository.save([jobid:"test-job-id", startDate: new Date(), endDate: new Date((new Date().getTime() - 10000)), status:"Done"] as JobHistory)
+		JobHistory mostRecent = this.jobHistoryRepository.save([jobid:"test-job-id", startDate: new Date(), endDate: new Date(), status: JobHistory.Status.success] as JobHistory)
+		JobHistory leastRecent  = this.jobHistoryRepository.save([jobid:"test-job-id", startDate: new Date(), endDate: new Date((new Date().getTime() - 10000)), status: JobHistory.Status.success] as JobHistory)
 
 		when:
 		Page<JobHistory> rpage = this.jobHistoryRepository.findByJobid("test-job-id", new PageRequest(0, 20, new Sort(Sort.Direction.DESC, "endDate")))
