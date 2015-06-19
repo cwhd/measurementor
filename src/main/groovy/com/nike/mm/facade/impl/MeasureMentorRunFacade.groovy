@@ -81,7 +81,7 @@ class MeasureMentorRunFacade implements IMeasureMentorRunFacade {
         //TODO run in parallel.
         //TODO error tracking.
         for (RunnableMeasureMentorBusinessAndConfigDto dto : mmcvDto.runnableMmbs) {
-            dto.measureMentorBusiness.updateData(dto.config, lastRunDate)
+            dto.measureMentorBusiness.updateData(dto.config)
         }
     }
 

@@ -103,7 +103,7 @@ class MeasureMentorRunFacadeUnitSpec  extends Specification {
         1 * this.jobHistoryBusiness.findLastSuccessfulJobRanForJobid(_) >> null
         1 * measureMentorBusiness.type() >> 'availableButFailConfig'
         1 * measureMentorBusiness.validateConfig(_)                     >> false
-        0 * measureMentorBusiness.updateData(_, _)
+        0 * measureMentorBusiness.updateData(_)
         1 * this.jobHistoryBusiness.save(_)
         1 * this.measureMentorRunBusiness.stopJob(_)
     }
@@ -127,10 +127,10 @@ class MeasureMentorRunFacadeUnitSpec  extends Specification {
         1 * this.jobHistoryBusiness.findLastSuccessfulJobRanForJobid(_) >> null
         1 * measureMentorBusinessSkip.type() >> 'availableAndFailsConfig'
         0 * measureMentorBusinessSkip.validateConfig()
-        0 * measureMentorBusinessSkip.updateData(_, _)
+        0 * measureMentorBusinessSkip.updateData(_)
         1 * measureMentorBusiness.type() >> 'availableAndPassesConfig'
         1 * measureMentorBusiness.validateConfig(_)                     >> true
-        1 * measureMentorBusiness.updateData(_, _)
+        1 * measureMentorBusiness.updateData(_)
         1 * this.jobHistoryBusiness.save(_)
         1 * this.measureMentorRunBusiness.stopJob(_)
     }

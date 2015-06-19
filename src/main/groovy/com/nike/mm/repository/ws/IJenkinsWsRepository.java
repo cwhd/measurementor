@@ -6,5 +6,5 @@ import com.nike.mm.dto.HttpRequestDto;
 
 public interface IJenkinsWsRepository {
 
-    List<String> getListOfRepositoryNames(HttpRequestDto dto);
+    List<String> getListOfBuilds(HttpRequestDto dto);
 }

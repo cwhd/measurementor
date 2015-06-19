@@ -36,7 +36,8 @@ class GithubBusiness implements IGithubBusiness {
 	}
 	
 	@Override
-	void updateData(Object configInfo, Date fromDate) {
+	void updateData(Object configInfo) {
+		Date fromDate = Date.parse( 'dd-MM-yyyy', "01-01-2001" )
 		List<String> repositories = this.findAllRepositories(configInfo, fromDate);
 		for (String repo: repositories) {
 			List commits = this.getAllCommitsForRepo(configInfo, repo);

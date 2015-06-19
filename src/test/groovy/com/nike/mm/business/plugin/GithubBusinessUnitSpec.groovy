@@ -90,7 +90,7 @@ class GithubBusinessUnitSpec extends Specification {
         def configinfo = [url:'http://nike.com', access_token:'access_token', repository_owner:'repoowner']
 
         when:
-        def rlist = this.githubBusiness.updateData(configinfo, new Date())
+        def rlist = this.githubBusiness.updateData(configinfo)
 
         then:
         1 * this.githubWsRepository.findAllRepositories(_) >> []
@@ -101,7 +101,7 @@ class GithubBusinessUnitSpec extends Specification {
         def configinfo = [url:'http://nike.com', access_token:'access_token', repository_owner:'repoowner']
 
         when:
-        def rlist = this.githubBusiness.updateData(configinfo, new Date())
+        def rlist = this.githubBusiness.updateData(configinfo)
 
         then:
         1 * this.githubWsRepository.findAllRepositories(_)          >> ['repo1']
@@ -115,7 +115,7 @@ class GithubBusinessUnitSpec extends Specification {
         def configinfo = [url:'http://nike.com', access_token:'access_token', repository_owner:'repoowner']
 
         when:
-        def rlist = this.githubBusiness.updateData(configinfo, new Date())
+        def rlist = this.githubBusiness.updateData(configinfo)
 
         then:
         1 * this.githubWsRepository.findAllRepositories(_)          >> ['repo1']
@@ -129,7 +129,7 @@ class GithubBusinessUnitSpec extends Specification {
         def configinfo = [url:'http://nike.com', access_token:'access_token', repository_owner:'repoowner']
 
         when:
-        def rlist = this.githubBusiness.updateData(configinfo, new Date())
+        def rlist = this.githubBusiness.updateData(configinfo)
 
         then:
         1 * this.githubWsRepository.findAllRepositories(_)          >> ['repo1']
@@ -143,7 +143,7 @@ class GithubBusinessUnitSpec extends Specification {
         def configinfo = [url:'http://nike.com', access_token:'access_token', repository_owner:'repoowner']
 
         when:
-        def rlist = this.githubBusiness.updateData(configinfo, new Date())
+        def rlist = this.githubBusiness.updateData(configinfo)
 
         then:
         1 * this.githubWsRepository.findAllRepositories(_)          >> ['repo1']

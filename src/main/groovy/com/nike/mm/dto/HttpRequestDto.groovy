@@ -7,4 +7,6 @@ class HttpRequestDto {
 	Object query
 	String authCookies
 	String credentials
+
+    ProxyDto proxyDto
 }

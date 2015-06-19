@@ -9,7 +9,6 @@ public interface IMeasureMentorBusiness {
 
     /**
      * The type. Must be unique.
-     *
      * @return - Name of the plugin.
      */
     String type();
@@ -17,7 +16,6 @@ public interface IMeasureMentorBusiness {
     /**
      * Validates the config. As every object has its own business for configuration this serves to ensure configuration is right
      * before the job starts executing.
-     *
      * @param config - The config object to validate.
      * @return - True if valid else false.
      */
@@ -25,9 +23,7 @@ public interface IMeasureMentorBusiness {
 
     /**
      * Run the system, get the data, put it into ES.
-     *
      * @param configInfo - The configuration information that was validated in the validateConfig(String) method.
-     * @param fromDate - Get the data from this date.
      */
-    void updateData(Object configInfo, Date fromDate);
+    void updateData(Object configInfo);
 }

@@ -24,7 +24,6 @@ class Stash {
     int linesAdded
     int linesRemoved
     int commentCount
-    String couchId
     //TODO need to get these up and running
     double timeOpen //how long something is open.  if this is closed, it's the difference between the createdDate and updatedDate.  If
     //it's not closed it's the length of time between createdDate and today

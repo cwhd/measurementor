@@ -2,6 +2,7 @@ package com.nike.mm.repository.ws
 
 import com.nike.mm.dto.HttpRequestDto
 import com.nike.mm.dto.JiraRequestDto
+import com.nike.mm.dto.ProxyDto
 import com.nike.mm.repository.ws.impl.JiraWsRepository
 import com.nike.mm.service.IHttpRequestService
 import com.nike.mm.service.impl.HttpRequestService
@@ -20,13 +21,13 @@ class JiraWsRepositoryItSpec extends Specification {
 
     @Autowired IHttpRequestService httpRequestService
 
+    ProxyDto proxyDto
+
     def setup() {
         this.jiraWsRepository                       = new JiraWsRepository()
         this.httpRequestService                     = new HttpRequestService()
         this.jiraWsRepository.httpRequestService    = this.httpRequestService
-        this.httpRequestService.setProxy            = true
-        this.httpRequestService.proxyUrl            = ""
-        this.httpRequestService.proxyPort           = 8080
+        this.proxyDto = [setProxy: true, url: "connsvr.nike.com", port: "8080"] as ProxyDto
     }
 
     //@Test
@@ -34,10 +35,11 @@ class JiraWsRepositoryItSpec extends Specification {
 
         setup:
         String path = "/rest/api/2/project";
-        HttpRequestDto dto = [url: "https://jira.nike.com", path: path, credentials: ""] as HttpRequestDto
+
+        HttpRequestDto dto = [url: "", path: path, credentials: "", proxyDto: this.proxyDto] as HttpRequestDto
 
         when:
-        def projects = this.jiraWsRepository.getProjectsList(dto)
+        //def projects = this.jiraWsRepository.getProjectsList(dto)
         1 == 1
 
         then:
@@ -51,9 +53,9 @@ class JiraWsRepositoryItSpec extends Specification {
 
         setup:
         String path = "/rest/api/2/project";
-        HttpRequestDto dto = [url: "https://jira.nike.com", path: path, credentials: ""] as HttpRequestDto
-        def projects = this.jiraWsRepository.getProjectsList(dto)
-        def jiraRequestDto = [startAt: 0, maxResults: 100, project: projects[0], url:"https://jira.nike.com", credentials: ""] as JiraRequestDto
+        HttpRequestDto dto = [url: "", path: path, credentials: "", proxyDto: this.proxyDto] as HttpRequestDto
+        //def projects = this.jiraWsRepository.getProjectsList(dto)
+        //def jiraRequestDto = [startAt: 0, maxResults: 100, project: projects[0], url:"", credentials: ""] as JiraRequestDto
 
         when:
         //def results = this.jiraWsRepository.getData(jiraRequestDto)

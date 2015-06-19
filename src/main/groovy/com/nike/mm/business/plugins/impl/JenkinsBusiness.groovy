@@ -20,7 +20,7 @@ class JenkinsBusiness implements IJenkinsBusiness {
 	}
 	
 	@Override
-	void updateData(Object configInfo, Date fromDate) {
+	void updateData(Object configInfo) {
 		throw new RuntimeException("unimplemented")
 	}
 }

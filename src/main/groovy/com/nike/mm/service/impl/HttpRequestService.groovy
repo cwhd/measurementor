@@ -15,23 +15,14 @@ import com.nike.mm.service.IHttpRequestService
 @Service
 class HttpRequestService implements IHttpRequestService {
 	
-	@Value('${mm.proxy.set_proxy}')
-	private boolean setProxy;
-	
-	@Value('${mm.proxy.url}')
-	private String proxyUrl;
-	
-	@Value('${mm.proxy.port}')
-	private int proxyPort;
-	
 	Object callRestfulUrl(HttpRequestDto httpRequestDto) {
 		
 		def http = new HTTPBuilder( httpRequestDto.url )
 
 		http.ignoreSSLIssues()
 
-		if(this.setProxy) {
-			http.setProxy(this.proxyUrl, this.proxyPort,null)
+		if(httpRequestDto.proxyDto.setProxy) {
+			http.setProxy(httpRequestDto.proxyDto.url, httpRequestDto.proxyDto.port,null)
 		}
 		http.request( GET, JSON ) { req ->
 			uri.path = httpRequestDto.path
