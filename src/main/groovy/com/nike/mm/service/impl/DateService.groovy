@@ -8,8 +8,8 @@ import org.springframework.stereotype.Service
 @Service
 class DateService implements IDateService {
 
-    DateTime getCurrentDateTime() {
-        return new DateTime()
+    Date getCurrentDateTime() {
+        return new DateTime().toDate()
 
     }
 }

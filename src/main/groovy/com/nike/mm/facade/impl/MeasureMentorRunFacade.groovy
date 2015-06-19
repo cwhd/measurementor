@@ -39,7 +39,7 @@ class MeasureMentorRunFacade implements IMeasureMentorRunFacade {
     @Async
     void runJobId(String jobid) {
         println "Running job " + jobid
-        def startDate = this.dateService.currentDateTime.toDate();
+        def startDate = this.dateService.currentDateTime;
         try {
             this.measureMentorRunBusiness.startJob(jobid);
             def configDto = this.measureMentorConfigBusiness.findById(jobid);
@@ -56,7 +56,7 @@ class MeasureMentorRunFacade implements IMeasureMentorRunFacade {
                         [
                             jobid: jobid,
                             startDate: startDate,
-                            endDate: this.dateService.currentDateTime.toDate(),
+                            endDate: this.dateService.currentDateTime,
                             success: 'false',
                             status: "error",
                             comments: mmcvDto.getMessageAsString()
@@ -69,7 +69,7 @@ class MeasureMentorRunFacade implements IMeasureMentorRunFacade {
                         [
                                 jobid    : jobid,
                                 startDate: startDate,
-                                endDate  : this.dateService.currentDateTime.toDate(),
+                                endDate  : this.dateService.currentDateTime,
                                 success  : false,
                                 status   : "success",
                                 comments : ("Success for jobid: " + jobid)

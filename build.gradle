@@ -22,7 +22,6 @@ buildscript {
 
 springBoot {
     mainClass = 'com.nike.mm.MeasurementorApplication'
-    agent = file('/opt/newrelic/newrelic.jar')			
 }
 
 jar {
