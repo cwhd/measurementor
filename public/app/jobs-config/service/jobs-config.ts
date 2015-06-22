@@ -37,28 +37,6 @@ angular.module("jobsConfig").factory("jobsConfig", function($http, $q, constants
                 }
             });
         },
-        changeJobStatus: function(jobData, onSuccess, onError) {
-            var req = {
-                method: "POST",
-                url: "api/jobs-config",
-                data: jobData
-            };
-            $http(req).
-            success(function(data, status, headers, config) {
-                if (onSuccess) {
-                    onSuccess();
-                }
-                generalLayout.displayToast({
-                    messageText: "Job status has been successfully changed.",
-                    messageType: "success"
-                });
-            }).
-            error(function(data, status, headers, config) {
-                if (onError) {
-                    onError();
-                }
-            });
-        },
         getJobConfig: function(jobId) {
             var deferred = $q.defer();
             $http.get("api/jobs-config/" + jobId).then(function(data) {
@@ -71,9 +49,6 @@ angular.module("jobsConfig").factory("jobsConfig", function($http, $q, constants
             return deferred.promise;
         },
         saveJobConfig: function(jobConfig, onSuccess, onError) {
-            jobConfig.config = JSON.parse(jobConfig.configAsString);
-            delete jobConfig.configAsString;
-
             var req = {
                 method: "POST",
                 url: "api/jobs-config",

@@ -117,7 +117,7 @@ describe("JobDetailsCtrl", function() {
         scope.jobDetailsData = {
             name: "TestJob",
             cron: "123",
-            configAsString: "test"
+            configAsString: "{type: 'JIRA'}"
         };
         scope.onChangeFormElement("name");
         expect(scope.formValidation.showNameValidation).toEqual(false);
@@ -141,15 +141,12 @@ describe("JobDetailsCtrl", function() {
         scope.jobDetailsData = {
             name: "TestJob",
             cron: "123",
-            configAsString: "test"
+            configAsString: "{type: 'JIRA'}"
         };
-        scope.onSave(true);
+        scope.onSave();
         expect(scope.formValidation.showNameValidation).toEqual(false);
         expect(scope.formValidation.showCronValidation).toEqual(false);
         expect(scope.formValidation.showConfigValidation).toEqual(false);
-        expect(stateName).toEqual("app.jobs-list");
-
-        scope.onSave(false);
         expect(stateName).toEqual("app.jobs-list");
     }));
 });

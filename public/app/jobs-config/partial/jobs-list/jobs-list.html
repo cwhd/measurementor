@@ -79,7 +79,7 @@
 						</div>	
 					</md-list-item>
 				</md-list>
-				<div layout="row" layout-align="end center">
+				<div layout="row" layout-align="end center" ng-if="jobsData.jobs.length">
 					<span>
 						Page {{jobsData.page.number + 1}} (out of {{' ' + jobsData.page.totalPages}})
 					</span>
