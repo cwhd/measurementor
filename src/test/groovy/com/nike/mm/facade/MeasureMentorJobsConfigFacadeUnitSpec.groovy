@@ -17,6 +17,8 @@ import spock.lang.Specification
  */
 class MeasureMentorJobsConfigFacadeUnitSpec extends Specification {
 
+    static String PASSWORD = "123"
+
     IMeasureMentorJobsConfigFacade measureMentorJobsConfigFacade
 
     IMeasureMentorJobsConfigBusiness measureMentorJobsConfigBusiness
@@ -36,6 +38,7 @@ class MeasureMentorJobsConfigFacadeUnitSpec extends Specification {
         this.measureMentorRunBusiness                                       = Mock(IMeasureMentorRunBusiness)
         this.cronService                                                    = Mock(ICronService)
         this.strongTextEncryptor                                            = new StrongTextEncryptor()
+        this.strongTextEncryptor.setPassword(PASSWORD)
         this.measureMentorJobsConfigFacade.measureMentorJobsConfigBusiness  = this.measureMentorJobsConfigBusiness
         this.measureMentorJobsConfigFacade.jobHistoryBusiness               = this.jobHistoryBusiness
         this.measureMentorJobsConfigFacade.measureMentorRunBusiness         = this.measureMentorRunBusiness
@@ -74,25 +77,26 @@ class MeasureMentorJobsConfigFacadeUnitSpec extends Specification {
     def "ensure that the list is converted to the appropriate dto with null job history"() {
 
         setup:
-        def dtos = [[id: "testId", name:"name", jobOn:true, cron:"* * * * *", encryptedConfig: null] as MeasureMentorJobsConfig]
+        def dtos = [[id: "testId", name:"name", jobOn:true, cron:"* * * * *", encryptedConfig: Base64.getEncoder().encodeToString(this.strongTextEncryptor.encrypt("{}").bytes)] as MeasureMentorJobsConfig]
 
         when:
         def rlist = this.measureMentorJobsConfigFacade.findListOfJobs(null)
 
         then:
-        1 * this.measureMentorJobsConfigBusiness.findAll(_) >> new PageImpl(dtos, null, 1)
-        1 * this.jobHistoryBusiness.findJobsLastBuildStatus(_) >> []
-        rlist.size()        == 1
-        rlist[0].id         == "testId"
-        rlist[0].name       == "name"
-        rlist[0].jobOn      == true
-        rlist[0].cron       == "* * * * *"
+        1 * this.measureMentorJobsConfigBusiness.findAll(_)         >> new PageImpl(dtos, null, 1)
+        1 * this.jobHistoryBusiness.findJobsLastBuildStatus(_)      >> []
+        rlist.size()                                                == 1
+        rlist[0].id                                                 == "testId"
+        rlist[0].name                                               == "name"
+        rlist[0].jobOn                                              == true
+        rlist[0].cron                                               == "* * * * *"
+        rlist[0].config                                             == "{}"
     }
 
     def "ensure that the list is converted and job history exists" () {
 
         setup:
-        def dtos = [[id: "testId", name:"name", jobOn:true, cron:"* * * * *", encryptedConfig: null] as MeasureMentorJobsConfig]
+        def dtos = [[id: "testId", name:"name", jobOn:true, cron:"* * * * *", encryptedConfig: Base64.getEncoder().encodeToString(this.strongTextEncryptor.encrypt("{}").bytes)] as MeasureMentorJobsConfig]
         def jh = [id: "id", jobid:"jid", startDate: new Date(), endDate: new Date(), status: JobHistory.Status.success, comments:"listing of comments"] as JobHistory
 
         when:
@@ -101,12 +105,13 @@ class MeasureMentorJobsConfigFacadeUnitSpec extends Specification {
         then:
         1 * this.measureMentorJobsConfigBusiness.findAll(_)         >> new PageImpl(dtos, null, 1)
         1 * this.jobHistoryBusiness.findJobsLastBuildStatus(_)      >> jh
-        rlist.size()                == 1
-        rlist[0].id                 == "testId"
-        rlist[0].name               == "name"
-        rlist[0].jobOn              == true
-        rlist[0].cron               == "* * * * *"
-        rlist[0].lastbuildstatus    == true
-        rlist[0].lastBuildDate      != null
+        rlist.size()                                                == 1
+        rlist[0].id                                                 == "testId"
+        rlist[0].name                                               == "name"
+        rlist[0].jobOn                                              == true
+        rlist[0].cron                                               == "* * * * *"
+        rlist[0].lastbuildstatus                                    == true
+        rlist[0].lastBuildDate                                      != null
+        rlist[0].config                                             == "{}"
     }
 }

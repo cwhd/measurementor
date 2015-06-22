@@ -53,16 +53,12 @@ class MeasureMentorJobsConfigFacade implements IMeasureMentorJobsConfigFacade {
         List<MeasureMentorJobsConfigDto> dtos = [];
         for (MeasureMentorJobsConfig entity : rpage.content) {
 
-            String configString = ""
-            if (entity.encryptedConfig) {
-                this.strongTextEncryptor.decrypt(new String(Base64.getDecoder().decode(entity.encryptedConfig)))
-            }
             MeasureMentorJobsConfigDto dto = [
                     id: entity.id,
                     name: entity.name,
                     jobOn: entity.jobOn,
                     cron: entity.cron,
-                    config: configString
+                    config: this.strongTextEncryptor.decrypt(new String(Base64.getDecoder().decode(entity.encryptedConfig)))
             ] as MeasureMentorJobsConfigDto
 
             JobHistory jh = jobHistoryBusiness.findJobsLastBuildStatus(entity.id);
