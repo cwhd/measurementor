@@ -71,4 +71,11 @@ interface IUtilitiesService {
      * Check out the unit tests to see some test data
      */
     double getDifferenceBetweenDatesInHours(firstDate, secondDate)
+
+    /**
+     * Some systems use timestamps in epoch time, this will convert that to a real date
+     * @param timestamp
+     * @return null if you don't pass anything in, the actual date when we can convert it
+     */
+    Date convertTimestampFromString(timestamp)
 }

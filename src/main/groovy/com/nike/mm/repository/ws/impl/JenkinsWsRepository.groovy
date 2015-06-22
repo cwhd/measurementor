@@ -20,12 +20,22 @@ class JenkinsWsRepository implements IJenkinsWsRepository {
 	}
 
 	@Override
-	Object findListOfJobsJobs(HttpRequestDto dto) {
+	Object findListOfJobsJobs(final HttpRequestDto dto) {
 		return this.httpRequestService.callRestfulUrl(dto)
 	}
 
     @Override
-    Object findListOfJobsJobsJobs(HttpRequestDto dto) {
+    Object findListOfBuilds(final HttpRequestDto dto) {
         return this.httpRequestService.callRestfulUrl(dto)
     }
+
+	@Override
+	Object findBuildInformation(final HttpRequestDto dto) {
+		return this.httpRequestService.callRestfulUrl(dto)
+	}
+
+	@Override
+	Object findFinalBuildInformation(HttpRequestDto dto) {
+		return this.httpRequestService.callRestfulUrl(dto)
+	}
 }

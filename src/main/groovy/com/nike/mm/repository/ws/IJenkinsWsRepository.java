@@ -10,5 +10,9 @@ public interface IJenkinsWsRepository {
 
     Object findListOfJobsJobs(HttpRequestDto dto);
 
-    Object findListOfJobsJobsJobs(HttpRequestDto dto);
+    Object findListOfBuilds(HttpRequestDto dto);
+
+    Object findBuildInformation(HttpRequestDto dto);
+
+    Object findFinalBuildInformation(HttpRequestDto dto);
 }
