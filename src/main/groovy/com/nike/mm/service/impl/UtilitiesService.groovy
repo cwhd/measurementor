@@ -117,4 +117,13 @@ class UtilitiesService implements IUtilitiesService {
 
         return val
     }
+
+    @Override
+    Date convertTimestampFromString(timestamp) {
+        if(timestamp) {
+            return new Date((long)timestamp)
+        } else {
+            return null
+        }
+    }
 }
