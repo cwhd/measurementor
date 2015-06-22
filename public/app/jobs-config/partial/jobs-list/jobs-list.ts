@@ -5,7 +5,7 @@ angular.module("jobsConfig").controller("JobsListCtrl", function($rootScope, $sc
     generalLayout.checkLogInStatus();
     generalLayout.data.viewTitle = "List of jobs";
 
-    var currentPage = "api/jobs-config?page=0&size=3&sort=name,asc";
+    var currentPage = "api/jobs-config?page=0&size=5&sort=name,asc";
 
     $scope.getData = function(url: string) {
         currentPage = url;
