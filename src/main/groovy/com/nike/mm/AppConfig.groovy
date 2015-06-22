@@ -30,7 +30,7 @@ class AppConfig {
     }
 
     @Bean
-    protected ThreadPoolTaskExecutor serviceTaskExecutor() {
+    protected static ThreadPoolTaskExecutor serviceTaskExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         executor.setThreadNamePrefix("service-task-executor-");
         executor.setCorePoolSize(5);
@@ -39,7 +39,7 @@ class AppConfig {
     }
 
     @Bean
-    protected ThreadPoolTaskScheduler threadPoolTaskScheduler() {
+    protected static ThreadPoolTaskScheduler threadPoolTaskScheduler() {
         ThreadPoolTaskScheduler scheduler = new ThreadPoolTaskScheduler();
         scheduler.setPoolSize(5);
         return scheduler;

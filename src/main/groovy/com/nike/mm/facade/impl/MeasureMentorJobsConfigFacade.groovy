@@ -1,6 +1,7 @@
 package com.nike.mm.facade.impl
 
 import com.nike.mm.service.ICronService
+import groovy.util.logging.Slf4j
 import org.jasypt.util.text.StrongTextEncryptor
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Page
@@ -17,6 +18,7 @@ import com.nike.mm.entity.MeasureMentorJobsConfig
 import com.nike.mm.facade.IMeasureMentorJobsConfigFacade
 
 @Service
+@Slf4j
 class MeasureMentorJobsConfigFacade implements IMeasureMentorJobsConfigFacade {
 
     @Autowired
@@ -70,6 +72,7 @@ class MeasureMentorJobsConfigFacade implements IMeasureMentorJobsConfigFacade {
             }
             dtos.add(dto)
         }
+        log.debug("Returning list of job configurations: {} of {}", dtos.size(), rpage.getTotalElements())
         return new PageImpl(dtos, pageable, rpage.getTotalElements())
     }
 }

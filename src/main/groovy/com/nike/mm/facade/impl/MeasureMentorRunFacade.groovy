@@ -9,7 +9,7 @@ import com.nike.mm.dto.MeasureMentorConfigValidationDto
 import com.nike.mm.dto.RunnableMeasureMentorBusinessAndConfigDto
 import com.nike.mm.entity.JobHistory
 import com.nike.mm.facade.IMeasureMentorRunFacade
-import groovy.util.logging.Log4j
+import groovy.util.logging.Slf4j
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Service
@@ -17,7 +17,7 @@ import org.springframework.stereotype.Service
 import java.text.SimpleDateFormat
 
 @Service
-@Log4j
+@Slf4j
 class MeasureMentorRunFacade implements IMeasureMentorRunFacade {
 
     @Autowired
@@ -38,7 +38,7 @@ class MeasureMentorRunFacade implements IMeasureMentorRunFacade {
     @Override
     @Async
     void runJobId(String jobid) {
-        println "Running job " + jobid
+        log.debug("Running job ID {}.", jobid)
         def startDate = this.dateService.currentDateTime;
         try {
             this.measureMentorRunBusiness.startJob(jobid);

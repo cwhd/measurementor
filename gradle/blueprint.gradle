@@ -13,7 +13,6 @@ ext {
     springBootVersion = '1.2.3.RELEASE'
     commons_lang_version='2.6'
     commons_io_version='2.4'
-    lombok_version='1.14.6'
     groovy_all_version='2.3.6'
     junit_version='4.11'
     spock_version='0.7-groovy-2.0'
@@ -45,7 +44,6 @@ dependencies {
     compile("org.codehaus.groovy.modules.http-builder:http-builder:0.7.1")
     compile("org.jasypt:jasypt:1.9.2")
     compile("net.sf.dozer:dozer:5.5.1")
-    compile("org.projectlombok:lombok:1.16.4")
     compile("joda-time:joda-time:2.8.1")
     
     testCompile("org.springframework.boot:spring-boot-starter-test")
