@@ -1,7 +1,6 @@
 package com.nike.mm.repository.ws
 
 import com.nike.mm.dto.HttpRequestDto
-import com.nike.mm.entity.Stash
 
 /**
  * Created by rparr2 on 6/16/15.

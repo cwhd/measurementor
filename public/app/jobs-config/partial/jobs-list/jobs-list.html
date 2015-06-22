@@ -79,6 +79,11 @@
 						</div>	
 					</md-list-item>
 				</md-list>
+				<div layout="row" layout-align="end center">
+					<span>
+						Page {{jobsData.page.number + 1}} (out of {{' ' + jobsData.page.totalPages}})
+					</span>
+				</div>
 				<div>
 					<md-button ng-click="onAdd()">
 						 <md-icon md-font-icon="fa fa-plus" class="awesomeFontIcon">

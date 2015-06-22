@@ -1,6 +1,7 @@
 package com.nike.mm.service.impl
 
 import com.nike.mm.service.IUtilitiesService
+import groovyx.net.http.HTTPBuilder
 import org.springframework.stereotype.Component
 
 import java.text.SimpleDateFormat
@@ -100,5 +101,20 @@ class UtilitiesService implements IUtilitiesService {
             result = 0
         }
         return [ raw:result, result:result.toInteger() ]
+    }
+
+    @Override
+    double getDifferenceBetweenDatesInHours(firstDate, secondDate) {
+        def val
+
+        if(!secondDate) { //if there is no second date, make it today
+            secondDate = new Date()
+        }
+        def second = new Date(secondDate)
+        def first = new Date(firstDate)
+        def diffInMinutes = TimeUnit.MILLISECONDS.toMinutes(second.getTime() - first.getTime())
+        val = diffInMinutes / 60
+
+        return val
     }
 }
