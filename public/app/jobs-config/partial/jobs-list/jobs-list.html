@@ -46,16 +46,13 @@
 									</div>
 									</md-content>
 									<md-content flex="25" flex-md="25" flex-gt-md="25" ng-class="job.lastbuildstatus == 'success' ? 'successBackGroundColor' : 'errorBackGroundColor'" class="paddingRight2X">
-									<div ng-if=!job.jobRunning class="md-list-item-text">
+									<div class="md-list-item-text">
 										<md-button ng-click="onRunJob(job.id)">
 											 <md-icon md-font-icon="fa fa-play-circle" class="awesomeFontIcon" >
 											 </md-icon> 
 											 &nbsp;Run
 										</md-button> 
 									</div>
-									<div ng-if=job.jobRunning class="md-list-item-text" >
-										Running...
-									</div>						
 								</md-content>
 								<md-content flex="25" flex-md="25" flex-gt-md="25" ng-class="job.lastbuildstatus == 'success' ? 'successBackGroundColor' : 'errorBackGroundColor'">
 									<div class="md-list-item-text">

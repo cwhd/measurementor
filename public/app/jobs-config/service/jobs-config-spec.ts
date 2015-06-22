@@ -42,20 +42,15 @@ describe("jobsConfig", function() {
             _links: {},
             page: {}
         });
-
-        // $httpBackend.when("POST", "api/jobs-config").respond(200, {});
     }));
 
     it("getJobs method checks", inject(function(jobsConfig, generalLayout) {
         var jobs;
-        jobsConfig.getJobs("api/jobs-config?page=0&size=2&sort=name,asc", false).then(function(data) {
+        jobsConfig.getJobs("api/jobs-config?page=0&size=2&sort=name,asc").then(function(data) {
             jobs = data.jobs;
         });
         $httpBackend.flush();
 
-        expect(jobs.length > 0).toBeTruthy();
-
-        jobs = jobsConfig.getJobs("api/jobs-config?page=0&size=2&sort=name,asc", true).jobs;
         expect(jobs.length > 0).toBeTruthy();
     }));
 
@@ -76,14 +71,11 @@ describe("jobsConfig", function() {
 
     it("getJobHistoryData method checks", inject(function(jobsConfig) {
         var jobHistories;
-        jobsConfig.getJobHistoryData("api/jobs-history/1?page=0&size=2&sort=endDate,desc", false).then(function(data) {
+        jobsConfig.getJobHistoryData("api/jobs-history/1?page=0&size=2&sort=endDate,desc").then(function(data) {
             jobHistories = data.jobHistories;
         });
         $httpBackend.flush();
 
-        expect(jobHistories.length > 0).toBeTruthy();
-
-        jobHistories = jobsConfig.getJobHistoryData("api/jobs-hostory/1?page=0&size=2&sort=endDate,desc", true).jobHistories;
         expect(jobHistories.length > 0).toBeTruthy();
     }));
 
@@ -92,14 +84,18 @@ describe("jobsConfig", function() {
 
         var onSuccess = jasmine.createSpy();
         var onError = jasmine.createSpy();
-        jobsConfig.changeJobStatus({id: "1"}, onSuccess, onError);
+        jobsConfig.changeJobStatus({
+            id: "1"
+        }, onSuccess, onError);
         $httpBackend.flush();
         expect(onSuccess).toHaveBeenCalled();
 
         $httpBackend.resetExpectations();
 
         $httpBackend.expect("POST", "api/jobs-config").respond(500, {});
-        jobsConfig.changeJobStatus({id: "1"}, onSuccess, onError);
+        jobsConfig.changeJobStatus({
+            id: "1"
+        }, onSuccess, onError);
         $httpBackend.flush();
         expect(onError).toHaveBeenCalled();
     }));
