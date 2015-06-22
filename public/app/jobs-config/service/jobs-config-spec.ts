@@ -81,27 +81,6 @@ describe("jobsConfig", function() {
         expect(jobHistories.length > 0).toBeTruthy();
     }));
 
-    it("changeJobStatus method checks", inject(function(jobsConfig) {
-        $httpBackend.expect("POST", "api/jobs-config").respond(200, {});
-
-        var onSuccess = jasmine.createSpy();
-        var onError = jasmine.createSpy();
-        jobsConfig.changeJobStatus({
-            id: "1"
-        }, onSuccess, onError);
-        $httpBackend.flush();
-        expect(onSuccess).toHaveBeenCalled();
-
-        $httpBackend.resetExpectations();
-
-        $httpBackend.expect("POST", "api/jobs-config").respond(500, {});
-        jobsConfig.changeJobStatus({
-            id: "1"
-        }, onSuccess, onError);
-        $httpBackend.flush();
-        expect(onError).toHaveBeenCalled();
-    }));
-
     it("saveJobConfig method checks", inject(function(jobsConfig) {
         $httpBackend.expect("POST", "api/jobs-config").respond(200, {});
 
