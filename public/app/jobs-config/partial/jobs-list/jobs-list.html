@@ -41,9 +41,12 @@
 									</div>
 								</md-content>
 								<md-content flex="25" flex-md="25" flex-gt-md="25" ng-class="job.lastbuildstatus == 'success' ? 'successBackGroundColor' : 'errorBackGroundColor'" layout="row" layout-align="center center">
-									<div class="md-list-item-text">
-										Last Build: {{job.lastBuildDate? job.lastBuildDate: 'Never Been Built'}}
+									<div ng-if="job.lastBuildDate" class="md-list-item-text">
+										Last Build: {{job.lastBuildDate | dateFormatter}}
 									</div>
+									<div ng-if="!job.lastBuildDate" class="md-list-item-text">
+										Last Build: Never has been built
+									</div>									
 									</md-content>
 									<md-content flex="25" flex-md="25" flex-gt-md="25" ng-class="job.lastbuildstatus == 'success' ? 'successBackGroundColor' : 'errorBackGroundColor'" class="paddingRight2X">
 									<div class="md-list-item-text">

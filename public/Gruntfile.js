@@ -60,7 +60,7 @@ module.exports = function(grunt) {
                 options: {
                     jshintrc: '.jshintrc'
                 },
-                src: ['*.js', "app/generalLayout/*.js", 'app/generalLayout/partial/*/*js', 'app/generalLayout/service/*js', 'app/jobs-config/partial/*/*js',
+                src: ['*.js', "app/generalLayout/*.js", 'app/generalLayout/partial/*/*js', 'app/generalLayout/service/*js', 'app/generalLayout/filter/*js', 'app/jobs-config/partial/*/*js',
                     'app/jobs-config/service/*js', 'app/user-management/partial/*/*js', 'app/user-management/service/*js',
                     'mainController.js', 'service/*js'
                 ]
@@ -199,7 +199,7 @@ module.exports = function(grunt) {
         //   }
         typescript: {
             base: {
-                src: ['app/*/partial/*/*.ts', 'app/*/service/*.ts', 'app/*/*.ts', '*.ts', 'protractor/*.ts'],
+                src: ['app/*/partial/*/*.ts', 'app/*/service/*.ts', 'app/*/filter/*.ts', 'app/*/*.ts', '*.ts', 'protractor/*.ts'],
                 dest: 'build',
                 options: {
                     module: 'amd', //or commonjs 
@@ -227,6 +227,7 @@ module.exports = function(grunt) {
                 preprocessors: {
                     'build/app/general-layout/partial/*/!(*spec*)': 'coverage',
                     'build/app/general-layout/service/!(*spec*)': 'coverage',
+                    'build/app/general-layout/filter/!(*spec*)': 'coverage',
                     'build/app/jobs-config/partial/*/!(*spec*)': 'coverage',
                     'build/app/jobs-config/service/!(*spec*)': 'coverage',
                     'build/app/user-management/partial/*/!(*spec*)': 'coverage',

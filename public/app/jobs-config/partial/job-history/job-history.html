@@ -37,9 +37,15 @@
 									<img alt="Build Status" style="padding-top:0.5rem" ng-src="{{history.status == 'success'? 'images/sunny.jpg': 'images/storm.jpg'}}" height="40">
 								</md-content>
 								<md-content flex="50" flex-md="50" flex-gt-md="50">
-									<div class="md-list-item-text">
+<!-- 									<div class="md-list-item-text">
 										Last Build: {{history.endDate? history.endDate: 'Never Been Built'}}
+									</div> -->
+									<div ng-if="history.endDate" class="md-list-item-text">
+										Last Build: {{history.endDate | dateFormatter}}
 									</div>
+									<div ng-if="!history.endDate" class="md-list-item-text">
+										Last Build: Never has been built
+									</div>																		
 								</md-content>
 							</div>
 							<div ng-if="history.isOpen" class="paddingLeft2X paddingTop1X paddingBottom1X listItemExpandAnimation">
