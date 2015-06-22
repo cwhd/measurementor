@@ -18,10 +18,16 @@ buildscript {
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}") 
     }
-} 
+}
+
+apply plugin: 'spring-boot'
 
 springBoot {
     mainClass = 'com.nike.mm.MeasurementorApplication'
+}
+
+bootRun {
+    addResources = false
 }
 
 jar {
@@ -29,6 +35,38 @@ jar {
     version = '0.0.1-SNAPSHOT'
 }
 
+apply plugin: 'war'
+
+war {
+    baseName = 'measurementor'
+    version =  '0.0.1-SNAPSHOT'
+}
+
 task wrapper(type: Wrapper) {
     gradleVersion = '2.4'
 }
+
+task installNpm(type: Exec) {
+    description = 'Install NPM, the Node Package Manager'
+    workingDir 'public'
+    commandLine 'npm', 'install'
+}
+
+task installBower(type: Exec) {
+    description = 'Install Bower, the Package Manager'
+    workingDir 'public'
+    commandLine 'bower', 'install'
+}
+
+task buildWebApp(type: Exec) {
+    description = 'Builds the web application'
+    workingDir 'public'
+    commandLine 'grunt', 'build'
+}
+
+task copyWebAppcopyWebApp(type: Copy) {
+    from 'public/dist'
+    into 'build/resources/webapp'
+}
+
+tasks.war.dependsOn installNpm, installBower, copyWebApp
