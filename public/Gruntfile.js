@@ -252,7 +252,7 @@ module.exports = function(grunt) {
     });
 
     //grunt.registerTask('build',['jshint','clean:before','less','dom_munger','ngtemplates','cssmin','concat','ngAnnotate','uglify','copy','htmlmin','clean:after']);
-    grunt.registerTask('build', ['ts', 'jshint', 'clean:before', 'less', 'dom_munger', 'ngtemplates', 'cssmin', 'concat', 'ngAnnotate', 'uglify', 'copy', 'htmlmin', 'clean:after', 'copyDist']);
+    grunt.registerTask('build', ['ts', 'jshint', 'clean:before', 'less', 'dom_munger', 'ngtemplates', 'cssmin', 'concat', 'ngAnnotate', 'uglify', 'copy', 'htmlmin', 'clean:after']);
     grunt.registerTask('serve', ['dom_munger:read', 'jshint', 'connect', 'ts', 'watch']);
     grunt.registerTask('test', ['dom_munger:read', 'karma:all_tests']);
 
@@ -302,6 +302,13 @@ module.exports = function(grunt) {
         if (filepath === 'index.html') {
             tasksToRun.push('dom_munger:read');
         }
+
+        // grunt.config('copy.main.files.cwe', '../ui');
+        // grunt.config('copy.main.files.src', '**/*');
+        // grunt.config('copy.main.files.dest', '../public2/');
+        // grunt.config('copy.main.files.filter', 'isFile');
+        // grunt.config('copy.main.files.expand', true);
+        // tasksToRun.push('copy');
 
         grunt.config('watch.main.tasks', tasksToRun);
 
