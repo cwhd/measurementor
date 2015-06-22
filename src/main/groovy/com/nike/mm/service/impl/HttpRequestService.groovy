@@ -1,17 +1,13 @@
 package com.nike.mm.service.impl
 
-import static groovyx.net.http.ContentType.JSON
-import static groovyx.net.http.Method.GET
-import lombok.extern.java.Log;
-import groovyx.net.http.HTTPBuilder
-
-import org.springframework.beans.factory.annotation.Value
-import org.springframework.stereotype.Service
-
 import com.nike.mm.dto.HttpRequestDto
 import com.nike.mm.service.IHttpRequestService
+import groovyx.net.http.HTTPBuilder
+import org.springframework.stereotype.Service
 
-@Log
+import static groovyx.net.http.ContentType.JSON
+import static groovyx.net.http.Method.GET
+
 @Service
 class HttpRequestService implements IHttpRequestService {
 	

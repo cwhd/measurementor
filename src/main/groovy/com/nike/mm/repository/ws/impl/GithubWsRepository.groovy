@@ -1,17 +1,13 @@
 package com.nike.mm.repository.ws.impl
 
-import lombok.extern.java.Log
-
+import com.nike.mm.dto.HttpRequestDto
+import com.nike.mm.entity.Github
+import com.nike.mm.repository.es.plugins.IGithubEsRepository
+import com.nike.mm.repository.ws.IGithubWsRepository
+import com.nike.mm.service.IHttpRequestService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Repository
 
-import com.nike.mm.dto.HttpRequestDto
-import com.nike.mm.entity.Github;
-import com.nike.mm.repository.es.plugins.IGithubEsRepository;
-import com.nike.mm.repository.ws.IGithubWsRepository
-import com.nike.mm.service.IHttpRequestService
-
-@Log
 @Repository
 class GithubWsRepository implements IGithubWsRepository {
 	
