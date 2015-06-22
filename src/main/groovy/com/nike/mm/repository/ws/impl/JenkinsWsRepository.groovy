@@ -15,8 +15,17 @@ class JenkinsWsRepository implements IJenkinsWsRepository {
 	@Autowired IHttpRequestService httpRequestService;
 	
 	@Override
-	public List<String> getListOfBuilds(final HttpRequestDto dto) {
-		def json = this.httpRequestService.callRestfulUrl(dto)
-		return null;
+	Object findListOfJobs(final HttpRequestDto dto) {
+		return this.httpRequestService.callRestfulUrl(dto)
 	}
+
+	@Override
+	Object findListOfJobsJobs(HttpRequestDto dto) {
+		return this.httpRequestService.callRestfulUrl(dto)
+	}
+
+    @Override
+    Object findListOfJobsJobsJobs(HttpRequestDto dto) {
+        return this.httpRequestService.callRestfulUrl(dto)
+    }
 }

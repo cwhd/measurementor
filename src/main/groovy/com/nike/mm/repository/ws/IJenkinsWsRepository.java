@@ -6,5 +6,9 @@ import com.nike.mm.dto.HttpRequestDto;
 
 public interface IJenkinsWsRepository {
 
-    List<String> getListOfBuilds(HttpRequestDto dto);
+    Object findListOfJobs(HttpRequestDto dto);
+
+    Object findListOfJobsJobs(HttpRequestDto dto);
+
+    Object findListOfJobsJobsJobs(HttpRequestDto dto);
 }
