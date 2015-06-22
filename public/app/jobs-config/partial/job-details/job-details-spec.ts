@@ -2,7 +2,7 @@ var angular, describe, beforeEach, module, inject, spyOn, it, expect;
 
 describe("JobDetailsCtrl", function() {
 
-    beforeEach(module("jobsConfig"));
+    beforeEach(module("jobsConfig", "generalLayout", "ngMaterial"));
 
     var rootScope, scope, ctrl, stateName, stateParams;
 
@@ -19,14 +19,6 @@ describe("JobDetailsCtrl", function() {
                     } else {
                         onError();
                     }
-                }
-            };
-        });
-        $provide.factory("generalLayout", function() { //mocking factory
-            return {
-                data: {},
-                checkLogInStatus: function() {
-                    return true;
                 }
             };
         });

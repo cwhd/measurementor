@@ -4,7 +4,7 @@ describe("SignInCtrl", function() {
 
     var scope, ctrl;
 
-    beforeEach(module("userManagement"));
+    beforeEach(module("userManagement", "ngMaterial"));
 
     beforeEach(module(function($provide) {
         $provide.factory("userManagement", function() {

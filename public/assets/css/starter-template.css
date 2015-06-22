@@ -14,6 +14,14 @@
 .errorBackGroundColor {
   background-color: #fcf8e3 !important;
 }
+.successToast {
+  background-color: #75ff75 !important;
+  color: black;
+}
+.errorToast {
+  background-color: #ff704d !important;
+  color: black;
+}
 .borderBottom {
   border-bottom: 1px solid silver;
 }

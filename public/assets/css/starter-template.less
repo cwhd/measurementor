@@ -2,6 +2,8 @@
 	@successBackGroundColor: #dff0d8;
 	@errorBackGroundColor: #fcf8e3;
 	@spacingUnit: 0.5rem;
+	@successMsgBackGroundColor: #75FF75;
+	@errorMsgBackGroundColor: #FF704D;
 
 	.awesomeFontIcon{
 		color: @defaultThemeColor; 
@@ -22,6 +24,16 @@
 	.errorBackGroundColor{
 		background-color: @errorBackGroundColor !important;
 	}
+
+	.successToast{
+	  	background-color: @successMsgBackGroundColor !important;
+	  	color: black;
+	}
+
+	.errorToast{
+		background-color: @errorMsgBackGroundColor !important;
+		color: black;
+	}	
 
 	.borderBottom{
 		border-bottom: 1px solid silver;

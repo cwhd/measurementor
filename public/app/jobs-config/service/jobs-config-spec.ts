@@ -3,7 +3,7 @@ var angular, describe, beforeEach, module, inject, spyOn, it, expect, jasmine;
 describe("jobsConfig", function() {
     var $httpBackend;
 
-    beforeEach(module("jobsConfig"));
+    beforeEach(module("jobsConfig", "generalLayout", "ngMaterial"));
 
     beforeEach(module(function($provide) {
         $provide.factory("constants", function() { //mocking factory
@@ -12,13 +12,13 @@ describe("jobsConfig", function() {
             };
         });
 
-        $provide.factory("generalLayout", function() { //mocking factory
-            return {
-                checkLogInStatus: function() {
-                    return true;
-                }
-            };
-        });
+        // $provide.factory("generalLayout", function() { //mocking factory
+        //     return {
+        //         checkLogInStatus: function() {
+        //             return true;
+        //         }
+        //     };
+        // });
     }));
 
     beforeEach(inject(function(_$httpBackend_) {
@@ -42,6 +42,8 @@ describe("jobsConfig", function() {
             _links: {},
             page: {}
         });
+
+        $httpBackend.whenGET("app/general-layout/templates/toast-template.html").respond("<div>dummy</div>");
     }));
 
     it("getJobs method checks", inject(function(jobsConfig, generalLayout) {

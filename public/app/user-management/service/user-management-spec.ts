@@ -4,8 +4,7 @@ describe("userManagement", function() {
 
     var stateName;
 
-    beforeEach(module("userManagement"));
-    beforeEach(module("generalLayout"));
+    beforeEach(module("userManagement", "generalLayout", "ngMaterial"));
 
     beforeEach(inject(function($state) {
         spyOn($state, "go").andCallFake(function(state, params) {
@@ -16,9 +15,7 @@ describe("userManagement", function() {
     it("LogIn service test", inject(function(userManagement, generalLayout) {
         userManagement.logIn({});
         expect(generalLayout.data.showLogOutBtn).toEqual(true);
-        expect(stateName).toEqual("app.jobs-list"); 
+        expect(stateName).toEqual("app.jobs-list");
 
-
-        
     }));
 });

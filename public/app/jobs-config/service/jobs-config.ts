@@ -1,7 +1,7 @@
 declare
 var angular: any;
 
-angular.module("jobsConfig").factory("jobsConfig", function($http, $q, constants) {
+angular.module("jobsConfig").factory("jobsConfig", function($http, $q, constants, generalLayout) {
 
     var jobsConfig = {
         getJobs: function(url) {
@@ -26,6 +26,10 @@ angular.module("jobsConfig").factory("jobsConfig", function($http, $q, constants
                 if (onSuccess) {
                     onSuccess();
                 }
+                generalLayout.displayToast({
+                    messageText: "Job has been successfully started.",
+                    messageType: "success"
+                });
             }).
             error(function(data, status, headers, config) {
                 if (onError) {
@@ -44,6 +48,10 @@ angular.module("jobsConfig").factory("jobsConfig", function($http, $q, constants
                 if (onSuccess) {
                     onSuccess();
                 }
+                generalLayout.displayToast({
+                    messageText: "Job status has been successfully changed.",
+                    messageType: "success"
+                });
             }).
             error(function(data, status, headers, config) {
                 if (onError) {

@@ -48,10 +48,14 @@ angular.module("jobsConfig").controller("JobDetailsCtrl", function($scope, $stat
             return;
         }
         initFormValidation();
-        
+
         var onSuccess = function() {
             //console.log("success");
             $state.go("app.jobs-list");
+            generalLayout.displayToast({
+                messageText: "Job has been successfully saved.",
+                messageType: "success"
+            });
         };
 
         var onError = function() {

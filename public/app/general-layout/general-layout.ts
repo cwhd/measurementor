@@ -11,3 +11,8 @@ angular.module("generalLayout").config(function($stateProvider) {
     });
     /* Add New States Above */
 });
+
+angular.module("generalLayout").controller("ToastCtrl", function($scope, $mdToast, generalLayout) {
+    $scope.messageText = generalLayout.data.toastMessageText;
+    $scope.messageType = generalLayout.data.toastMessageType;
+});
