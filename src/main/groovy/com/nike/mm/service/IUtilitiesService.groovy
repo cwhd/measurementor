@@ -61,4 +61,14 @@ interface IUtilitiesService {
      * @return a value of 0 indicates that you're good.  Greater than 0 means underestimating, less than 0 indicated overestimating.
      */
     def estimateHealth(estimate, actualTime, maxEstimate, maxTime, estimationValues)
+
+    /**
+     * this will return the different between 2 dates in unix timestamp format in hours
+     * @param firstDate whichever of the 2 dates happened first
+     * @param secondDate  whichever of the 2 dates happend last
+     * @return a double representing the difference in hours.
+     * For example If the difference is 55 minutes return would be 0.9166666667
+     * Check out the unit tests to see some test data
+     */
+    double getDifferenceBetweenDatesInHours(firstDate, secondDate)
 }
