@@ -23,7 +23,7 @@ describe("jobsConfig", function() {
 
     beforeEach(inject(function(_$httpBackend_) {
         $httpBackend = _$httpBackend_;
-        $httpBackend.when("GET", "api/jobs-config?page=0&size=2&sort=name,asc").respond({
+        $httpBackend.when("GET", "api/jobs-config?page=0&size=5&sort=name,asc").respond({
             _embedded: {
                 measureMentorJobsConfigDtoes: [{
                     id: 1
@@ -33,7 +33,7 @@ describe("jobsConfig", function() {
             page: {}
         });
 
-        $httpBackend.when("GET", "api/jobs-history/1?page=0&size=2&sort=endDate,desc").respond({
+        $httpBackend.when("GET", "api/jobs-history/1?page=0&size=5&sort=endDate,desc").respond({
             _embedded: {
                 jobHistoryDtoes: [{
                     id: 1
@@ -48,7 +48,7 @@ describe("jobsConfig", function() {
 
     it("getJobs method checks", inject(function(jobsConfig, generalLayout) {
         var jobs;
-        jobsConfig.getJobs("api/jobs-config?page=0&size=2&sort=name,asc").then(function(data) {
+        jobsConfig.getJobs("api/jobs-config?page=0&size=5&sort=name,asc").then(function(data) {
             jobs = data.jobs;
         });
         $httpBackend.flush();
@@ -73,7 +73,7 @@ describe("jobsConfig", function() {
 
     it("getJobHistoryData method checks", inject(function(jobsConfig) {
         var jobHistories;
-        jobsConfig.getJobHistoryData("api/jobs-history/1?page=0&size=2&sort=endDate,desc").then(function(data) {
+        jobsConfig.getJobHistoryData("api/jobs-history/1?page=0&size=5&sort=endDate,desc").then(function(data) {
             jobHistories = data.jobHistories;
         });
         $httpBackend.flush();

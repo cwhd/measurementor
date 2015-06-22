@@ -14,9 +14,9 @@ angular.module("generalLayout").factory("generalLayout", function($state, $mdToa
             $state.go("app.signIn");
         },
         checkLogInStatus: function() {
-            if (!this.data.showLogOutBtn) {
-                $state.go("app.signIn");
-            }
+            // if (!this.data.showLogOutBtn) {
+            //     $state.go("app.signIn");
+            // }
         },
         displayToast: function(parameters) {
             var templateUrl = "app/general-layout/templates/toast-template.html";
