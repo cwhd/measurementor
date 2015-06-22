@@ -18,4 +18,4 @@ mm:
 logging:
     file: mm.log
     level:
-        com.nike.mm: 'INFO'
+        com.nike.mm: DEBUG
