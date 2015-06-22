@@ -65,17 +65,4 @@ describe("JobsListCtrl", function() {
         scope.onRunJob("123");
         expect(jobsConfig.runJob).toHaveBeenCalled();
     }));
-
-    it("JobsListCtrl onRunJob function checks", inject(function(jobsConfig) {
-        spyOn(jobsConfig, "runJob");
-
-        scope.onRunJob("123");
-        expect(jobsConfig.runJob).toHaveBeenCalled();
-    }));
-
-    it("JobsListCtrl onChangeJobStatus function checks", inject(function(jobsConfig) {
-        spyOn(jobsConfig, "changeJobStatus");
-        scope.onChangeJobStatus(0, {id: "1"});
-        expect(jobsConfig.changeJobStatus).toHaveBeenCalled();
-    }));
 });

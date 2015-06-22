@@ -33,7 +33,7 @@ angular.module("jobsConfig").controller("JobsListCtrl", function($rootScope, $sc
             config: job.config
         };
 
-        jobsConfig.changeJobStatus(jobData, onSuccess);
+        jobsConfig.saveJobConfig(jobData, onSuccess);
     };
 
     $scope.onAdd = function() {

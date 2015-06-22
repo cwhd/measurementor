@@ -48,7 +48,7 @@
 						</div>	
 					</md-list-item>
 				</md-list>
-				<div layout="row" layout-align="end center">
+				<div layout="row" layout-align="end center" ng-if="jobHistoryData.jobHistories.length">
 					<span>
 						Page {{jobHistoryData.page.number + 1}} (out of {{' ' + jobHistoryData.page.totalPages}})
 					</span>
