@@ -1,4 +1,4 @@
-package com.nike.mm.business.plugin
+package com.nike.mm.business.plugin.data
 
 /**
  * Created by rparr2 on 6/19/15.
