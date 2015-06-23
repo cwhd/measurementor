@@ -64,9 +64,11 @@ task buildWebApp(type: Exec) {
     commandLine 'grunt', 'build'
 }
 
-task copyWebAppcopyWebApp(type: Copy) {
+task copyWebApp(type: Copy) {
     from 'public/dist'
     into 'build/resources/webapp'
 }
 
-tasks.war.dependsOn installNpm, installBower, copyWebApp
+tasks.buildWebApp.dependsOn installNpm, installBower
+tasks.copyWebApp.dependsOn buildWebApp
+tasks.war.dependsOn copyWebApp
