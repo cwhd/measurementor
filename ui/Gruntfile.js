@@ -200,7 +200,7 @@ module.exports = function(grunt) {
         typescript: {
             base: {
                 src: ['app/*/partial/*/*.ts', 'app/*/service/*.ts', 'app/*/filter/*.ts', 'app/*/*.ts', '*.ts', 'protractor/*.ts'],
-                dest: 'build',
+                dest: '../public2/build',
                 options: {
                     module: 'amd', //or commonjs 
                     target: 'es5', //or es3 
@@ -262,25 +262,15 @@ module.exports = function(grunt) {
         //https://github.com/gruntjs/grunt-contrib-watch/issues/156
 
         var tasksToRun = [];
-        // grunt.log.write("!!!");
-        // grunt.log.write(filepath);
-        // grunt.log.write("!!!");
         if (filepath.lastIndexOf('.ts') !== -1) {
             grunt.config('typescript.base.src', filepath);
             grunt.config('typescript.options.keepDirectoryHierarchy', true);
 
-            // var buildFilePath = filepath;
-            // buildFilePath = buildFilePath.substring(4, buildFilePath.length);
             grunt.config('typescript.base.dest', 'build');
             tasksToRun.push('ts');
         }
 
         if (filepath.lastIndexOf('.ts') !== -1) {
-
-            //lint the changed js file
-            // grunt.config('tslint.files.src', filepath);
-            // tasksToRun.push('tslint');
-
             //find the appropriate unit test for the changed file
             var spec = filepath;
             if (filepath.lastIndexOf('-spec.ts') === -1) {
@@ -304,7 +294,7 @@ module.exports = function(grunt) {
         }
 
         // grunt.config('copy.main.files.cwe', '../ui');
-        // grunt.config('copy.main.files.src', '**/*');
+        // grunt.config('copy.main.files.src', filepath);
         // grunt.config('copy.main.files.dest', '../public2/');
         // grunt.config('copy.main.files.filter', 'isFile');
         // grunt.config('copy.main.files.expand', true);
