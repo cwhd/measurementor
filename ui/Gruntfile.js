@@ -220,6 +220,17 @@ module.exports = function(grunt) {
             //  during_watch
         },
 
+        // less: {
+        //     during_watch: {
+        //         options: {
+        //             paths: ["assets/css"]
+        //         },
+        //         files: {
+        //             "path/to/result.css": "path/to/source.less"
+        //         }
+        //     },
+        // },
+
         karma: {
             options: {
                 frameworks: ['jasmine'],
@@ -270,15 +281,14 @@ module.exports = function(grunt) {
         //https://github.com/gruntjs/grunt-contrib-watch/issues/156
 
         var tasksToRun = [];
+
         if (filepath.lastIndexOf('.ts') !== -1) {
             grunt.config('typescript.base.src', filepath);
             grunt.config('typescript.options.keepDirectoryHierarchy', true);
 
             grunt.config('typescript.base.dest', '../public/build');
             tasksToRun.push('ts');
-        }
 
-        if (filepath.lastIndexOf('.ts') !== -1) {
             //find the appropriate unit test for the changed file
             var spec = filepath;
             if (filepath.lastIndexOf('-spec.ts') === -1) {
@@ -293,6 +303,15 @@ module.exports = function(grunt) {
                 grunt.config('karma.options.files', files);
                 tasksToRun.push('karma:during_watch');
             }
+        }
+
+        if (filepath.lastIndexOf('starter-template.less') !== -1) {
+            //var destPathForLessCompiler = "../public/test.css"; // + filepath.substring(0, filepath.length - 4) + "css";
+            grunt.config('less.during_watch.files', {
+                "../public/assets/css/starter-template.css": filepath
+            });
+            grunt.config('less.during_watch.verbose', true);
+            tasksToRun.push('less:during_watch');
         }
 
         //if index.html changed, we need to reread the <script> tags so our next run of karma
