@@ -47,6 +47,10 @@ Thumbs.db
 /build
 */build
 /data
+/public
+/ui/dist
+/ui/node_modules
+/ui/bower_components
 
 #
 # # IntelliJ specific files/directories
