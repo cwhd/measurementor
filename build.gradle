@@ -73,7 +73,7 @@ task copyWebApp(type: Copy) {
     into 'src/main/webapp'
 }
 */
-tasks.buildWebApp.dependsOn installNpm//, installBower
+tasks.buildWebApp.dependsOn installNpm, installBower
 //tasks.copyWebApp.dependsOn buildWebApp
 //tasks.war.dependsOn copyWebApp
 tasks.war.dependsOn buildWebApp
