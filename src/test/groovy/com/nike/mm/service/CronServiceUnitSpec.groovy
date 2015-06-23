@@ -75,7 +75,7 @@ class CronServiceSpec extends Specification {
         0 * this.threadPoolTaskScheduler.schedule(_, _)
     }
 
-    def "adding a cron job works"() {
+    def "adding a valid cron job works"() {
 
         setup:
         String jobId                                             = "valid"
@@ -123,6 +123,23 @@ class CronServiceSpec extends Specification {
         2 * this.measureMentorJobsConfigFacade.findById(jobId)   >>> [[id: jobId, jobOn: false, cron: cron],[id: jobId, jobOn: true, cron: cron]]
         1 * this.threadPoolTaskScheduler.schedule(_, _)          >> future
         0 * future.cancel(_)                                     >> true
+    }
+
+    def "updating a valid cron job multiple times works"() {
+
+        setup:
+        String jobId                                             = "JobOnAndJobOn"
+        String cron                                              = "0 * * * * MON-FRI"
+        ScheduledFuture future                                   = Mock(ScheduledFuture.class)
+
+        when:
+        this.cronService.processJob(jobId)
+        this.cronService.processJob(jobId)
+
+        then:
+        2 * this.measureMentorJobsConfigFacade.findById(jobId)   >>> [[id: jobId, jobOn: true, cron: cron],[id: jobId, jobOn: true, cron: cron]]
+        2 * this.threadPoolTaskScheduler.schedule(_, _)          >> future
+        1 * future.cancel(_)                                     >> true
     }
 
 }
