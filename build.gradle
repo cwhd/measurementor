@@ -52,19 +52,19 @@ task wrapper(type: Wrapper) {
 
 task installNpm(type: Exec) {
     description = 'Install NPM, the Node Package Manager'
-    workingDir 'WebApp'
+    workingDir 'ui'
     commandLine 'npm', 'install'
 }
 
 task installBower(type: Exec) {
     description = 'Install Bower, the Package Manager'
-    workingDir 'WebApp'
+    workingDir 'ui'
     commandLine 'bower', 'install'
 }
 
 task buildWebApp(type: Exec) {
     description = 'Builds the web application'
-    workingDir 'WebApp'
+    workingDir 'ui'
     commandLine 'grunt', 'build'
 }
 /*
@@ -78,5 +78,5 @@ tasks.buildWebApp.dependsOn installNpm//, installBower
 //tasks.war.dependsOn copyWebApp
 tasks.war.dependsOn buildWebApp
 war {
-    from 'WebApp/dist'
+    from 'ui/dist'
 }
