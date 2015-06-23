@@ -60,9 +60,8 @@ module.exports = function(grunt) {
                 options: {
                     jshintrc: '.jshintrc'
                 },
-                src: ['*.js', "app/generalLayout/*.js", 'app/generalLayout/partial/*/*js', 'app/generalLayout/service/*js', 'app/generalLayout/filter/*js', 'app/jobs-config/partial/*/*js',
-                    'app/jobs-config/service/*js', 'app/user-management/partial/*/*js', 'app/user-management/service/*js',
-                    'mainController.js', 'service/*js'
+                src: ['build/*.js', "build/app/generalLayout/*.js", 'build/app/generalLayout/partial/*/*js', 'build/app/generalLayout/service/*js', 'build/app/generalLayout/filter/*js', 'build/app/generalLayout/filter/*js', 'build/app/jobs-config/partial/*/*js',
+                    'build/app/jobs-config/service/*js', 'build/app/user-management/partial/*/*js', 'build/app/user-management/service/*js'
                 ]
             }
         },

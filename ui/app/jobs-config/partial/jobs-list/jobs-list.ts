@@ -23,6 +23,10 @@ angular.module("jobsConfig").controller("JobsListCtrl", function($rootScope, $sc
     $scope.onChangeJobStatus = function(index, job) {
         var onSuccess = function() {
             $scope.jobsData.jobs[index].jobOn = !$scope.jobsData.jobs[index].jobOn;
+            generalLayout.displayToast({
+                messageText: "Job status has been successfully updated.",
+                messageType: "success"
+            });
         };
 
         var jobData = {
