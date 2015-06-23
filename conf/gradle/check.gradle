@@ -1,7 +1,7 @@
 apply plugin: 'checkstyle'
 checkstyle {
     ignoreFailures = true 
-    configFile = rootProject.file('config/checkstyle/checkstyle.xml')
+    configFile = rootProject.file('conf/checkstyle/checkstyle.xml')
 }
 
 // JaCoCo

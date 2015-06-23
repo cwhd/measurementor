@@ -1,7 +1,7 @@
 #!groovy    
 
-apply from: file('config/gradle/blueprint.gradle')
-apply from: file('config/gradle/check.gradle')
+apply from: file('conf/gradle/blueprint.gradle')
+apply from: file('conf/gradle/check.gradle')
 
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
