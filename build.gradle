@@ -67,15 +67,14 @@ task buildWebApp(type: Exec) {
     workingDir 'ui'
     commandLine 'grunt', 'build'
 }
-/*
+
 task copyWebApp(type: Copy) {
-    from 'public/dist'
-    into 'src/main/webapp'
+    from 'ui/dist'
+    into 'public'
 }
-*/
+
 tasks.buildWebApp.dependsOn installNpm, installBower
-//tasks.copyWebApp.dependsOn buildWebApp
-//tasks.war.dependsOn copyWebApp
+tasks.copyWebApp.dependsOn buildWebApp
 tasks.war.dependsOn buildWebApp
 war {
     from 'ui/dist'
