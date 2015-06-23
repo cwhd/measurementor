@@ -262,10 +262,10 @@ module.exports = function(grunt) {
                 }
             },
             all_tests: {
-                browsers: ['PhantomJS']
+                browsers: ['Chrome']
             },
             during_watch: {
-                browsers: ['PhantomJS']
+                browsers: ['Chrome']
             },
         },
     });
@@ -283,11 +283,12 @@ module.exports = function(grunt) {
         var tasksToRun = [];
 
         if (filepath.lastIndexOf('.ts') !== -1) {
-            grunt.config('typescript.base.src', filepath);
-            grunt.config('typescript.options.keepDirectoryHierarchy', true);
+            // grunt.config('typescript.base.src', filepath);
+            // grunt.config('typescript.options.keepDirectoryHierarchy', true);
 
-            grunt.config('typescript.base.dest', '../public/build');
-            tasksToRun.push('ts');
+            // grunt.config('typescript.base.dest', '../public/build');
+            tasksToRun.push('typescript:base');
+            tasksToRun.push('typescript:during_watch');
 
             //find the appropriate unit test for the changed file
             var spec = filepath;
