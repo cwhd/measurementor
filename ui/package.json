@@ -33,6 +33,7 @@
         "gulp-ngmin": "~0.1.2",
         "gulp-rename": "~1.2.0",
         "gulp-uglify": "~0.2.1",
+        "grunt-contrib-less": "~1.0.1",
         "jshint-stylish": "~0.1.5",
         "karma": "~0.12.6",
         "karma-chrome-launcher": "~0.1.3",
