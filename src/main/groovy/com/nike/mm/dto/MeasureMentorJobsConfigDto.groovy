@@ -5,7 +5,7 @@ class MeasureMentorJobsConfigDto {
 	String id;
 	String name;
 	boolean jobOn;
-	boolean lastbuildstatus;
+	String lastbuildstatus;
 	Object config;
 	Date lastBuildDate
 	String cron

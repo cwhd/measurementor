@@ -64,7 +64,7 @@ class MeasureMentorJobsConfigFacade implements IMeasureMentorJobsConfigFacade {
 
             JobHistory jh = jobHistoryBusiness.findJobsLastBuildStatus(entity.id);
             if (jh != null) {
-                dto.lastbuildstatus = jh.status.toString()
+                dto.lastbuildstatus = jh.status
                 dto.lastBuildDate = jh.endDate
             }
             dtos.add(dto)

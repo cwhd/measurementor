@@ -111,7 +111,7 @@ class MeasureMentorJobsConfigFacadeUnitSpec extends Specification {
         rlist[0].name                                               == "name"
         rlist[0].jobOn                                              == true
         rlist[0].cron                                               == "* * * * *"
-        rlist[0].lastbuildstatus                                    == true
+        rlist[0].lastbuildstatus                                    == JobHistory.Status.success.toString()
         rlist[0].lastBuildDate                                      != null
         rlist[0].config                                             == new JsonSlurper().parseText("{}")
     }
