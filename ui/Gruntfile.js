@@ -95,23 +95,19 @@ module.exports = function(grunt) {
         copy: {
             main: {
                 files: [{
-                        src: ['images/**'],
-                        dest: 'dist/'
-                    }, {
-                        src: ['bower_components/font-awesome/fonts/**'],
-                        dest: 'dist/',
-                        filter: 'isFile',
-                        expand: true
-                    }, {
-                        src: ['bower_components/bootstrap/fonts/**'],
-                        dest: 'dist/',
-                        filter: 'isFile',
-                        expand: true
-                    }
-                    //{src: ['bower_components/angular-ui-utils/ui-utils-ieshiv.min.js'], dest: 'dist/'},
-                    //{src: ['bower_components/select2/*.png','bower_components/select2/*.gif'], dest:'dist/css/',flatten:true,expand:true},
-                    //{src: ['bower_components/angular-mocks/angular-mocks.js'], dest: 'dist/'}
-                ]
+                    src: ['images/**'],
+                    dest: 'dist/'
+                }, {
+                    src: ['bower_components/font-awesome/fonts/**'],
+                    dest: 'dist/',
+                    filter: 'isFile',
+                    expand: true
+                }, {
+                    src: ['bower_components/bootstrap/fonts/**'],
+                    dest: 'dist/',
+                    filter: 'isFile',
+                    expand: true
+                }]
             }
         },
         dom_munger: {
@@ -200,7 +196,7 @@ module.exports = function(grunt) {
         typescript: {
             base: {
                 src: ['app/*/partial/*/*.ts', 'app/*/service/*.ts', 'app/*/filter/*.ts', 'app/*/*.ts', '*.ts', 'protractor/*.ts'],
-                dest: '../public2/build',
+                dest: 'build',
                 options: {
                     module: 'amd', //or commonjs 
                     target: 'es5', //or es3 
@@ -209,7 +205,20 @@ module.exports = function(grunt) {
                     declaration: false,
                     keepDirectoryHierarchy: true
                 }
-            }
+            },
+            during_watch: {
+                src: ['app/*/partial/*/*.ts', 'app/*/service/*.ts', 'app/*/filter/*.ts', 'app/*/*.ts', '*.ts', 'protractor/*.ts'],
+                dest: '../public/build',
+                options: {
+                    module: 'amd', //or commonjs 
+                    target: 'es5', //or es3 
+                    basePath: '',
+                    sourceMap: false,
+                    declaration: false,
+                    keepDirectoryHierarchy: true
+                }
+            },
+            //  during_watch
         },
 
         karma: {
@@ -248,15 +257,15 @@ module.exports = function(grunt) {
             during_watch: {
                 browsers: ['PhantomJS']
             },
-        }
+        },
     });
 
     //grunt.registerTask('build',['jshint','clean:before','less','dom_munger','ngtemplates','cssmin','concat','ngAnnotate','uglify','copy','htmlmin','clean:after']);
-    grunt.registerTask('build', ['ts', 'jshint', 'clean:before', 'less', 'dom_munger', 'ngtemplates', 'cssmin', 'concat', 'ngAnnotate', 'uglify', 'copy', 'htmlmin', 'clean:after']);
-    grunt.registerTask('serve', ['dom_munger:read', 'jshint', 'connect', 'ts', 'watch']);
+    grunt.registerTask('build', ['typescript:base', 'jshint', 'clean:before', 'less', 'dom_munger', 'ngtemplates', 'cssmin', 'concat', 'ngAnnotate', 'uglify', 'copy', 'htmlmin', 'clean:after']);
+    grunt.registerTask('serve', ['dom_munger:read', 'jshint', 'connect', 'typescript:during_watch', 'watch']);
     grunt.registerTask('test', ['dom_munger:read', 'karma:all_tests']);
 
-    grunt.registerTask('ts', ['typescript']);
+    grunt.registerTask('ts', ['typescript:during_watch']);
 
     grunt.event.on('watch', function(action, filepath) {
         //https://github.com/gruntjs/grunt-contrib-watch/issues/156
@@ -266,7 +275,7 @@ module.exports = function(grunt) {
             grunt.config('typescript.base.src', filepath);
             grunt.config('typescript.options.keepDirectoryHierarchy', true);
 
-            grunt.config('typescript.base.dest', 'build');
+            grunt.config('typescript.base.dest', '../public/build');
             tasksToRun.push('ts');
         }
 
@@ -274,7 +283,7 @@ module.exports = function(grunt) {
             //find the appropriate unit test for the changed file
             var spec = filepath;
             if (filepath.lastIndexOf('-spec.ts') === -1) {
-                spec = "build/" + filepath.substring(0, filepath.length - 3) + '-spec.js';
+                spec = "../public/build/" + filepath.substring(0, filepath.length - 3) + '-spec.js';
             }
 
             //if the spec exists then lets run it
@@ -293,14 +302,13 @@ module.exports = function(grunt) {
             tasksToRun.push('dom_munger:read');
         }
 
-        // grunt.config('copy.main.files.cwe', '../ui');
-        // grunt.config('copy.main.files.src', filepath);
-        // grunt.config('copy.main.files.dest', '../public2/');
-        // grunt.config('copy.main.files.filter', 'isFile');
-        // grunt.config('copy.main.files.expand', true);
-        // tasksToRun.push('copy');
+        grunt.config('copy.during_watch.files', [{
+            src: filepath,
+            dest: '../public/' + filepath
+        }]);
+        grunt.config('copy.during_watch.verbose', true);
+        tasksToRun.push('copy:during_watch');
 
         grunt.config('watch.main.tasks', tasksToRun);
-
     });
 };
