@@ -8,6 +8,7 @@ import com.nike.mm.entity.JobHistory
 import com.nike.mm.entity.MeasureMentorJobsConfig
 import com.nike.mm.facade.impl.MeasureMentorJobsConfigFacade
 import com.nike.mm.service.ICronService
+import groovy.json.JsonSlurper
 import org.jasypt.util.text.StrongTextEncryptor
 import org.springframework.data.domain.PageImpl
 import spock.lang.Specification
@@ -90,7 +91,7 @@ class MeasureMentorJobsConfigFacadeUnitSpec extends Specification {
         rlist[0].name                                               == "name"
         rlist[0].jobOn                                              == true
         rlist[0].cron                                               == "* * * * *"
-        rlist[0].config                                             == "{}"
+        rlist[0].config                                             == new JsonSlurper().parseText("{}")
     }
 
     def "ensure that the list is converted and job history exists" () {
@@ -112,6 +113,6 @@ class MeasureMentorJobsConfigFacadeUnitSpec extends Specification {
         rlist[0].cron                                               == "* * * * *"
         rlist[0].lastbuildstatus                                    == true
         rlist[0].lastBuildDate                                      != null
-        rlist[0].config                                             == "{}"
+        rlist[0].config                                             == new JsonSlurper().parseText("{}")
     }
 }

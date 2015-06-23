@@ -1,6 +1,7 @@
 package com.nike.mm.facade.impl
 
 import com.nike.mm.service.ICronService
+import groovy.json.JsonSlurper
 import groovy.util.logging.Slf4j
 import org.jasypt.util.text.StrongTextEncryptor
 import org.springframework.beans.factory.annotation.Autowired
@@ -58,7 +59,7 @@ class MeasureMentorJobsConfigFacade implements IMeasureMentorJobsConfigFacade {
                     name: entity.name,
                     jobOn: entity.jobOn,
                     cron: entity.cron,
-                    config: this.strongTextEncryptor.decrypt(new String(Base64.getDecoder().decode(entity.encryptedConfig)))
+                    config: new JsonSlurper().parseText(this.strongTextEncryptor.decrypt(new String(Base64.getDecoder().decode(entity.encryptedConfig))))
             ] as MeasureMentorJobsConfigDto
 
             JobHistory jh = jobHistoryBusiness.findJobsLastBuildStatus(entity.id);
