@@ -33,6 +33,7 @@ angular.module("jobsConfig").controller("JobDetailsCtrl", function($scope, $stat
     initFormValidation();
 
     $scope.onSave = function() {
+        var job;
         if (!$scope.jobDetailsData.name || !$scope.jobDetailsData.cron || !$scope.jobDetailsData.configAsString) {
             if (!$scope.jobDetailsData.name) {
                 $scope.formValidation.showNameValidation = true;
@@ -50,20 +51,23 @@ angular.module("jobsConfig").controller("JobDetailsCtrl", function($scope, $stat
         initFormValidation();
 
         var onSuccess = function() {
-            $state.go("app.jobs-list");
+            //$state.go("app.jobs-list");
             generalLayout.displayToast({
                 messageText: "Job has been successfully saved.",
                 messageType: "success"
             });
+
+            $scope.jobDetailsData.configAsString = JSON.stringify(job.config, null, 4);
         };
 
         var onError = function() {
-            $state.go("app.jobs-list");
+            //$state.go("app.jobs-list");
         };
 
         try {
             $scope.jobDetailsData.config = JSON.parse($scope.jobDetailsData.configAsString);
-            delete $scope.jobDetailsData.configAsString;
+            job = angular.copy($scope.jobDetailsData);
+            delete job.configAsString;
         } catch (e) {
             generalLayout.displayToast({
                 messageText: "Wrong config value (not a proper JSON string).",
@@ -73,7 +77,7 @@ angular.module("jobsConfig").controller("JobDetailsCtrl", function($scope, $stat
             return;
         }
 
-        jobsConfig.saveJobConfig(angular.copy($scope.jobDetailsData), onSuccess, onError);
+        jobsConfig.saveJobConfig(angular.copy(job), onSuccess, onError);
     };
 
     $scope.onBack = function() {

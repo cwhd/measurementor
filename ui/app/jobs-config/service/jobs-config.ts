@@ -41,7 +41,7 @@ angular.module("jobsConfig").factory("jobsConfig", function($http, $q, constants
             var deferred = $q.defer();
             $http.get("api/jobs-config/" + jobId).then(function(data) {
                 if (data) {
-                    data.data.configAsString = JSON.stringify(data.data.config);
+                    data.data.configAsString = JSON.stringify(data.data.config, null, 4);
                     return deferred.resolve(data.data);
                 }
             });
