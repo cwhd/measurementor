@@ -3,11 +3,15 @@ measurementor helps you visualize data from your development cycle to help you b
 used as an example data collection system in the book [Agile Metrics In Action](http://manning.com/davis2/).
 
 # Development Branch
-This is the development branch for the updated project. Updated with the latest.
+This is a new development branch for measurementor.  There are a bunch of changes in this branch:
+- We're using [Spring Boot](http://projects.spring.io/spring-boot/) and [Node.js](https://nodejs.org/) instead of Grails
+- A shiny interface that makes it easier to create and manage jobs
+- Use Gradle to manage the build process
+- Use Docker to manage containers for easier local development and deployments
 
 # Getting Started
 
-## Basics
+## Basic Stuff
 Please install the following:
 - [JDK](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html): Note that Java 7 also works for this project.
 - [Gradle](https://gradle.org/): Used for the build of the application.
@@ -16,9 +20,7 @@ Please install the following:
 You will have 2 options for elasticsearch environments in development.
 - Install elastic on
 
-
-
-Additiona
+## Additional Stuff
 First note the [vagrant file](https://www.vagrantup.com/).  That will call the [puppet](http://puppetlabs.com/) manifest
 that will install everything you need to get going.  In a nutshell it installs:
 - [Elasticsearch](http://www.elasticsearch.org/) : used for indexing data for searching
@@ -60,15 +62,8 @@ Navigate to the directory that's shared with your dev machine for the measuremen
 
 Run the app:
 
-    grails run-app
+    See [NOTES.md](NOTES.md)
 
-# In Progress...
-This is still a bit of a work in progress but feel free to let me know if there's anything that could be better.
-- When Grails 3 comes out I need to update the app to take advantage of native gradle
-- Need to install the data collector and start it up when everything else starts up
-- Working on making the setup.sh do everything you need
-- Need a data collector for github
-- Write more unit tests
 
 thanks!
 
