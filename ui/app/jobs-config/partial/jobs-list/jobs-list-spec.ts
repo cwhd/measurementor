@@ -35,6 +35,17 @@ describe("JobsListCtrl", function() {
         ctrl = $controller("JobsListCtrl", {
             $scope: scope
         });
+
+        scope.jobsData = {
+            links: {
+                prev: {
+                    href: ""
+                },
+                next: {
+                    href: ""
+                }
+            }
+        };
     }));
 
     it("JobsListCtrl general checks", inject(function(generalLayout) {
@@ -59,10 +70,37 @@ describe("JobsListCtrl", function() {
         });
     }));
 
+    it("JobsListCtrl onChangeJobStatus function checks", inject(function(jobsConfig) {
+        spyOn(jobsConfig, "saveJobConfig");
+
+        scope.onChangeJobStatus(0, {
+            id: "1",
+            name: "test",
+            jobOn: true,
+            cron: "0 * * * * MON-FRI",
+            config: {}
+        });
+        expect(jobsConfig.saveJobConfig).toHaveBeenCalled();
+    }));
+
     it("JobsListCtrl onRunJob function checks", inject(function(jobsConfig) {
         spyOn(jobsConfig, "runJob");
 
         scope.onRunJob("123");
         expect(jobsConfig.runJob).toHaveBeenCalled();
     }));
+
+    it("JobsListCtrl onPrevious function checks", inject(function(jobsConfig) {
+        spyOn(scope, "getData");
+
+        scope.onPrevious();
+        expect(scope.getData).toHaveBeenCalled();
+    }));
+
+    it("JobsListCtrl onNext function checks", inject(function(jobsConfig) {
+        spyOn(scope, "getData");
+
+        scope.onNext();
+        expect(scope.getData).toHaveBeenCalled();
+    }));    
 });

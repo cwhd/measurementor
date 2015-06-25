@@ -60,9 +60,7 @@ module.exports = function(grunt) {
                 options: {
                     jshintrc: '.jshintrc'
                 },
-                src: ['build/*.js', "build/app/generalLayout/*.js", 'build/app/generalLayout/partial/*/*js', 'build/app/generalLayout/service/*js', 'build/app/generalLayout/filter/*js', 'build/app/generalLayout/filter/*js', 'build/app/jobs-config/partial/*/*js',
-                    'build/app/jobs-config/service/*js', 'build/app/user-management/partial/*/*js', 'build/app/user-management/service/*js'
-                ]
+                src: ['build/*.js', "build/app/*/*.js", 'build/app/*/partial/*/*js', 'build/app/*/service/*js', 'build/app/*/filter/*js']
             }
         },
         clean: {
@@ -244,13 +242,9 @@ module.exports = function(grunt) {
                 singleRun: true,
 
                 preprocessors: {
-                    'build/app/general-layout/partial/*/!(*spec*)': 'coverage',
-                    'build/app/general-layout/service/!(*spec*)': 'coverage',
-                    'build/app/general-layout/filter/!(*spec*)': 'coverage',
-                    'build/app/jobs-config/partial/*/!(*spec*)': 'coverage',
-                    'build/app/jobs-config/service/!(*spec*)': 'coverage',
-                    'build/app/user-management/partial/*/!(*spec*)': 'coverage',
-                    'build/app/user-management/service/!(*spec*)': 'coverage'
+                    'build/app/*/partial/*/!(*spec*)': 'coverage',
+                    'build/app/*/service/!(*spec*)': 'coverage',
+                    'build/app/*/filter/!(*spec*)': 'coverage'
                 },
                 reporters: ['dots', 'junit', 'mocha', 'coverage'],
                 junitReporter: {
