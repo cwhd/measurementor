@@ -41,7 +41,7 @@ class MeasureMentorJobsConfigBusiness implements IMeasureMentorJobsConfigBusines
 		return rdto
 	}
 
-	@Override Object saveConfig(MeasureMentorJobsConfigDto dto) {
+	@Override MeasureMentorJobsConfig saveConfig(MeasureMentorJobsConfigDto dto) {
 		String configString = new JsonBuilder(dto.config).toPrettyString();
 		MeasureMentorJobsConfig mmjc = [
 				name:dto.name,

@@ -64,7 +64,7 @@ class MeasureMentorJobsConfigFacadeUnitSpec extends Specification {
 
         setup:
         def dto     = [id:"not a real id"] as MeasureMentorJobsConfigDto
-        def entity  = [id:dto.id] as MeasureMentorJobsConfig
+        def entity  = [id:dto.id, name:"name", jobOn:true, cron:"* * * * *", encryptedConfig: Base64.getEncoder().encodeToString(this.strongTextEncryptor.encrypt("{}").bytes)] as MeasureMentorJobsConfig
 
         when:
         def rentity = this.measureMentorJobsConfigFacade.saveJobsConfig(dto);

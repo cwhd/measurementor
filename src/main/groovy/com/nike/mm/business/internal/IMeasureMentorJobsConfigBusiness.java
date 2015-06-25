@@ -8,7 +8,7 @@ import com.nike.mm.entity.MeasureMentorJobsConfig;
 
 public interface IMeasureMentorJobsConfigBusiness {
 
-    Object saveConfig(MeasureMentorJobsConfigDto dto);
+    MeasureMentorJobsConfig saveConfig(MeasureMentorJobsConfigDto dto);
 
     MeasureMentorJobsConfigDto findById(final String id);
 

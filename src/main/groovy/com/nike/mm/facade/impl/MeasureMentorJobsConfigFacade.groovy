@@ -42,10 +42,15 @@ class MeasureMentorJobsConfigFacade implements IMeasureMentorJobsConfigFacade {
     }
 
     @Override
-    Object saveJobsConfig(MeasureMentorJobsConfigDto dto) {
-        Object result = this.measureMentorJobsConfigBusiness.saveConfig(dto)
-        this.cronService.processJob(dto.id)
-        return result
+    MeasureMentorJobsConfigDto saveJobsConfig(MeasureMentorJobsConfigDto dto) {
+
+        // persist changes
+        MeasureMentorJobsConfig entity = this.measureMentorJobsConfigBusiness.saveConfig(dto)
+
+        // create/update cron job
+        this.cronService.processJob(entity.id)
+
+        return this.toDto(entity)
     }
 
     @Override
@@ -54,13 +59,7 @@ class MeasureMentorJobsConfigFacade implements IMeasureMentorJobsConfigFacade {
         List<MeasureMentorJobsConfigDto> dtos = [];
         for (MeasureMentorJobsConfig entity : rpage.content) {
 
-            MeasureMentorJobsConfigDto dto = [
-                    id: entity.id,
-                    name: entity.name,
-                    jobOn: entity.jobOn,
-                    cron: entity.cron,
-                    config: new JsonSlurper().parseText(this.strongTextEncryptor.decrypt(new String(Base64.getDecoder().decode(entity.encryptedConfig))))
-            ] as MeasureMentorJobsConfigDto
+            MeasureMentorJobsConfigDto dto = this.toDto(entity)
 
             JobHistory jh = jobHistoryBusiness.findJobsLastBuildStatus(entity.id);
             if (jh != null) {
@@ -71,5 +70,21 @@ class MeasureMentorJobsConfigFacade implements IMeasureMentorJobsConfigFacade {
         }
         log.debug("Returning list of job configurations: {} of {}", dtos.size(), rpage.getTotalElements())
         return new PageImpl(dtos, pageable, rpage.getTotalElements())
+    }
+
+    /**
+     * Transform a MeasureMentorJobsConfig instance to a DTO
+     * @param entity
+     * @return MeasureMentorJobsConfigDto instance
+     */
+    private MeasureMentorJobsConfigDto toDto(MeasureMentorJobsConfig entity) {
+
+        MeasureMentorJobsConfigDto dto = [
+                id: entity.id,
+                name: entity.name,
+                jobOn: entity.jobOn,
+                cron: entity.cron,
+                config: new JsonSlurper().parseText(this.strongTextEncryptor.decrypt(new String(Base64.getDecoder().decode(entity.encryptedConfig))))
+        ] as MeasureMentorJobsConfigDto
     }
 }

@@ -16,5 +16,5 @@ public interface IMeasureMentorJobsConfigRest {
 
     MeasureMentorJobsConfigDto findById(final String id);
 
-    Object save(MeasureMentorJobsConfigDto dto);
+    MeasureMentorJobsConfigDto save(MeasureMentorJobsConfigDto dto);
 }
