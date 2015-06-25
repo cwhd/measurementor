@@ -74,7 +74,11 @@ task buildWebApp(type: Exec) {
 
 task copyWebApp(type: Copy) {
     from 'ui/dist'
-    into 'public'
+    into 'src/main/webapp'
+}
+
+task cleanOutputFolders(type: Delete) {
+    delete 'public', 'build', 'ui/dist', 'src/main/webapp'
 }
 
 tasks.buildWebApp.dependsOn installNpm, installBower
@@ -82,3 +86,4 @@ tasks.copyWebApp.dependsOn buildWebApp
 tasks.war.dependsOn buildWebApp
 tasks.run.dependsOn buildWebApp
 tasks.bootRun.dependsOn buildWebApp
+tasks.clean.dependsOn cleanOutputFolders

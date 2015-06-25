@@ -51,7 +51,7 @@ If you chose to run the UI layer side-by-side with the Java back-end but in diff
 - run the back-end java application like a regular spring boot application using either the command line or your favorite IDE.
 
 If you chose to run both UI and back-end on the same process, you need to first build the UI.
-To do so, run the following gradle task, to build the UI layer and create a new public folder at the root of the project.
+To do so, run the following gradle task, to build the UI layer and create a new folder under src/main/webapp.
 This new folder will then be automatically picked up by Spring boot as you run the application like a standard
 spring boot application from your favorite IDE.
     >gradle copyWebApp
