@@ -37,6 +37,17 @@ describe("JobHistoryCtrl", function() {
         ctrl = $controller("JobHistoryCtrl", {
             $scope: scope
         });
+
+        scope.jobHistoryData = {
+            links: {
+                prev: {
+                    href: ""
+                },
+                next: {
+                    href: ""
+                }
+            }
+        };
     }));
 
     it("JobHistoryListCtrl global checks", inject(function(generalLayout) {
@@ -46,4 +57,17 @@ describe("JobHistoryCtrl", function() {
         expect(stateName).toEqual("app.jobs-list");
     }));
 
+    it("JobHistoryListCtrl onPrevious function checks", inject(function(jobsConfig) {
+        spyOn(scope, "getData");
+
+        scope.onPrevious();
+        expect(scope.getData).toHaveBeenCalled();
+    }));
+
+    it("JobHistoryListCtrl onNext function checks", inject(function(jobsConfig) {
+        spyOn(scope, "getData");
+
+        scope.onNext();
+        expect(scope.getData).toHaveBeenCalled();
+    }));
 });

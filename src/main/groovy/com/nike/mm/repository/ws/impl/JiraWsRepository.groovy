@@ -26,15 +26,7 @@ class JiraWsRepository implements IJiraWsRepository {
     }
 
     @Override
-    Object getData(final JiraRequestDto requestDto) {
-        def fromQuery = ""
-        if(requestDto.fromDate) {
-            fromQuery = " AND updatedDate>$requestDto.fromDate"
-        }
-        final def path = "/rest/api/2/search"
-        final def jiraQuery = "project=$requestDto.project$fromQuery"
-        final def query = [jql: jiraQuery, expand:"changelog",startAt: requestDto.startAt, maxResults: requestDto.maxResults, fields:"*all"]
-        final HttpRequestDto dto = [url: requestDto.url, path: path, query:query, credentials: requestDto.credentials] as HttpRequestDto
+    Object getDataForProject(final HttpRequestDto dto) {
         return this.httpRequestService.callRestfulUrl(dto)
     }
 }

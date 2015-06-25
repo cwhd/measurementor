@@ -1,6 +1,7 @@
 package com.nike.mm.service.impl
 
 import com.nike.mm.service.IUtilitiesService
+import groovy.util.logging.Slf4j
 import groovyx.net.http.HTTPBuilder
 import org.springframework.stereotype.Component
 
@@ -11,6 +12,7 @@ import java.util.concurrent.TimeUnit
  * Created by rparr2 on 6/19/15.
  */
 @Component
+@Slf4j
 class UtilitiesService implements IUtilitiesService {
 
     @Override
@@ -72,7 +74,7 @@ class UtilitiesService implements IUtilitiesService {
         def upperTimeBound = maxTime
         def lowerTimeBound = 0
 
-        logger.debug("estimate: $estimate | estimateTime: $estimateTime | actualTime: $actualTime")
+        log.debug("estimate: $estimate | estimateTime: $estimateTime | actualTime: $actualTime")
 
         def currentEstimateIndex = estimationValues.findIndexOf { it == estimate}
         //calculate the lowerTimeBound

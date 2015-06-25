@@ -10,5 +10,5 @@ interface IJiraWsRepository {
 
     List<String> getProjectsList(HttpRequestDto dto)
 
-    Object getData(JiraRequestDto requestDto )
+    Object getDataForProject(HttpRequestDto dto)
 }
