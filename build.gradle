@@ -46,6 +46,10 @@ configurations {
     providedRuntime
 }
 
+war {
+    from 'ui/dist'
+}
+
 task wrapper(type: Wrapper) {
     gradleVersion = '2.4'
 }
@@ -76,6 +80,5 @@ task copyWebApp(type: Copy) {
 tasks.buildWebApp.dependsOn installNpm, installBower
 tasks.copyWebApp.dependsOn buildWebApp
 tasks.war.dependsOn buildWebApp
-war {
-    from 'ui/dist'
-}
+tasks.run.dependsOn buildWebApp
+tasks.bootRun.dependsOn buildWebApp
