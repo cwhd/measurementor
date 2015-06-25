@@ -1,5 +1,6 @@
 package com.nike.mm.entity
 
+import org.springframework.data.annotation.Id
 import org.springframework.data.elasticsearch.annotations.Document
 
 /**
@@ -7,6 +8,9 @@ import org.springframework.data.elasticsearch.annotations.Document
  */
 @Document(indexName = "measurementor", type = "jirahistory")
 class JiraHistory {
+
+    @Id
+    String id
 
     Date timestamp
     String changedBy

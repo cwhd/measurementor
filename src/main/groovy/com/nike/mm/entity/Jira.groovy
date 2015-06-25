@@ -9,7 +9,7 @@ import org.springframework.data.elasticsearch.annotations.Document
 class Jira {
 
 	@Id
-	String id;
+	String id
 	
 	String couchId
 	String key
