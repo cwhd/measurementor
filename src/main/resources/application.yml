@@ -14,8 +14,3 @@ mm:
     jenkins:
         url: http://192.168.37.90:8080
         path_postfix: /api/json
-
-logging:
-    file: mm.log
-    level:
-        com.nike.mm: DEBUG
