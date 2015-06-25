@@ -51,6 +51,7 @@ Thumbs.db
 /ui/dist
 /ui/node_modules
 /ui/bower_components
+/src/main/webapp
 
 #
 # # IntelliJ specific files/directories
