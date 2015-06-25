@@ -50,6 +50,7 @@ describe("JobsListCtrl", function() {
 
     it("JobsListCtrl general checks", inject(function(generalLayout) {
         expect(generalLayout.data.viewTitle).toEqual("List of jobs");
+        expect(scope.showSpinner).toEqual(true);
 
         scope.onAdd();
         expect(stateName).toEqual("app.job-details");
@@ -94,6 +95,7 @@ describe("JobsListCtrl", function() {
         spyOn(scope, "getData");
 
         scope.onPrevious();
+        expect(scope.showSpinner).toEqual(true);
         expect(scope.getData).toHaveBeenCalled();
     }));
 
@@ -101,6 +103,7 @@ describe("JobsListCtrl", function() {
         spyOn(scope, "getData");
 
         scope.onNext();
+        expect(scope.showSpinner).toEqual(true);
         expect(scope.getData).toHaveBeenCalled();
-    }));    
+    }));
 });

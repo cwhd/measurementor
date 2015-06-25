@@ -1,9 +1,10 @@
 declare
 var angular: any;
 
-angular.module("jobsConfig").controller("JobsListCtrl", function($rootScope, $scope, $state, jobsConfig, generalLayout) {
+angular.module("jobsConfig").controller("JobsListCtrl", function($rootScope, $scope, $state, $timeout, jobsConfig, generalLayout) {
     generalLayout.checkLogInStatus();
     generalLayout.data.viewTitle = "List of jobs";
+    $scope.showSpinner = true;
 
     var currentPage = "api/jobs-config?page=0&size=5&sort=name,asc";
 
@@ -12,6 +13,9 @@ angular.module("jobsConfig").controller("JobsListCtrl", function($rootScope, $sc
         jobsConfig.getJobs(url).then(function(data) {
             $scope.jobsData = angular.copy(data);
         });
+        $timeout(function() {
+            $scope.showSpinner = false;
+        }, 250);
     };
 
     $scope.getData(currentPage);
@@ -59,10 +63,12 @@ angular.module("jobsConfig").controller("JobsListCtrl", function($rootScope, $sc
     };
 
     $scope.onPrevious = function() {
+        $scope.showSpinner = true;
         $scope.getData($scope.jobsData.links.prev.href);
     };
 
     $scope.onNext = function() {
+        $scope.showSpinner = true;
         $scope.getData($scope.jobsData.links.next.href);
     };
 });

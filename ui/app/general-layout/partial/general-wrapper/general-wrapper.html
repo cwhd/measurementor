@@ -1,7 +1,7 @@
 <div ng-controller="GeneralWrapperCtrl" style="height: 100%;">
 	<md-toolbar class="md-primary">
 		<div layout="row" layout-align="space-between center">
-			<div><img src="images/nike-logo.png" style="width: 50px; height: 50px; margin-left: 1rem;"></div>
+			<div><img src="images/nike-logo.png" style="width: 50px; height: 50px; margin-left: 1rem;"></div> 
 			<div>
 				<h1 id='ToolbarLabel' class="md-toolbar-tools">
 					{{generalLayoutData.viewTitle}}
@@ -10,9 +10,9 @@
 			<div>
 				<md-button id="LogOutBtn" ng-click="onLogOut()" style="width: 100px" ng-if="generalLayoutData.showLogOutBtn">
 					<i class="fa fa-power-off awesomeFontIconWhite"></i>&nbsp;&nbsp;&nbsp;Log Out
-				</md-button>        
+				</md-button>           
 			</div>  
 		</div>	     
 	</md-toolbar>
-	<div ui-view style="height: -webkit-calc(100% - 64px);"></div>
+	<div ui-view style="height: calc(100% - 64px);"></div>	
 </div>
