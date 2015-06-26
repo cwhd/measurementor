@@ -22,6 +22,7 @@ angular.module("jobsConfig").controller("JobHistoryCtrl", function($scope, $stat
     $scope.getData(url);
 
     $scope.onPrevious = function() {
+        $scope.showSpinner = true;
         $scope.getData($scope.jobHistoryData.links.prev.href);
     };
 
