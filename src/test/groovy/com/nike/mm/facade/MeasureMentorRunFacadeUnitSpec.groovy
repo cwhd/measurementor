@@ -44,14 +44,15 @@ class MeasureMentorRunFacadeUnitSpec  extends Specification {
         this.measureMentorRunFacade.runJobId("anyid")
 
         then:
+        2 * this.dateService.getCurrentDateTime()
         1 * this.measureMentorRunBusiness.startJob(_)
-        1 * this.measureMentorConfigBusiness.findById(_)                >> configDto
-        1 * this.jobHistoryBusiness.findLastSuccessfulJobRanForJobid(_) >> null
-        1 * this.jobHistoryBusiness.save(_)
+        1 * this.measureMentorConfigBusiness.findById(_)                         >> configDto
+        0 * this.jobHistoryBusiness.findLastSuccessfulJobRanForJobidAndPlugin(_) >> null
+        0 * this.jobHistoryBusiness.saveJobRunResults(_)
         1 * this.measureMentorRunBusiness.stopJob(_)
     }
 
-    def "run the job has a previous job history and has no config so it should go right through" ()  {
+    def "run the job which has previous job history and has no config so it should go right through" ()  {
 
         setup:
         def configDto                                                   = [id: 'testId', name: 'SomeBuild', config: []] as MeasureMentorJobsConfigDto
@@ -62,36 +63,20 @@ class MeasureMentorRunFacadeUnitSpec  extends Specification {
         this.measureMentorRunFacade.runJobId("anyid")
 
         then:
+        2 * this.dateService.getCurrentDateTime()
         1 * this.measureMentorRunBusiness.startJob(_)
-        1 * this.measureMentorConfigBusiness.findById(_)                >> configDto
-        1 * this.jobHistoryBusiness.findLastSuccessfulJobRanForJobid(_) >> previousJobHistory
-        1 * this.jobHistoryBusiness.save(_)
+        1 * this.measureMentorConfigBusiness.findById(_)                         >> configDto
+        0 * this.jobHistoryBusiness.findLastSuccessfulJobRanForJobidAndPlugin(_) >> previousJobHistory
+        0 * this.jobHistoryBusiness.saveJobRunResults(_)
         1 * this.measureMentorRunBusiness.stopJob(_)
     }
 
-    def "run the job no previous job history and cannot find a confugued business function." ()  {
-
-        setup:
-        def configDto                                                   = [id: 'testId', name: 'SomeBuild', config: [[type:'invalid']]] as MeasureMentorJobsConfigDto
-        this.measureMentorRunFacade.measureMentorBusinesses             = [];
-
-        when:
-        this.measureMentorRunFacade.runJobId("anyid")
-
-        then:
-        1 * this.measureMentorRunBusiness.startJob(_)
-        1 * this.measureMentorConfigBusiness.findById(_)                >> configDto
-        1 * this.jobHistoryBusiness.findLastSuccessfulJobRanForJobid(_) >> null
-        1 * this.jobHistoryBusiness.save(_)
-        1 * this.measureMentorRunBusiness.stopJob(_)
-    }
-
-    def "run the job and find a plugin but fail the validation" () {
+    def "run the job without history and find a plugin" () {
 
         setup:
         IMeasureMentorBusiness measureMentorBusiness                    = Mock(IMeasureMentorBusiness)
         this.measureMentorRunFacade.measureMentorBusinesses             = [measureMentorBusiness];
-        def configDto                                                   = [id: 'testId', name: 'SomeBuild', config: [[type:'availableButFailConfig']]] as MeasureMentorJobsConfigDto
+        def configDto                                                   = [id: 'testId', name: 'SomeBuild', config: [[type:'available']]] as MeasureMentorJobsConfigDto
 
         when:
         this.measureMentorRunFacade.runJobId("anyid")
@@ -99,39 +84,12 @@ class MeasureMentorRunFacadeUnitSpec  extends Specification {
         then:
         2 * this.dateService.getCurrentDateTime()
         1 * this.measureMentorRunBusiness.startJob(_)
-        1 * this.measureMentorConfigBusiness.findById(_)                >> configDto
-        1 * this.jobHistoryBusiness.findLastSuccessfulJobRanForJobid(_) >> null
-        1 * measureMentorBusiness.type() >> 'availableButFailConfig'
-        1 * measureMentorBusiness.validateConfig(_)                     >> false
+        1 * this.measureMentorConfigBusiness.findById(_)                         >> configDto
+        1 * this.jobHistoryBusiness.findLastSuccessfulJobRanForJobidAndPlugin(_) >> null
+        1 * measureMentorBusiness.type()                                         >> 'available'
+        1 * measureMentorBusiness.validateConfig(_)                              >> false
         0 * measureMentorBusiness.updateData(_)
-        1 * this.jobHistoryBusiness.save(_)
-        1 * this.measureMentorRunBusiness.stopJob(_)
-    }
-
-    def "run the job and find a plugin pass validation and update data" () {
-
-        setup:
-        IMeasureMentorBusiness measureMentorBusiness                    = Mock(IMeasureMentorBusiness)
-        IMeasureMentorBusiness measureMentorBusinessSkip                = Mock(IMeasureMentorBusiness)
-        this.measureMentorRunFacade.measureMentorBusinesses             = [measureMentorBusinessSkip, measureMentorBusiness];
-        def configDto = [id: 'testId', name: 'SomeBuild', config: [[type: 'availableAndPassesConfig']]] as
-                MeasureMentorJobsConfigDto
-
-        when:
-        this.measureMentorRunFacade.runJobId("anyid")
-
-        then:
-        2 * this.dateService.getCurrentDateTime()
-        1 * this.measureMentorRunBusiness.startJob(_)
-        1 * this.measureMentorConfigBusiness.findById(_)                >> configDto
-        1 * this.jobHistoryBusiness.findLastSuccessfulJobRanForJobid(_) >> null
-        1 * measureMentorBusinessSkip.type() >> 'availableAndFailsConfig'
-        0 * measureMentorBusinessSkip.validateConfig()
-        0 * measureMentorBusinessSkip.updateData(_)
-        1 * measureMentorBusiness.type() >> 'availableAndPassesConfig'
-        1 * measureMentorBusiness.validateConfig(_)                     >> true
-        1 * measureMentorBusiness.updateData(_)
-        1 * this.jobHistoryBusiness.save(_)
+        0 * this.jobHistoryBusiness.saveJobRunResults(_)
         1 * this.measureMentorRunBusiness.stopJob(_)
     }
 }

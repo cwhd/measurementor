@@ -1,5 +1,7 @@
 package com.nike.mm.business.plugins;
 
+import com.nike.mm.dto.JobRunResponseDto;
+
 import java.util.Date;
 
 /**
@@ -26,4 +28,12 @@ public interface IMeasureMentorBusiness {
      * @param configInfo - The configuration information that was validated in the validateConfig(String) method.
      */
     void updateData(Object configInfo);
+
+    /**
+     * Run the system, get the data, put it into ES and report on it.
+     * @Param lastRunDate - Last time that job was run
+     * @param configInfo - The configuration information that was validated in the validateConfig(String) method.
+     * @return JobRunResponseDto instance
+     */
+    JobRunResponseDto updateDataWithResponse(Date lastRunDate, Object configInfo);
 }

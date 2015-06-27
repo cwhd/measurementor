@@ -2,7 +2,9 @@ package com.nike.mm.business.plugins.impl
 
 import com.nike.mm.business.plugins.IStashBusiness
 import com.nike.mm.dto.HttpRequestDto
+import com.nike.mm.dto.JobRunResponseDto
 import com.nike.mm.dto.ProxyDto
+import com.nike.mm.entity.JobHistory
 import com.nike.mm.entity.Stash
 import com.nike.mm.repository.es.plugins.IStashEsRepository
 import com.nike.mm.repository.ws.IStashWsRepository
@@ -50,6 +52,11 @@ class StashBusiness implements IStashBusiness {
         for ( String projectKey: this.stashWsRepository.findAllProjects(dto) ) {
             this.updateProject(projectKey, configInfo, fromDate)
         }
+    }
+
+    @Override
+    JobRunResponseDto updateDataWithResponse(Date lastRunDate, Object configInfo) {
+        return [type: type(), status: JobHistory.Status.success, reccordsCount: 0] as JobRunResponseDto
     }
 
     void updateProject(final String projectKey, final Object configInfo, final Date fromDate) {

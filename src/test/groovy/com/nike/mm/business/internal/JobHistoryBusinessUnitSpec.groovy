@@ -1,7 +1,10 @@
 package com.nike.mm.business.internal
 
+import com.google.common.collect.Lists
 import com.nike.mm.business.internal.impl.JobHistoryBusiness
+import com.nike.mm.dto.JobRunResponseDto
 import com.nike.mm.entity.JobHistory
+import com.nike.mm.repository.es.internal.IJobConfigHistoryRepository
 import com.nike.mm.repository.es.internal.IJobHistoryRepository
 import org.springframework.data.domain.PageImpl
 import spock.lang.Specification
@@ -12,10 +15,14 @@ class JobHistoryBusinessUnitSpec extends Specification {
 
     IJobHistoryRepository jobHistoryRepository
 
+    IJobConfigHistoryRepository jobConfigHistoryRepository
+
     def setup() {
-        this.jobHistoryBusiness                         = new JobHistoryBusiness()
-        this.jobHistoryRepository                       = Mock(IJobHistoryRepository)
-        this.jobHistoryBusiness.jobHistoryRepository    = this.jobHistoryRepository
+        this.jobHistoryBusiness                             = new JobHistoryBusiness()
+        this.jobHistoryRepository                           = Mock(IJobHistoryRepository)
+        this.jobConfigHistoryRepository                     = Mock(IJobConfigHistoryRepository)
+        this.jobHistoryBusiness.jobHistoryRepository        = this.jobHistoryRepository
+        this.jobHistoryBusiness.jobConfigHistoryRepository  = this.jobConfigHistoryRepository
     }
 
     def "save the job history record" () {
@@ -98,6 +105,31 @@ class JobHistoryBusinessUnitSpec extends Specification {
         then:
         1 * this.jobHistoryRepository.findByJobid(_, _) >> new PageImpl([], null, 1)
         page.content.isEmpty()
+    }
+
+    def "Save job run results without plugin results" () {
+
+        when:
+        this.jobHistoryBusiness.saveJobRunResults("jobid", new Date(), new Date(), Collections.emptyList())
+
+        then:
+        0 * this.jobConfigHistoryRepository.save(_)
+        1 * this.jobHistoryRepository.save(_)
+    }
+
+    def "Save job run results with plugin results" () {
+
+        setup:
+        def fakeJobRunResult = new JobRunResponseDto()
+        def pluginResults = Lists.newArrayList(fakeJobRunResult, fakeJobRunResult)
+        def jh = [id: "jobHistoryId"] as JobHistory
+
+        when:
+        this.jobHistoryBusiness.saveJobRunResults("jobid", new Date(), new Date(), pluginResults)
+
+        then:
+        1 * this.jobHistoryRepository.save(_)                  >> jh
+        2 * this.jobConfigHistoryRepository.save(_)
     }
 
 }

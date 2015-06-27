@@ -2,8 +2,10 @@ package com.nike.mm.business.plugins.impl
 
 import com.nike.mm.business.plugins.IJenkinsBusiness
 import com.nike.mm.dto.HttpRequestDto
+import com.nike.mm.dto.JobRunResponseDto
 import com.nike.mm.dto.ProxyDto
 import com.nike.mm.entity.Jenkins
+import com.nike.mm.entity.JobHistory
 import com.nike.mm.repository.es.plugins.IJenkinsEsRepository
 import com.nike.mm.repository.ws.IJenkinsWsRepository
 import com.nike.mm.service.IUtilitiesService
@@ -33,6 +35,11 @@ class JenkinsBusiness implements IJenkinsBusiness {
 	void updateData(final Object configInfo) {
         //TODO get last from date.
         this.findJobs(configInfo)
+    }
+
+    @Override
+    JobRunResponseDto updateDataWithResponse(Date lastRunDate, Object configInfo) {
+        return [type: type(), status: JobHistory.Status.success, reccordsCount: 0] as JobRunResponseDto
     }
 
     void findJobs(final Object configInfo){
