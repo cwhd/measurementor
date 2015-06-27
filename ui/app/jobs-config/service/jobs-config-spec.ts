@@ -11,14 +11,6 @@ describe("jobsConfig", function() {
                 mockdata: false
             };
         });
-
-        // $provide.factory("generalLayout", function() { //mocking factory
-        //     return {
-        //         checkLogInStatus: function() {
-        //             return true;
-        //         }
-        //     };
-        // });
     }));
 
     beforeEach(inject(function(_$httpBackend_) {

@@ -52,6 +52,7 @@ describe("JobHistoryCtrl", function() {
 
     it("JobHistoryListCtrl global checks", inject(function(generalLayout) {
         expect(generalLayout.data.viewTitle).toEqual("Job history");
+        expect(scope.showSpinner).toEqual(true);
 
         scope.onBack();
         expect(stateName).toEqual("app.jobs-list");
@@ -61,6 +62,7 @@ describe("JobHistoryCtrl", function() {
         spyOn(scope, "getData");
 
         scope.onPrevious();
+        expect(scope.showSpinner).toEqual(true);
         expect(scope.getData).toHaveBeenCalled();
     }));
 
@@ -68,6 +70,7 @@ describe("JobHistoryCtrl", function() {
         spyOn(scope, "getData");
 
         scope.onNext();
+        expect(scope.showSpinner).toEqual(true);
         expect(scope.getData).toHaveBeenCalled();
     }));
 });

@@ -1,5 +1,8 @@
 <div ng-controller="JobHistoryCtrl" style="height: 100%; width: 100%;">
-	<div layout="row" style="width: 100%;">
+	<div layout="row" layout-sm="column" layout-align="center center" style="height: 100%; width: 100%;" ng-if="showSpinner">
+	  <md-progress-circular md-mode="indeterminate" class="md-hue-2"></md-progress-circular>
+	</div>
+	<div layout="row" style="width: 100%;" ng-if="!showSpinner">
 		<md-content flex="0" flex-md="1" flex-gt-md="1"></md-content>	
 		<md-content flex="100" flex-md="99" flex-gt-md="99">
 			<md-button id="BackBtn" ng-click="onBack()" class="marginTop2X">
@@ -7,19 +10,19 @@
 				 </md-icon> 
 				 &nbsp;Back
 			</md-button>		
-		</md-content>	
+		</md-content>
 	</div>	
-	<div layout="column" style="width: 100%;">
+	<div layout="column" style="width: 100%;" ng-if="!showSpinner">
 		<div layout="row" style="width: 100%;">
 			<md-content flex="0" flex-md="5" flex-gt-md="10"></md-content>
 			<md-content layout-padding flex="100" flex-md="90" flex-gt-md="80" style="overflow: visible;">
 				<div>
-					<md-button ng-click="onPrevious()" ng-if="jobHistoryData.links.prev && jobHistoryData.links.prev.href">
+					<md-button ng-click="onPrevious()" ng-if="::jobHistoryData.links.prev.href">
 						 <md-icon md-font-icon="fa fa-backward" class="awesomeFontIcon">
 						 </md-icon> 
 						 &nbsp;Previous
 					</md-button>
-					<md-button ng-click="onNext()" ng-if="jobHistoryData.links.next && jobHistoryData.links.next.href">
+					<md-button ng-click="onNext()" ng-if="::jobHistoryData.links.next.href">
 						 <md-icon md-font-icon="fa fa-forward" class="awesomeFontIcon">
 						 </md-icon> 
 						 &nbsp;Next
@@ -27,21 +30,18 @@
 				</div>
 				<md-list>
 					<md-subheader class="md-no-sticky" style="font-size: 1.6rem;">Job history list</md-subheader>
-					<md-list-item class="md-3-line" ng-if="!jobHistoryData.jobHistories.length">
+					<md-list-item class="md-3-line" ng-if="::!jobHistoryData.jobHistories.length">
 						<div class="md-list-item-text">No data found</div>			
 					</md-list-item>		
-					<md-list-item class="md-3-line" style="padding: 0px;" ng-repeat="history in jobHistoryData.jobHistories">
+					<md-list-item class="md-3-line" style="padding: 0px;" ng-repeat="history in ::jobHistoryData.jobHistories">
 						<div class="borderBottom" style="width: 100%;">	
 							<div layout="row" style="width: 100%; outline: 0px; cursor: pointer;" ng-click="history.isOpen = !history.isOpen">
 								<md-content flex="50" flex-md="50" flex-gt-md="50" class="paddingLeft2X">
-									<img alt="Build Status" style="padding-top:0.5rem" ng-src="{{history.status == 'success'? 'images/sunny.jpg': 'images/storm.jpg'}}" height="40">
+									<img alt="Build Status" style="padding-top:0.5rem" ng-src="{{::history.status == 'success'? 'images/sunny.jpg': 'images/storm.jpg'}}" height="40">
 								</md-content>
 								<md-content flex="50" flex-md="50" flex-gt-md="50">
-<!-- 									<div class="md-list-item-text">
-										Last Build: {{history.endDate? history.endDate: 'Never Been Built'}}
-									</div> -->
 									<div ng-if="history.endDate" class="md-list-item-text">
-										Last Build: {{history.endDate | dateFormatter}}
+										Last Build: {{::history.endDate | dateFormatter}}
 									</div>
 									<div ng-if="!history.endDate" class="md-list-item-text">
 										Last Build: Never has been built
@@ -49,23 +49,23 @@
 								</md-content>
 							</div>
 							<div ng-if="history.isOpen" class="paddingLeft2X paddingTop1X paddingBottom1X listItemExpandAnimation">
-								{{history.comments}}
+								{{::history.comments}}
 							</div>	
 						</div>	
 					</md-list-item>
 				</md-list>
 				<div layout="row" layout-align="end center" ng-if="jobHistoryData.jobHistories.length">
 					<span>
-						Page {{jobHistoryData.page.number + 1}} (out of {{' ' + jobHistoryData.page.totalPages}})
+						Page {{::jobHistoryData.page.number + 1}} (out of {{::' ' + jobHistoryData.page.totalPages}})
 					</span>
 				</div>				
 				<div>
-					<md-button ng-click="onPrevious()" ng-if="jobHistoryData.links.prev && jobHistoryData.links.prev.href">
+					<md-button ng-click="onPrevious()" ng-if="::jobHistoryData.links.prev.href">
 						 <md-icon md-font-icon="fa fa-backward" class="awesomeFontIcon">
 						 </md-icon> 
 						 &nbsp;Previous
 					</md-button>
-					<md-button ng-click="onNext()" ng-if="jobHistoryData.links.next && jobHistoryData.links.next.href">
+					<md-button ng-click="onNext()" ng-if="::jobHistoryData.links.next.href">
 						 <md-icon md-font-icon="fa fa-forward" class="awesomeFontIcon">
 						 </md-icon> 
 						 &nbsp;Next

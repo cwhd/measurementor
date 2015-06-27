@@ -48,6 +48,9 @@
         "grunt-typescript": "~0.6.2",
         "load-grunt-tasks": "~0.2",
         "rimraf": "~2.2.6",
-        "streamqueue": "0.0.5"
+        "streamqueue": "0.0.5",
+        "reflect-metadata": "0.1.0",
+        "benchpress": "2.0.0-alpha.28",
+        "protractor": "2.1.0"
     }
 }
