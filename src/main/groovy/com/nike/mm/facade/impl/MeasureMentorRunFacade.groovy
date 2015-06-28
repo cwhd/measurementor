@@ -1,24 +1,36 @@
 package com.nike.mm.facade.impl
 
-import com.nike.mm.service.IDateService
+import com.google.common.collect.Lists
 import com.nike.mm.business.internal.IJobHistoryBusiness
 import com.nike.mm.business.internal.IMeasureMentorJobsConfigBusiness
 import com.nike.mm.business.internal.IMeasureMentorRunBusiness
 import com.nike.mm.business.plugins.IMeasureMentorBusiness
-import com.nike.mm.dto.MeasureMentorConfigValidationDto
-import com.nike.mm.dto.RunnableMeasureMentorBusinessAndConfigDto
+import com.nike.mm.dto.JobRunRequestDto
+import com.nike.mm.dto.JobRunResponseDto
 import com.nike.mm.entity.JobHistory
 import com.nike.mm.facade.IMeasureMentorRunFacade
+import com.nike.mm.service.IDateService
 import groovy.util.logging.Slf4j
+import groovyx.gpars.GParsPool
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Service
 
-import java.text.SimpleDateFormat
+import java.text.MessageFormat
 
 @Service
 @Slf4j
 class MeasureMentorRunFacade implements IMeasureMentorRunFacade {
+
+    /**
+     * Error message when no plugin found in a given configuration
+     */
+    public static final String NO_MATCHING_PLUGIN = "No measure mentor configured for: {0}"
+
+    /**
+     * Error message when a configuration cannot be validated successfully
+     */
+    public static final String INVALID_CONFIG = "Config not valid config for: {0}"
+
 
     @Autowired
     Set<IMeasureMentorBusiness> measureMentorBusinesses
@@ -36,82 +48,69 @@ class MeasureMentorRunFacade implements IMeasureMentorRunFacade {
     IDateService dateService
 
     @Override
-    @Async
     void runJobId(String jobid) {
-        log.debug("Running job ID {}.", jobid)
-        def startDate = this.dateService.currentDateTime;
+        log.debug("Running job ID {} ", jobid)
+
+        def startDate = this.dateService.currentDateTime
+
         try {
-            this.measureMentorRunBusiness.startJob(jobid);
-            def configDto = this.measureMentorConfigBusiness.findById(jobid);
+            this.measureMentorRunBusiness.startJob(jobid)
+            def configDto = this.measureMentorConfigBusiness.findById(jobid)
 
-            MeasureMentorConfigValidationDto mmcvDto = this.validateTheConfigFilesAndPlugins(configDto.config);
-            mmcvDto.configId = configDto.id;
+            List<JobRunRequestDto> requests = createRequestsFromConfig(jobid, configDto.config)
 
-            JobHistory previousJh = this.jobHistoryBusiness.findLastSuccessfulJobRanForJobid(jobid);
-            if (previousJh) {
-                mmcvDto.previousJobId = previousJh.id;
+            List<JobRunResponseDto> responses = Lists.newArrayListWithCapacity(requests.size())
+
+            // execute all plugins in parallel
+            GParsPool.withPool {
+                requests.eachParallel { request ->
+                    this.invokePlugin(request, responses)
+                }
             }
-            if (!mmcvDto.errors.isEmpty()) {
-                this.jobHistoryBusiness.save(
-                        [
-                            jobid: jobid,
-                            startDate: startDate,
-                            endDate: this.dateService.currentDateTime,
-                            status: JobHistory.Status.error,
-                            comments: mmcvDto.getMessageAsString()
-                ] as JobHistory);
-            } else {
-                //TODO We need to get agreeget data as well as success monicers from this.
-                this.runMmbs(getLastRunDateOrDefault(previousJh), mmcvDto);
-                //TODO: Error handling.
-                this.jobHistoryBusiness.save(
-                        [
-                                jobid    : jobid,
-                                startDate: startDate,
-                                endDate  : this.dateService.currentDateTime,
-                                status   : JobHistory.Status.success,
-                                comments : ("Success for jobid: " + jobid)
-                        ] as JobHistory);
-            }
+
+            this.jobHistoryBusiness.saveJobRunResults(jobid, startDate, this.dateService.currentDateTime, responses)
+
         } finally {
             this.measureMentorRunBusiness.stopJob(jobid);
         }
     }
 
-    private Date getLastRunDateOrDefault(JobHistory previousJh) {
-        Date date = new SimpleDateFormat("dd/MM/yyyy").parse("01/01/1901");
-        if (previousJh) {
-            date = previousJh.endDate;
-        }
-        return date;
-    }
+    private static List<JobRunRequestDto> createRequestsFromConfig(String jobid, def configs) {
 
-    private void runMmbs(Date lastRunDate, MeasureMentorConfigValidationDto mmcvDto) {
-        //TODO run in parallel.
-        //TODO error tracking.
-        for (RunnableMeasureMentorBusinessAndConfigDto dto : mmcvDto.runnableMmbs) {
-            dto.measureMentorBusiness.updateData(dto.config)
-        }
-    }
-
-    private MeasureMentorConfigValidationDto validateTheConfigFilesAndPlugins(def configs) {
-        MeasureMentorConfigValidationDto mmcvDto = new MeasureMentorConfigValidationDto();
+        List<JobRunRequestDto> list = Lists.newArrayList()
         configs.each { config ->
-            if (config.type) {
-                IMeasureMentorBusiness mmb = this.findByType(config.type)
-                if (mmb == null) {
-                    mmcvDto.errors.add("No measure mentor configured for: $config.type");
-                } else if (!mmb.validateConfig(config)) {
-                    mmcvDto.errors.add("Config not valid config for: $config.type");
-                } else {
-                    mmcvDto.runnableMmbs.add([measureMentorBusiness: mmb, config: config] as
-                            RunnableMeasureMentorBusinessAndConfigDto)
-                }
-            } else {
-                mmcvDto.errors.add("No config")
-            }
+            JobRunRequestDto request = new JobRunRequestDto()
+            request.jobid = jobid
+            request.config = config
+            request.pluginType = config.type
+            list.add(request)
         }
-        return mmcvDto;
+        return list
+    }
+
+    private void invokePlugin(JobRunRequestDto request, List<JobRunResponseDto> responses) {
+
+        log.debug("Invoking plugin {}", request.pluginType)
+
+        // retrieve the last time this job/plugin was run successfully
+        Date lastRunDate = this.jobHistoryBusiness.findLastSuccessfulJobRanForJobidAndPlugin(request)
+
+        IMeasureMentorBusiness plugin = this.findByType(request.pluginType)
+        if (null == plugin) {
+            String errorMessage = MessageFormat.format(NO_MATCHING_PLUGIN, request.pluginType)
+            responses.add(createFailureResponse(request.pluginType, errorMessage))
+        } else if (plugin.validateConfig(request.config)) {
+            responses.add(plugin.updateDataWithResponse(lastRunDate, request))
+        } else {
+            String errorMessage = MessageFormat.format(INVALID_CONFIG, request.pluginType)
+            responses.add(createFailureResponse(request.pluginType, errorMessage))
+        }
+
+    }
+
+    private static JobRunResponseDto createFailureResponse(String pluginType, String errorMessage) {
+        [type: pluginType, recordsCount: 0, status: JobHistory.Status.error, errorMessage:
+                errorMessage] as JobRunResponseDto
     }
 
     private IMeasureMentorBusiness findByType(final String type) {

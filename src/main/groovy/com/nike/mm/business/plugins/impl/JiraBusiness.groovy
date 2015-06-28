@@ -1,9 +1,11 @@
 package com.nike.mm.business.plugins.impl
 
 import com.nike.mm.dto.HttpRequestDto
+import com.nike.mm.dto.JobRunResponseDto
 import com.nike.mm.dto.ProxyDto
 import com.nike.mm.entity.Jira
 import com.nike.mm.entity.JiraHistory
+import com.nike.mm.entity.JobHistory
 import com.nike.mm.repository.es.plugins.IJiraEsRepository
 import com.nike.mm.repository.es.plugins.IJiraHistoryEsRepository
 import com.nike.mm.repository.ws.IJiraWsRepository
@@ -50,6 +52,11 @@ class JiraBusiness implements IJiraBusiness {
             this.updateProjectData(projectName, dto)
         }
 	}
+
+    @Override
+    JobRunResponseDto updateDataWithResponse(Date lastRunDate, Object configInfo) {
+        return [type: type(), status: JobHistory.Status.success, reccordsCount: 0] as JobRunResponseDto
+    }
 
 	List<String> getProjects(final Object configInfo) {
 		def path            = "/rest/api/2/project"

@@ -1,7 +1,8 @@
 package com.nike.mm.business.plugins.impl
 
+import com.nike.mm.dto.JobRunResponseDto
+import com.nike.mm.entity.JobHistory
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 
 import com.nike.mm.business.plugins.IGithubBusiness;
@@ -50,7 +51,12 @@ class GithubBusiness implements IGithubBusiness {
 			}
 		}
 	}
-	
+
+	@Override
+	JobRunResponseDto updateDataWithResponse(Date lastRunDate, Object configInfo) {
+		return [type: type(), status: JobHistory.Status.success, reccordsCount: 0] as JobRunResponseDto
+	}
+
 	private List<String> findAllRepositories(final Object configInfo, final Date fromDate) {
 		String path = "/users/$configInfo.repository_owner/repos";
 		HttpRequestDto dto = [url: configInfo.url, path: path, query:[access_token: configInfo.access_token, start: start, limit: limit]] as HttpRequestDto;

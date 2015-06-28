@@ -1,7 +1,5 @@
 package com.nike.mm.entity
 
-import java.util.Date;
-
 import org.springframework.data.annotation.Id
 import org.springframework.data.elasticsearch.annotations.Document
 
