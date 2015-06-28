@@ -17,7 +17,8 @@ buildscript {
     	}
     }
     dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}") 
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+        classpath("org.springframework:springloaded:1.2.3.RELEASE")
     }
 }
 
@@ -96,7 +97,6 @@ task cleanOutputFolders(type: Delete) {
 
 tasks.buildWebApp.dependsOn installNpm, installBower
 tasks.copyWebApp.dependsOn buildWebApp
-tasks.war.dependsOn buildWebApp
-tasks.run.dependsOn buildWebApp
-tasks.bootRun.dependsOn buildWebApp
+tasks.war.dependsOn copyWebApp
+tasks.run.dependsOn copyWebApp
 tasks.clean.dependsOn cleanOutputFolders
