@@ -74,13 +74,12 @@ class JiraBusiness implements IJiraBusiness {
             keepGoing = true
             def movedToDev
             json.issues.each{ def i ->
-
+                OtherItemsDto otherItemsDto                         = new OtherItemsDto(i)
                 ChangelogHistoryItemDto changelogHistoryItemDto = new ChangelogHistoryItemDto()
                 if (i.changelog) {
-                    changelogHistoryItemDto  = new ChangelogHistoryItemDto(i, projectConfig.taskStatusMap)
+                    changelogHistoryItemDto  = new ChangelogHistoryItemDto(i, projectConfig.taskStatusMap, otherItemsDto)
                 }
                 LeadTimeDevTimeDto leadTimeDevTimeDto               = new LeadTimeDevTimeDto(i, changelogHistoryItemDto.movedToDevList.min())
-                OtherItemsDto otherItemsDto                         = new OtherItemsDto(i)
                 this.saveJiraData(projectName, i, changelogHistoryItemDto, leadTimeDevTimeDto, otherItemsDto)
             }
         }
@@ -207,7 +206,7 @@ class JiraBusiness implements IJiraBusiness {
          * In the event that we have changelog infomation.
          * @param i - The json array from the result list.
          */
-        ChangelogHistoryItemDto(def i, def taskStatusMap) {
+        ChangelogHistoryItemDto(final def i, final def taskStatusMap, final def OtherItemsDto otherItemsDto) {
 
             for (def h : i.changelog.histories) {
                 for (def t : h.items) {
@@ -232,11 +231,12 @@ class JiraBusiness implements IJiraBusiness {
                         history = [
                                 dataType: "PTS",
                                 sourceId: h.id,
-                                timestamp: h.created,
+                                timestamp: JiraBusiness.this.utilitiesService.cleanJiraDate(h.created),
                                 changeField: t.field,
                                 newValue: t.toString,
                                 changedBy: h.author.emailAddress,
-                                key: i.key
+                                key: i.key,
+                                issueType: otherItemsDto.issueType
                         ] as JiraHistory
                         JiraBusiness.this.jiraHistoryEsRepository.save(history)
                     }

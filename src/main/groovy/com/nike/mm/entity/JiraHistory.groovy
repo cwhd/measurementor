@@ -20,4 +20,5 @@ class JiraHistory {
     String key
     String sourceId
     String dataType
+    String issueType
 }
