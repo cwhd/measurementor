@@ -34,12 +34,12 @@ class JiraBusiness implements IJiraBusiness {
 	String type() {
 		return "Jira";
 	}
-	
+
 	@Override
 	boolean validateConfig(Object config) {
 		return config.url ? true:false;
 	}
-	
+
 	@Override
 	void updateData(final Object configInfo) {
 		this.getProjects(configInfo).each { def projectName ->
@@ -49,12 +49,13 @@ class JiraBusiness implements IJiraBusiness {
             def jiraQuery       = "project=$projectName"
             def query           = [jql: jiraQuery, expand:"changelog",startAt: 0, maxResults: 100, fields:"*all"]
             HttpRequestDto dto  = [url: configInfo.url, path: path, query:query, credentials: configInfo.credentials, proxyDto:[]as ProxyDto] as HttpRequestDto
-            this.updateProjectData(projectName, dto)
+            this.updateProjectData(projectName, dto, configInfo.projectConfigs[projectName])
         }
 	}
 
     @Override
     JobRunResponseDto updateDataWithResponse(Date lastRunDate, Object configInfo) {
+        updateData(configInfo)
         return [type: type(), status: JobHistory.Status.success, reccordsCount: 0] as JobRunResponseDto
     }
 
@@ -64,7 +65,7 @@ class JiraBusiness implements IJiraBusiness {
 		return this.jiraWsRepository.getProjectsList(dto)
 	}
 
-    def updateProjectData(final String projectName, final HttpRequestDto dto) {
+    def updateProjectData(final String projectName, final HttpRequestDto dto, final Object projectConfig) {
         boolean keepGoing = false
 
         def json = this.jiraWsRepository.getDataForProject(dto)
@@ -76,7 +77,7 @@ class JiraBusiness implements IJiraBusiness {
 
                 ChangelogHistoryItemDto changelogHistoryItemDto = new ChangelogHistoryItemDto()
                 if (i.changelog) {
-                    changelogHistoryItemDto  = new ChangelogHistoryItemDto(i)
+                    changelogHistoryItemDto  = new ChangelogHistoryItemDto(i, projectConfig.taskStatusMap)
                 }
                 LeadTimeDevTimeDto leadTimeDevTimeDto               = new LeadTimeDevTimeDto(i, changelogHistoryItemDto.movedToDevList.min())
                 OtherItemsDto otherItemsDto                         = new OtherItemsDto(i)
@@ -86,7 +87,7 @@ class JiraBusiness implements IJiraBusiness {
         if(keepGoing) {
             JiraBusiness.log.debug("NEXT PAGE starting at $dto.query.startAt")
             dto.query.startAt += dto.query.maxResults
-            this.updateProjectData(projectName, dto)
+            this.updateProjectData(projectName, dto, projectConfig)
         }
     }
 
@@ -197,10 +198,6 @@ class JiraBusiness implements IJiraBusiness {
         def assignees       = []
         def movedToDevList  = []
 
-        //NOTE we need to set the map so we know what direction things are moving in; this relates to the moveForward & moveBackward stuff
-        //TODO this needs to be a parameter that gets passed in based on the project
-        def taskStatusMap = ["In Definition": 1, "Dev Ready":2, "Dev":3, "QA Ready":4, "QA":5, "Deploy Ready":6, "Done":7]
-
         /**
          * Default constructor in the case that we have no change log information
          */
@@ -210,7 +207,7 @@ class JiraBusiness implements IJiraBusiness {
          * In the event that we have changelog infomation.
          * @param i - The json array from the result list.
          */
-        ChangelogHistoryItemDto(def i) {
+        ChangelogHistoryItemDto(def i, def taskStatusMap) {
 
             for (def h : i.changelog.histories) {
                 for (def t : h.items) {
