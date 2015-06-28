@@ -1,5 +1,8 @@
 package com.nike.mm.entity
 
+import org.springframework.data.elasticsearch.annotations.Field
+import org.springframework.data.elasticsearch.annotations.FieldType
+
 import java.util.Date;
 
 import org.springframework.data.annotation.Id
@@ -13,6 +16,7 @@ class Jira {
 	
 	String couchId
 	String key
+	@Field(type = FieldType.Date)
 	Date created
 	String createdBy
 	String issuetype
@@ -22,6 +26,7 @@ class Jira {
 	String[] assignees //this is actually a map of stuff
 	String[] tags
 	String dataType
+	@Field(type = FieldType.Date)
 	Date finished
 	long leadTime
 	long devTime
