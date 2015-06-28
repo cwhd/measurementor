@@ -52,6 +52,8 @@ Thumbs.db
 /ui/node_modules
 /ui/bower_components
 /src/main/webapp
+/.vagrant/
+/node_modules
 
 #
 # # IntelliJ specific files/directories
