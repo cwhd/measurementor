@@ -100,7 +100,7 @@ class MeasureMentorRunFacade implements IMeasureMentorRunFacade {
             String errorMessage = MessageFormat.format(NO_MATCHING_PLUGIN, request.pluginType)
             responses.add(createFailureResponse(request.pluginType, errorMessage))
         } else if (plugin.validateConfig(request.config)) {
-            responses.add(plugin.updateDataWithResponse(lastRunDate, request))
+            responses.add(plugin.updateDataWithResponse(lastRunDate, request.config))
         } else {
             String errorMessage = MessageFormat.format(INVALID_CONFIG, request.pluginType)
             responses.add(createFailureResponse(request.pluginType, errorMessage))
