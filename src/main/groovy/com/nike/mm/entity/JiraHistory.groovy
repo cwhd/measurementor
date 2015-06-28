@@ -13,6 +13,7 @@ class JiraHistory {
 
     @Id
     String id
+    @Field(type = FieldType.Date)
     Date timestamp
     String changedBy
     String changeField
