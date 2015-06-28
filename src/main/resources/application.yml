@@ -1,7 +1,7 @@
 spring:
     data:
         elasticsearch:
-            cluster-node: localhost:9300
+            cluster-nodes: localhost:9300
             repositories:
                 enabled: true
 mm:
@@ -11,6 +11,3 @@ mm:
         port: 8080
     encrypt:
         password: Password123
-    jenkins:
-        url: http://192.168.37.90:8080
-        path_postfix: /api/json
