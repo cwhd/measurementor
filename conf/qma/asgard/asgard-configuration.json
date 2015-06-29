@@ -1,0 +1,58 @@
+{
+    "application": {
+        "name": "measurementor",
+        "group": "qm-automation",
+        "type": "Standalone Application",
+        "description": "Measurementor aggregates data from the SDLC and allows you to create dashboards for measuring your team.",
+        "owner": "cdav18",
+        "email": "chris.davis@nike.com",
+        "tags": ["measure", "agile", "qm"],
+        "monitorBucketType": "APPLICATION",
+        "product": "measurementor",
+        "team": "QM Automation",
+        "projectId": 104480,
+        "pagerDutyAPIKey": "bd1db521272a49feaf9a37e766232653"
+    },
+    "environments": {
+        "test": {
+            "targetEurekaNamespace": "amilauncher.eureka-tools.test.",
+            "targetAsgard": "tools",
+            "min": 1,
+            "max": 3,
+            "desiredCapacity": 1,
+            "azRebalance": true,
+            "defaultCooldown": 10,
+            "healthCheckGracePeriod": 300,
+            "healthCheckType": "EC2",
+            "instanceType": "m3.medium",
+            "keyName": "qm_automation",
+            "selectedSecurityGroups": ["sg-02973467", "sg-cd941ca8"],
+            "selectedZones": ["us-west-2a"],
+            "subnetPurpose": "INTERNAL",
+            "terminationPolicy": "DEFAULT"
+        },
+        "tools": {
+            "targetEurekaNamespace": "amilauncher.eureka-tools.",
+            "min": 1,
+            "max": 3,
+            "desiredCapacity": 1,
+            "azRebalance": true,
+            "defaultCooldown": 10,
+            "healthCheckGracePeriod": 300,
+            "healthCheckType": "EC2",
+            "instanceType": "m3.medium",
+            "keyName": "qm_automation",
+            "selectedSecurityGroups": [
+                "sg-02973467",
+                "sg-cd941ca8"
+            ],
+            "selectedZones": [
+                "us-west-2a",
+                "us-west-2b",
+                "us-west-2c"
+            ],
+            "subnetPurpose": "INTERNAL",
+            "terminationPolicy": "DEFAULT"
+        }
+    }
+}
