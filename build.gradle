@@ -25,11 +25,11 @@ buildscript {
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
         classpath("com.nike.gradle-continuousdelivery-plugin:gradle-continuousdelivery-plugin:2.+")
- 
     }
 }
 
 apply plugin: 'spring-boot'
+apply plugin: 'continuousdelivery'
 
 springBoot {
     mainClass = 'com.nike.mm.MeasurementorApplication'
