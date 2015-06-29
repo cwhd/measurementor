@@ -13,9 +13,6 @@ import org.jasypt.util.text.StrongTextEncryptor
 import org.springframework.data.domain.PageImpl
 import spock.lang.Specification
 
-/**
- * Created by rparr2 on 6/11/15.
- */
 class MeasureMentorJobsConfigFacadeUnitSpec extends Specification {
 
     static String PASSWORD = "123"
