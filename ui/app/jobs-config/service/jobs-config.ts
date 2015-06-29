@@ -62,8 +62,22 @@ angular.module("jobsConfig").factory("jobsConfig", function($http, $q, constants
 
             }).
             error(function(data, status, headers, config) {
+                var errorMessages = [];
+                var errorMessage = "";
+                var fieldName = "";
+
+                if (data && data.message) {
+                    while (data.message.indexOf("default message") >= 0) {
+                        data.message = data.message.substring(data.message.indexOf("default message") + 17);
+                        fieldName = data.message.substring(0, data.message.indexOf("]"));
+                        data.message = data.message.substring(data.message.indexOf("default message") + 17);
+                        errorMessage = data.message.substring(0, data.message.indexOf("]"));
+                        errorMessages.push({ field: fieldName, message: errorMessage});
+                    }
+                }
+
                 if (onError) {
-                    onError();
+                    onError(errorMessages);
                 }
             });
         },

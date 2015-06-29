@@ -53,7 +53,7 @@ describe("JobDetailsCtrl", function() {
             }
         };
         scope.onBlurFormElement(event);
-        expect(scope.formValidation.showNameValidation).toEqual(true);
+        expect(scope.formValidation.name.show).toEqual(true);
 
         event = {
             currentTarget: {
@@ -62,16 +62,16 @@ describe("JobDetailsCtrl", function() {
             }
         };
         scope.onBlurFormElement(event);
-        expect(scope.formValidation.showCronValidation).toEqual(true);
+        expect(scope.formValidation.cron.show).toEqual(true);
 
         event = {
             currentTarget: {
-                name: "configAsString",
+                name: "config",
                 value: ""
             }
         };
         scope.onBlurFormElement(event);
-        expect(scope.formValidation.showConfigValidation).toEqual(true);
+        expect(scope.formValidation.config.show).toEqual(true);
 
         event = {
             currentTarget: {
@@ -80,7 +80,7 @@ describe("JobDetailsCtrl", function() {
             }
         };
         scope.onBlurFormElement(event);
-        expect(scope.formValidation.showNameValidation).toEqual(false);
+        expect(scope.formValidation.name.show).toEqual(false);
 
         event = {
             currentTarget: {
@@ -89,16 +89,16 @@ describe("JobDetailsCtrl", function() {
             }
         };
         scope.onBlurFormElement(event);
-        expect(scope.formValidation.showCronValidation).toEqual(false);
+        expect(scope.formValidation.cron.show).toEqual(false);
 
         event = {
             currentTarget: {
-                name: "configAsString",
+                name: "config",
                 value: "test"
             }
         };
         scope.onBlurFormElement(event);
-        expect(scope.formValidation.showConfigValidation).toEqual(false);
+        expect(scope.formValidation.config.show).toEqual(false);
     }));
 
     it("Form validation checks (onChange logic)", inject(function() {
@@ -108,11 +108,11 @@ describe("JobDetailsCtrl", function() {
             configAsString: ""
         };
         scope.onChangeFormElement("name");
-        expect(scope.formValidation.showNameValidation).toEqual(true);
+        expect(scope.formValidation.name.show).toEqual(true);
         scope.onChangeFormElement("cron");
-        expect(scope.formValidation.showCronValidation).toEqual(true);
-        scope.onChangeFormElement("configAsString");
-        expect(scope.formValidation.showConfigValidation).toEqual(true);
+        expect(scope.formValidation.cron.show).toEqual(true);
+        scope.onChangeFormElement("config");
+        expect(scope.formValidation.config.show).toEqual(true);
 
         scope.jobDetailsData = {
             name: "TestJob",
@@ -120,33 +120,32 @@ describe("JobDetailsCtrl", function() {
             configAsString: "{type: 'JIRA'}"
         };
         scope.onChangeFormElement("name");
-        expect(scope.formValidation.showNameValidation).toEqual(false);
+        expect(scope.formValidation.name.show).toEqual(false);
         scope.onChangeFormElement("cron");
-        expect(scope.formValidation.showCronValidation).toEqual(false);
-        scope.onChangeFormElement("configAsString");
-        expect(scope.formValidation.showConfigValidation).toEqual(false);
+        expect(scope.formValidation.cron.show).toEqual(false);
+        scope.onChangeFormElement("config");
+        expect(scope.formValidation.config.show).toEqual(false);
     }));
 
     it("Form validation checks (onSave logic)", inject(function() {
+        scope.jobDetailsData = {
+            name: "TestJob",
+            cron: "123",
+            configAsString: "{}"
+        };
+        scope.onSave();
+        expect(scope.formValidation.name.show).toEqual(false);
+        expect(scope.formValidation.cron.show).toEqual(false);
+        expect(scope.formValidation.config.show).toEqual(false);
+
         scope.jobDetailsData = {
             name: "",
             cron: "",
             configAsString: ""
         };
         scope.onSave();
-        expect(scope.formValidation.showNameValidation).toEqual(true);
-        expect(scope.formValidation.showCronValidation).toEqual(true);
-        expect(scope.formValidation.showConfigValidation).toEqual(true);
-
-        scope.jobDetailsData = {
-            name: "TestJob",
-            cron: "123",
-            configAsString: "{type: 'JIRA'}"
-        };
-        scope.onSave();
-        expect(scope.formValidation.showNameValidation).toEqual(false);
-        expect(scope.formValidation.showCronValidation).toEqual(false);
-        expect(scope.formValidation.showConfigValidation).toEqual(false);
-        expect(stateName).toEqual("app.jobs-list");
+        expect(scope.formValidation.name.show).toEqual(true);
+        expect(scope.formValidation.cron.show).toEqual(true);
+        expect(scope.formValidation.config.show).toEqual(true);      
     }));
 });
