@@ -1,21 +1,17 @@
 package com.nike.mm.rest.impl
 
+import com.nike.mm.dto.MeasureMentorJobsConfigDto
+import com.nike.mm.facade.IMeasureMentorJobsConfigFacade
+import com.nike.mm.rest.IMeasureMentorJobsConfigRest
+import com.nike.mm.rest.assembler.MeasureMentorJobsConfigResourceAssembler
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.web.PagedResourcesAssembler
 import org.springframework.hateoas.PagedResources
-import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestMethod
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 
-import com.nike.mm.dto.MeasureMentorJobsConfigDto
-import com.nike.mm.facade.IMeasureMentorJobsConfigFacade
-import com.nike.mm.rest.IMeasureMentorJobsConfigRest
-import com.nike.mm.rest.assembler.MeasureMentorJobsConfigResourceAssembler
+import javax.validation.Valid
 
 @RestController
 @RequestMapping("/api/jobs-config")
@@ -41,7 +37,7 @@ class MeasureMentorJobsConfigRest implements IMeasureMentorJobsConfigRest{
 	 
 	@Override
 	@RequestMapping(method = RequestMethod.POST)
-	public MeasureMentorJobsConfigDto save(@RequestBody MeasureMentorJobsConfigDto dto) {
+	public MeasureMentorJobsConfigDto save(@RequestBody @Valid MeasureMentorJobsConfigDto dto) {
 		return this.measureMentorJobsConfigFacade.saveJobsConfig(dto);
 	}
 }

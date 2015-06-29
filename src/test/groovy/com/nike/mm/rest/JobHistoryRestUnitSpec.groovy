@@ -21,7 +21,7 @@ class JobHistoryRestUnitSpec extends Specification {
     JobHistoryResourceAssembler jobHistoryResourceAssembler
 
     def setup() {
-        this.jobHistoryRest = new JobHistoryRest()
+        this.jobHistoryRest                             = new JobHistoryRest()
         this.jobHistoryFacade                           = Mock(IJobHistoryFacade)
         this.jobHistoryRest.jobHistoryFacade            = this.jobHistoryFacade
     }

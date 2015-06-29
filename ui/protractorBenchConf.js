@@ -1,5 +1,3 @@
-var httpServer = require('http-server');
-
 exports.config = {
     directConnect: true,
 

@@ -60,7 +60,7 @@ describe('deep tree baseline', function() {
         //Tells protractor this isn't an Angular 1 application
         browser.ignoreSynchronization = true;
         //Load the benchmark
-        browser.get(baseUrl + '');
+        //browser.get(baseUrl + '');
         return runner.sample({
             id: 'measurementor',
             execute: function() {
