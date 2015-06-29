@@ -9,7 +9,8 @@ import com.nike.mm.entity.MeasureMentorJobsConfig
 import com.nike.mm.facade.impl.MeasureMentorJobsConfigFacade
 import com.nike.mm.service.ICronService
 import groovy.json.JsonSlurper
-import org.jasypt.util.text.StrongTextEncryptor
+import org.jasypt.util.text.BasicTextEncryptor
+import org.jasypt.util.text.TextEncryptor
 import org.springframework.data.domain.PageImpl
 import spock.lang.Specification
 
@@ -27,7 +28,7 @@ class MeasureMentorJobsConfigFacadeUnitSpec extends Specification {
 
     ICronService cronService
 
-    StrongTextEncryptor strongTextEncryptor
+    TextEncryptor textEncryptor
 
     def setup() {
         this.measureMentorJobsConfigFacade                                  = new MeasureMentorJobsConfigFacade()
@@ -35,13 +36,13 @@ class MeasureMentorJobsConfigFacadeUnitSpec extends Specification {
         this.jobHistoryBusiness                                             = Mock(IJobHistoryBusiness)
         this.measureMentorRunBusiness                                       = Mock(IMeasureMentorRunBusiness)
         this.cronService                                                    = Mock(ICronService)
-        this.strongTextEncryptor                                            = new StrongTextEncryptor()
-        this.strongTextEncryptor.setPassword(PASSWORD)
+        this.textEncryptor                                            = new BasicTextEncryptor()
+        this.textEncryptor.setPassword(PASSWORD)
         this.measureMentorJobsConfigFacade.measureMentorJobsConfigBusiness  = this.measureMentorJobsConfigBusiness
         this.measureMentorJobsConfigFacade.jobHistoryBusiness               = this.jobHistoryBusiness
         this.measureMentorJobsConfigFacade.measureMentorRunBusiness         = this.measureMentorRunBusiness
         this.measureMentorJobsConfigFacade.cronService                      = this.cronService
-        this.measureMentorJobsConfigFacade.strongTextEncryptor              = this.strongTextEncryptor
+        this.measureMentorJobsConfigFacade.textEncryptor              = this.textEncryptor
     }
 
     def "find an individual record"() {
@@ -61,7 +62,7 @@ class MeasureMentorJobsConfigFacadeUnitSpec extends Specification {
 
         setup:
         def dto     = [id:"not a real id"] as MeasureMentorJobsConfigDto
-        def entity  = [id:dto.id, name:"name", jobOn:true, cron:"* * * * *", encryptedConfig: Base64.getEncoder().encodeToString(this.strongTextEncryptor.encrypt("{}").bytes)] as MeasureMentorJobsConfig
+        def entity  = [id:dto.id, name:"name", jobOn:true, cron:"* * * * *", encryptedConfig: Base64.getEncoder().encodeToString(this.textEncryptor.encrypt("{}").bytes)] as MeasureMentorJobsConfig
 
         when:
         def rentity = this.measureMentorJobsConfigFacade.saveJobsConfig(dto);
@@ -75,7 +76,7 @@ class MeasureMentorJobsConfigFacadeUnitSpec extends Specification {
     def "ensure that the list is converted to the appropriate dto with null job history"() {
 
         setup:
-        def dtos = [[id: "testId", name:"name", jobOn:true, cron:"* * * * *", encryptedConfig: Base64.getEncoder().encodeToString(this.strongTextEncryptor.encrypt("{}").bytes)] as MeasureMentorJobsConfig]
+        def dtos = [[id: "testId", name:"name", jobOn:true, cron:"* * * * *", encryptedConfig: Base64.getEncoder().encodeToString(this.textEncryptor.encrypt("{}").bytes)] as MeasureMentorJobsConfig]
 
         when:
         def rlist = this.measureMentorJobsConfigFacade.findListOfJobs(null)
@@ -94,7 +95,7 @@ class MeasureMentorJobsConfigFacadeUnitSpec extends Specification {
     def "ensure that the list is converted and job history exists" () {
 
         setup:
-        def dtos = [[id: "testId", name:"name", jobOn:true, cron:"* * * * *", encryptedConfig: Base64.getEncoder().encodeToString(this.strongTextEncryptor.encrypt("{}").bytes)] as MeasureMentorJobsConfig]
+        def dtos = [[id: "testId", name:"name", jobOn:true, cron:"* * * * *", encryptedConfig: Base64.getEncoder().encodeToString(this.textEncryptor.encrypt("{}").bytes)] as MeasureMentorJobsConfig]
         def jh = [id: "id", jobid:"jid", startDate: new Date(), endDate: new Date(), status: JobHistory.Status.success, comments:"listing of comments"] as JobHistory
 
         when:

@@ -2,7 +2,9 @@ package com.nike.mm
 
 import org.dozer.DozerBeanMapper
 import org.dozer.Mapper
+import org.jasypt.util.text.BasicTextEncryptor
 import org.jasypt.util.text.StrongTextEncryptor
+import org.jasypt.util.text.TextEncryptor
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -19,10 +21,18 @@ class AppConfig {
 
     @Bean
     StrongTextEncryptor strongTextEncryptor() {
-        StrongTextEncryptor textEncryptor = new StrongTextEncryptor();
+        StrongTextEncryptor textEncryptor = new StrongTextEncryptor();//BasicTextEncryptor
         textEncryptor.setPassword(this.encryptPassword);
         return textEncryptor;
     }
+
+    @Bean
+    TextEncryptor textEncryptor() {
+        BasicTextEncryptor textEncryptor = new BasicTextEncryptor();//BasicTextEncryptor
+        textEncryptor.setPassword(this.encryptPassword);
+        return textEncryptor;
+    }
+
 
     @Bean
     Mapper dozerBeanMapper() {

@@ -4,7 +4,8 @@ import com.nike.mm.business.internal.impl.MeasureMentorJobsConfigBusiness
 import com.nike.mm.dto.MeasureMentorJobsConfigDto
 import com.nike.mm.entity.MeasureMentorJobsConfig
 import com.nike.mm.repository.es.internal.IMeasureMentorJobsConfigRepository
-import org.jasypt.util.text.StrongTextEncryptor
+import org.jasypt.util.text.BasicTextEncryptor
+import org.jasypt.util.text.TextEncryptor
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
@@ -19,15 +20,15 @@ class MeasureMentorJobsConfigBusinessUnitSpec extends Specification {
 
     IMeasureMentorJobsConfigRepository measureMentorConfigRepository
 
-    StrongTextEncryptor strongTextEncryptor
+    TextEncryptor textEncryptor
 
     def setup() {
         this.measureMentorJobsConfigBusiness                                = new MeasureMentorJobsConfigBusiness()
         this.measureMentorConfigRepository                                  = Mock(IMeasureMentorJobsConfigRepository)
-        this.strongTextEncryptor                                            = new StrongTextEncryptor()
-        this.strongTextEncryptor.setPassword("password")
+        this.textEncryptor                                            = new BasicTextEncryptor()
+        this.textEncryptor.setPassword("password")
         this.measureMentorJobsConfigBusiness.measureMentorConfigRepository  = this.measureMentorConfigRepository
-        this.measureMentorJobsConfigBusiness.strongTextEncryptor            = this.strongTextEncryptor
+        this.measureMentorJobsConfigBusiness.textEncryptor            = this.textEncryptor
     }
 
     def "find all and page" () {
@@ -46,7 +47,7 @@ class MeasureMentorJobsConfigBusinessUnitSpec extends Specification {
     def "find one and decrypt the configuration" () {
 
         setup:
-        def dto = [id: "id", name: "name", jobOn: true, encryptedConfig: Base64.getEncoder().encodeToString(this.strongTextEncryptor.encrypt('[{"id":"id"}]').getBytes()), cron:"cron"] as MeasureMentorJobsConfig
+        def dto = [id: "id", name: "name", jobOn: true, encryptedConfig: Base64.getEncoder().encodeToString(this.textEncryptor.encrypt('[{"id":"id"}]').getBytes()), cron:"cron"] as MeasureMentorJobsConfig
 
         when:
         def rdto = this.measureMentorJobsConfigBusiness.findById("id")
