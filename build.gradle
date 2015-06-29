@@ -30,6 +30,7 @@ buildscript {
 
 apply plugin: 'spring-boot'
 apply plugin: 'continuousdelivery'
+apply plugin: 'sonar-runner'
 
 springBoot {
     mainClass = 'com.nike.mm.MeasurementorApplication'
