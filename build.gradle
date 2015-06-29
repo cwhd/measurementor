@@ -14,9 +14,18 @@ buildscript {
         maven  {
         	url "http://repo1.maven.org/maven2"
     	}
+        maven { 
+            credentials {
+                username 'maven'
+                password 'ludist'
+            }
+            url "http://repo.nikedev.com:8081/artifactory/all-repos"
+        }
     }
     dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}") 
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+        classpath("com.nike.gradle-continuousdelivery-plugin:gradle-continuousdelivery-plugin:2.+")
+ 
     }
 }
 
