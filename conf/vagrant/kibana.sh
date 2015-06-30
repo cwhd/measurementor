@@ -14,4 +14,4 @@ sudo rm kibana-4.1.0-linux-x64.tar.gz
 
 cd kibana-4.1.0-linux-x64
 
-./bin/kibana&
+./bin/kibana &
