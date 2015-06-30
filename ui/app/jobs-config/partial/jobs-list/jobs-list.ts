@@ -6,7 +6,8 @@ angular.module("jobsConfig").controller("JobsListCtrl", function($rootScope, $sc
     generalLayout.data.viewTitle = "List of jobs";
     $scope.showSpinner = true;
 
-    var currentPage = "api/jobs-config?page=0&size=5&sort=name,asc";
+
+    var currentPage = "api/jobs-config?page=" + generalLayout.data.jobsListCurrentPageNumber + "&size=5&sort=name,asc";
 
     $scope.getData = function(url: string) {
         currentPage = url;
@@ -63,11 +64,13 @@ angular.module("jobsConfig").controller("JobsListCtrl", function($rootScope, $sc
     };
 
     $scope.onPrevious = function() {
+        generalLayout.data.jobsListCurrentPageNumber--;
         $scope.showSpinner = true;
         $scope.getData($scope.jobsData.links.prev.href);
     };
 
     $scope.onNext = function() {
+        generalLayout.data.jobsListCurrentPageNumber++;
         $scope.showSpinner = true;
         $scope.getData($scope.jobsData.links.next.href);
     };

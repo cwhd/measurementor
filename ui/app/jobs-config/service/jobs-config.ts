@@ -2,7 +2,6 @@ declare
 var angular: any;
 
 angular.module("jobsConfig").factory("jobsConfig", function($http, $q, constants, generalLayout) {
-
     var jobsConfig = {
         getJobs: function(url) {
             var deferred = $q.defer();
@@ -59,7 +58,6 @@ angular.module("jobsConfig").factory("jobsConfig", function($http, $q, constants
                 if (onSuccess) {
                     onSuccess();
                 }
-
             }).
             error(function(data, status, headers, config) {
                 var errorMessages = [];
