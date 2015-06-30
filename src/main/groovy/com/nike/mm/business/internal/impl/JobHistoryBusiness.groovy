@@ -133,6 +133,7 @@ class JobHistoryBusiness implements IJobHistoryBusiness {
     }
 
     static PageRequest getDefaultDescEndDatePagerequest() {
-        new PageRequest(0, 1, new Sort(Sort.Direction.DESC, END_DATE))
+        new PageRequest(0, 1)
+//        new PageRequest(0, 1, new Sort(Sort.Direction.DESC, END_DATE))
     }
 }
