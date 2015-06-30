@@ -1,9 +1,8 @@
 package com.nike.mm.facade;
 
+import com.nike.mm.dto.MeasureMentorJobsConfigDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-
-import com.nike.mm.dto.MeasureMentorJobsConfigDto;
 
 public interface IMeasureMentorJobsConfigFacade {
 

@@ -75,6 +75,19 @@ class MeasureMentorRunFacade implements IMeasureMentorRunFacade {
         }
     }
 
+    @Override
+    String validateConfig(Object config) {
+        String errorMessage
+        IMeasureMentorBusiness plugin = this.findByType(config.type)
+        if (!plugin) {
+            errorMessage = MessageFormat.format(NO_MATCHING_PLUGIN, config.type)
+        } else {
+            errorMessage = plugin.validateConfig(config)
+        }
+
+        return errorMessage
+    }
+
     private static List<JobRunRequestDto> createRequestsFromConfig(String jobid, def configs) {
 
         List<JobRunRequestDto> list = Lists.newArrayList()

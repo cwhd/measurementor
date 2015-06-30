@@ -3,16 +3,12 @@ package com.nike.mm.business.plugin
 import com.nike.mm.business.plugin.data.IJenkinsDataForTests
 import com.nike.mm.business.plugins.IJenkinsBusiness
 import com.nike.mm.business.plugins.impl.JenkinsBusiness
-import com.nike.mm.entity.Jenkins
 import com.nike.mm.repository.es.plugins.IJenkinsEsRepository
 import com.nike.mm.repository.ws.IJenkinsWsRepository
-import com.nike.mm.service.IUtilitiesService
 import com.nike.mm.service.impl.UtilitiesService
+import org.apache.commons.lang3.StringUtils
 import spock.lang.Specification
 
-/**
- * Created by rparr2 on 6/12/15.
- */
 class JenkinsBusinessUnitSpec extends Specification {
 
     IJenkinsBusiness jenkinsBusiness
@@ -43,25 +39,28 @@ class JenkinsBusinessUnitSpec extends Specification {
     def "confirm valid config"() {
 
         when:
-        boolean validConfig = this.jenkinsBusiness.validateConfig([url:"http://google.com"])
+        String errorMessage = this.jenkinsBusiness.validateConfig([url:"http://google.com"])
 
         then:
-        validConfig
+        StringUtils.isEmpty(errorMessage)
     }
 
     def "invalid config"() {
 
         when:
-        boolean validConfig = this.jenkinsBusiness.validateConfig([])
+        String errorMessage = this.jenkinsBusiness.validateConfig([])
 
         then:
-        !validConfig
+        !StringUtils.isEmpty(errorMessage)
     }
 
     def "update data is disabled"() {
 
+        setup:
+        def fromDate = Date.parse( 'dd-MM-yyyy', "01-01-2001" )
+
         when:
-        this.jenkinsBusiness.updateData(null, null);
+        this.jenkinsBusiness.updateDataWithResponse(fromDate, null);
 
         then:
         thrown(RuntimeException)
@@ -71,9 +70,10 @@ class JenkinsBusinessUnitSpec extends Specification {
 
         setup:
         def config = [url:"http://made.up", credentials:"credentials"]
+        def fromDate = Date.parse( 'dd-MM-yyyy', "01-01-2001" )
 
         when:
-        this.jenkinsBusiness.updateData(config)
+        this.jenkinsBusiness.updateDataWithResponse(fromDate,config)
 
         then:
         1 * this.jenkinsWsRepository.findListOfJobs(_)              >> IJenkinsDataForTests.API_JSON
@@ -89,9 +89,10 @@ class JenkinsBusinessUnitSpec extends Specification {
 
         setup:
         def config = [url:"http://made.up", credentials:"credentials"]
+        def fromDate = Date.parse( 'dd-MM-yyyy', "01-01-2001" )
 
         when:
-        this.jenkinsBusiness.updateData(config)
+        this.jenkinsBusiness.updateDataWithResponse(fromDate, config)
 
         then:
         1 * this.jenkinsWsRepository.findListOfJobs(_)              >> IJenkinsDataForTests.API_JSON

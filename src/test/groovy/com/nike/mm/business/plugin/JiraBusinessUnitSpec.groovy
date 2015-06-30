@@ -8,11 +8,10 @@ import com.nike.mm.repository.es.plugins.IJiraHistoryEsRepository
 import com.nike.mm.repository.ws.IJiraWsRepository
 import com.nike.mm.service.IUtilitiesService
 import com.nike.mm.service.impl.UtilitiesService
+import org.apache.commons.lang3.StringUtils
 import spock.lang.Specification
 
-/**
- * Created by rparr2 on 6/12/15.
- */
+
 class JiraBusinessUnitSpec extends Specification {
 
     IJiraBusiness jiraBusiness
@@ -49,28 +48,29 @@ class JiraBusinessUnitSpec extends Specification {
     def "confirm valid config"() {
 
         when:
-        boolean validConfig = this.jiraBusiness.validateConfig([url:"http://google.com"])
+        String errorMessage = this.jiraBusiness.validateConfig([url:"http://google.com"])
 
         then:
-        validConfig
+        StringUtils.isEmpty(errorMessage)
     }
 
     def "invalid config"() {
 
         when:
-        boolean validConfig = this.jiraBusiness.validateConfig([])
+        String errorMessage = this.jiraBusiness.validateConfig([])
 
         then:
-        !validConfig
+        !StringUtils.isEmpty(errorMessage)
     }
 
     def "update data and general workflow"() {
 
         setup:
         def config = [url:"http://made.up", credentials:"credentials"]
+        def fromDate = Date.parse( 'dd-MM-yyyy', "01-01-2001" )
 
         when:
-        this.jiraBusiness.updateData(config);
+        this.jiraBusiness.updateDataWithResponse(fromDate, config);
 
         then:
         1 * this.jiraWsRepository.getProjectsList(_)        >> ['PROJECTA']
@@ -83,9 +83,10 @@ class JiraBusinessUnitSpec extends Specification {
 
         setup:
         def config = [url:"http://made.up", credentials:"credentials"]
+        def fromDate = Date.parse( 'dd-MM-yyyy', "01-01-2001" )
 
         when:
-        this.jiraBusiness.updateData(config);
+        this.jiraBusiness.updateDataWithResponse(fromDate, config);
 
         then:
         1 * this.jiraWsRepository.getProjectsList(_)        >> ['PROJECTA']

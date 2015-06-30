@@ -8,11 +8,10 @@ import com.nike.mm.repository.ws.IStashWsRepository
 import com.nike.mm.service.IUtilitiesService
 import com.nike.mm.entity.Stash
 import com.nike.mm.service.impl.UtilitiesService
+import org.apache.commons.lang3.StringUtils
 import spock.lang.Specification
 
-/**
- * Created by rparr2 on 6/19/15.
- */
+
 class StashBusinessUnitSpec extends Specification {
 
     IStashBusiness stashBusiness
@@ -48,10 +47,10 @@ class StashBusinessUnitSpec extends Specification {
         def configInfo = [url:"http://google.com"]
 
         when:
-        boolean valid = this.stashBusiness.validateConfig(configInfo)
+        String errorMessage = this.stashBusiness.validateConfig(configInfo)
 
         then:
-        valid
+        StringUtils.isEmpty(errorMessage)
     }
 
     def "validate config url is not valid" () {
@@ -60,19 +59,20 @@ class StashBusinessUnitSpec extends Specification {
         def configInfo = [url:"http://google.notreal"]
 
         when:
-        boolean valid = this.stashBusiness.validateConfig(configInfo)
+        String errorMessage = this.stashBusiness.validateConfig(configInfo)
 
         then:
-        !valid
+        !StringUtils.isEmpty(errorMessage)
     }
 
     def "no projects returned"() {
 
         setup:
         def config = [url:"http://made.up", credentials:"credentials"]
+        def fromDate = Date.parse( 'dd-MM-yyyy', "01-01-2001" )
 
         when:
-        this.stashBusiness.updateData(config);
+        this.stashBusiness.updateDataWithResponse(fromDate, config);
 
         then:
         1 * this.stashWsRepository.findAllProjects(_) >> []
@@ -82,9 +82,10 @@ class StashBusinessUnitSpec extends Specification {
 
         setup:
         def config = [url:"http://made.up", credentials:"credentials"]
+        def fromDate = Date.parse( 'dd-MM-yyyy', "01-01-2001" )
 
         when:
-        this.stashBusiness.updateData(config);
+        this.stashBusiness.updateDataWithResponse(fromDate, config);
 
         then:
         1 * this.stashWsRepository.findAllProjects(_)               >> ["PROJECT1"]
@@ -97,9 +98,10 @@ class StashBusinessUnitSpec extends Specification {
 
         setup:
         def config = [url:"http://made.up", credentials:"credentials"]
+        def fromDate = Date.parse( 'dd-MM-yyyy', "01-01-2001" )
 
         when:
-        this.stashBusiness.updateData(config);
+        this.stashBusiness.updateDataWithResponse(fromDate, config);
 
         then:
         1 * this.stashWsRepository.findAllProjects(_)               >> ["PROJECT1"]
@@ -115,9 +117,10 @@ class StashBusinessUnitSpec extends Specification {
 
         setup:
         def config = [url:"http://made.up", credentials:"credentials"]
+        def fromDate = Date.parse( 'dd-MM-yyyy', "01-01-2001" )
 
         when:
-        this.stashBusiness.updateData(config);
+        this.stashBusiness.updateDataWithResponse(fromDate, config);
 
         then:
         1 * this.stashWsRepository.findAllProjects(_)               >> ["PROJECT1"]
@@ -133,9 +136,10 @@ class StashBusinessUnitSpec extends Specification {
 
         setup:
         def config = [url:"http://made.up", credentials:"credentials"]
+        def fromDate = Date.parse( 'dd-MM-yyyy', "01-01-2001" )
 
         when:
-        this.stashBusiness.updateData(config);
+        this.stashBusiness.updateDataWithResponse(fromDate, config);
 
         then:
         1 * this.stashWsRepository.findAllProjects(_)               >> ["PROJECT1"]
@@ -151,9 +155,10 @@ class StashBusinessUnitSpec extends Specification {
 
         setup:
         def config = [url:"http://made.up", credentials:"credentials"]
+        def fromDate = Date.parse( 'dd-MM-yyyy', "01-01-2001" )
 
         when:
-        this.stashBusiness.updateData(config);
+        this.stashBusiness.updateDataWithResponse(fromDate, config);
 
         then:
         1 * this.stashWsRepository.findAllProjects(_)               >> ["PROJECT1"]
@@ -169,9 +174,10 @@ class StashBusinessUnitSpec extends Specification {
 
         setup:
         def config = [url:"http://made.up", credentials:"credentials"]
+        def fromDate = Date.parse( 'dd-MM-yyyy', "01-01-2001" )
 
         when:
-        this.stashBusiness.updateData(config);
+        this.stashBusiness.updateDataWithResponse(fromDate, config);
 
         then:
         1 * this.stashWsRepository.findAllProjects(_)               >> ["PROJECT1"]
@@ -187,9 +193,10 @@ class StashBusinessUnitSpec extends Specification {
 
         setup:
         def config = [url:"http://made.up", credentials:"credentials"]
+        def fromDate = Date.parse( 'dd-MM-yyyy', "01-01-2001" )
 
         when:
-        this.stashBusiness.updateData(config);
+        this.stashBusiness.updateDataWithResponse(fromDate, config);
 
         then:
         1 * this.stashWsRepository.findAllProjects(_)               >> ["PROJECT1"]
