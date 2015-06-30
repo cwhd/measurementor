@@ -24,7 +24,7 @@ import java.text.SimpleDateFormat
 class JobHistoryBusiness implements IJobHistoryBusiness {
 
     /**
-     * Error message when a plugin failed for a givne reason
+     * Error message when a plugin failed for a given reason
      */
     public static final String PLUGIN_FAILED = "Plugin {0} failed: "
 
@@ -133,6 +133,7 @@ class JobHistoryBusiness implements IJobHistoryBusiness {
     }
 
     static PageRequest getDefaultDescEndDatePagerequest() {
+        //todo found a workaround
         new PageRequest(0, 1)
 //        new PageRequest(0, 1, new Sort(Sort.Direction.DESC, END_DATE))
     }

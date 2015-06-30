@@ -91,14 +91,22 @@ class MeasureMentorRunFacade implements IMeasureMentorRunFacade {
     private static List<JobRunRequestDto> createRequestsFromConfig(String jobid, def configs) {
 
         List<JobRunRequestDto> list = Lists.newArrayList()
-        configs.each { config ->
-            JobRunRequestDto request = new JobRunRequestDto()
-            request.jobid = jobid
-            request.config = config
-            request.pluginType = config.type
-            list.add(request)
+        if (isCollectionOrArray(configs)) {
+            configs.each { config ->
+                list.add(createRequestfromConfig(jobid, config))
+            }
+        } else {
+            list.add(createRequestfromConfig(jobid, configs))
         }
         return list
+    }
+
+    private static JobRunRequestDto createRequestfromConfig(String jobid, def config) {
+        JobRunRequestDto request = new JobRunRequestDto()
+        request.jobid = jobid
+        request.config = config
+        request.pluginType = config.type
+        return request
     }
 
     private void invokePlugin(JobRunRequestDto request, List<JobRunResponseDto> responses) {
@@ -133,5 +141,9 @@ class MeasureMentorRunFacade implements IMeasureMentorRunFacade {
             }
         }
         return null;
+    }
+
+    private static boolean isCollectionOrArray(Object value) {
+        [Collection, Object[]].any { it.isAssignableFrom(value.getClass()) }
     }
 }
