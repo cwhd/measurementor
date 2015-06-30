@@ -25,6 +25,6 @@
         "grunt-typescript": "~0.6.2",
         "load-grunt-tasks": "~0.2",
         "rimraf": "~2.2.6",
-        "streamqueue": "0.0.5",
+        "streamqueue": "0.0.5"
     }
 }
