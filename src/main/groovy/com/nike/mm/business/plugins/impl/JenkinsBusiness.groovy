@@ -9,11 +9,12 @@ import com.nike.mm.entity.JobHistory
 import com.nike.mm.repository.es.plugins.IJenkinsEsRepository
 import com.nike.mm.repository.ws.IJenkinsWsRepository
 import com.nike.mm.service.IUtilitiesService
+import org.apache.commons.lang3.StringUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
 @Service
-class JenkinsBusiness implements IJenkinsBusiness {
+class JenkinsBusiness extends AbstractBusiness implements IJenkinsBusiness {
 
 	@Autowired IJenkinsWsRepository jenkinsWsRepository
 
@@ -25,25 +26,23 @@ class JenkinsBusiness implements IJenkinsBusiness {
 	String type() {
 		return "Jenkins";
 	}
-	
-	@Override
-	boolean validateConfig(Object config) {
-		return config.url ? true:false;
-	}
-	
-	@Override
-	void updateData(final Object configInfo) {
-        //TODO get last from date.
-        this.findJobs(configInfo)
+
+    @Override
+    String validateConfig(Object config) {
+        String errorMessage = null
+        if (!config.url) {
+            errorMessage = prefixWithType("Missing url")
+        }
+        return errorMessage
     }
 
     @Override
     JobRunResponseDto updateDataWithResponse(Date lastRunDate, Object configInfo) {
+        this.findJobs(lastRunDate, configInfo)
         return [type: type(), status: JobHistory.Status.success, reccordsCount: 0] as JobRunResponseDto
     }
 
-    void findJobs(final Object configInfo){
-		Date fromDate = Date.parse( 'dd-MM-yyyy', "01-01-2001" )
+    void findJobs(final Date fromDate, final Object configInfo){
 		String path = "/api/json";
         println "1.Path: $path"
 		HttpRequestDto dto = [url: configInfo.url, path: path, query:[start: 0, limit: 300], credentials: configInfo.credentials, proxyDto:[]as ProxyDto] as HttpRequestDto

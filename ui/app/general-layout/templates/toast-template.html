@@ -1,3 +1,8 @@
-<md-toast ng-class="messageType == 'error' ? 'errorToast' : 'successToast'">
-  <span flex>{{messageText}}</span>
+<md-toast ng-class="::messageType == 'error' ? 'errorToast' : 'successToast'">
+  <div flex ng-if="!isArrayOfMessages">{{::messageText}}</div>
+
+  <div layout="column">
+  	<div ng-if="isArrayOfMessages" ng-repeat="message in messageText">
+  		<span ng-if="messageText.length > 1">-</span> {{::message}}{{$index != (messageText.length - 1) ? ';' : '.'}}</div>
+  </div>  
 </md-toast>

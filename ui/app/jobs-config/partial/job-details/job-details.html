@@ -15,31 +15,31 @@
 			<md-content flex="0" flex-md="15" flex-gt-md="33"></md-content>					
 			<md-content layout-padding flex="100" flex-md="70" flex-gt-md="33" style="overflow: visible;">
 				<form name="jobDetailsForm">
-					<md-input-container md-is-error='formValidation.showNameValidation'>
+					<md-input-container md-is-error='formValidation.name.show'>
 						<label>Job Name</label>
 						<input type="text" name="name" ng-model="jobDetailsData.name" ng-blur="onBlurFormElement($event)" ng-change="onChangeFormElement('name')">
-						<div ng-messages="formValidation">
-					         <div ng-message="showNameValidation">This field is required</div>
+						<div ng-messages="formValidation.name">
+					         <div ng-message="show">{{formValidation.name.message}}</div>
 				        </div>						
 					</md-input-container>
-					<md-input-container md-is-error='formValidation.showCronValidation'>
+					<md-input-container md-is-error='formValidation.cron.show'>
 						<label>Cron</label>
 						<input type="text" name="cron" ng-model="jobDetailsData.cron" ng-blur="onBlurFormElement($event)" ng-change="onChangeFormElement('cron')">
-						<div ng-messages="formValidation">
-					         <div ng-message="showCronValidation">This field is required</div>
-				        </div>							
+						<div ng-messages="formValidation.cron">
+					         <div ng-message="show">{{formValidation.cron.message}}</div>
+				        </div>						
 					</md-input-container>
 				 	
 			        <md-checkbox ng-model="jobDetailsData.jobOn" class="md-primary"b>
 			          Job On
 			        </md-checkbox>
 
-			        <md-input-container md-is-error='formValidation.showConfigValidation'>
+			        <md-input-container md-is-error='formValidation.config.show'>
 			           <label>Config</label>
-			           <textarea name="configAsString" ng-model="jobDetailsData.configAsString" ng-blur="onBlurFormElement($event)" ng-change="onChangeFormElement('configAsString')"></textarea>
-					   <div ng-messages="formValidation">
-					   	   <div ng-message="showConfigValidation">This field is required</div>
-				       	</div>	
+			           <textarea name="config" ng-model="jobDetailsData.configAsString" ng-blur="onBlurFormElement($event)" ng-change="onChangeFormElement('config')"></textarea>
+						<div ng-messages="formValidation.config">
+					         <div ng-message="show">{{formValidation.config.message}}</div>
+				        </div>	
 			        </md-input-container>
 
 					<div layout="column">

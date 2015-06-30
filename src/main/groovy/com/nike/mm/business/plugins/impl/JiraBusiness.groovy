@@ -11,6 +11,7 @@ import com.nike.mm.repository.es.plugins.IJiraHistoryEsRepository
 import com.nike.mm.repository.ws.IJiraWsRepository
 import com.nike.mm.service.IUtilitiesService
 import groovy.util.logging.Slf4j
+import org.apache.commons.lang3.StringUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
@@ -20,7 +21,7 @@ import java.util.concurrent.TimeUnit;
 
 @Service
 @Slf4j
-class JiraBusiness implements IJiraBusiness {
+class JiraBusiness extends AbstractBusiness implements IJiraBusiness {
 
 	@Autowired IJiraWsRepository jiraWsRepository
 
@@ -34,27 +35,27 @@ class JiraBusiness implements IJiraBusiness {
 	String type() {
 		return "Jira";
 	}
-	
-	@Override
-	boolean validateConfig(Object config) {
-		return config.url ? true:false;
-	}
-	
-	@Override
-	void updateData(final Object configInfo) {
-		this.getProjects(configInfo).each { def projectName ->
-            def path            = "/rest/api/2/search"
 
+    @Override
+    String validateConfig(Object config) {
+        String errorMessage = null
+        if (!config.url) {
+            errorMessage = prefixWithType("Missing url")
+        }
+        //todo credentials required ?
+        return errorMessage
+    }
+
+    @Override
+    JobRunResponseDto updateDataWithResponse(Date lastRunDate, Object configInfo) {
+        this.getProjects(configInfo).each { def projectName ->
+            def path            = "/rest/api/2/search"
             //TODO: UpdateDate to the jql
             def jiraQuery       = "project=$projectName"
             def query           = [jql: jiraQuery, expand:"changelog",startAt: 0, maxResults: 100, fields:"*all"]
             HttpRequestDto dto  = [url: configInfo.url, path: path, query:query, credentials: configInfo.credentials, proxyDto:[]as ProxyDto] as HttpRequestDto
             this.updateProjectData(projectName, dto)
         }
-	}
-
-    @Override
-    JobRunResponseDto updateDataWithResponse(Date lastRunDate, Object configInfo) {
         return [type: type(), status: JobHistory.Status.success, reccordsCount: 0] as JobRunResponseDto
     }
 
