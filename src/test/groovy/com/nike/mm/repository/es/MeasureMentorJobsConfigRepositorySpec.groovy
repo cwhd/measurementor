@@ -1,6 +1,6 @@
 package com.nike.mm.repository.es
 
-import org.jasypt.util.text.StrongTextEncryptor
+import org.jasypt.util.text.TextEncryptor
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test
@@ -23,7 +23,7 @@ class MeasureMentorJobsConfigRepositorySpec extends Specification {
 	
 	@Autowired IMeasureMentorJobsConfigRepository measureMentorConfigRepository;
 	
-	@Autowired StrongTextEncryptor strongTextEncryptor;
+	@Autowired TextEncryptor textEncryptor
 	
 	@Test
 	def "get a config from the database with the encrypted string still encrypted"() {
@@ -31,14 +31,14 @@ class MeasureMentorJobsConfigRepositorySpec extends Specification {
 		setup:
 		this.measureMentorConfigRepository.deleteAll();
 		String config = '[{"type":"Jira", "url":"http://myJira.com"},{"type":"Jenkins", "url":"http://myjenkins.com"}]';
-		this.measureMentorConfigRepository.save([name:"TESTCONFIG", encryptedConfig: Base64.getEncoder().encodeToString(this.strongTextEncryptor.encrypt(config).getBytes())] as MeasureMentorJobsConfig)
+		this.measureMentorConfigRepository.save([name:"TESTCONFIG", encryptedConfig: Base64.getEncoder().encodeToString(this.textEncryptor.encrypt(config).getBytes())] as MeasureMentorJobsConfig)
 		
 		when:
 		MeasureMentorJobsConfig rmmc = this.measureMentorConfigRepository.findByName("TESTCONFIG");
 		
 		then:
 		rmmc.name == "TESTCONFIG"; 
-		this.strongTextEncryptor.decrypt(new String(Base64.getDecoder().decode(rmmc.encryptedConfig))) == '[{"type":"Jira", "url":"http://myJira.com"},{"type":"Jenkins", "url":"http://myjenkins.com"}]';
+		this.textEncryptor.decrypt(new String(Base64.getDecoder().decode(rmmc.encryptedConfig))) == '[{"type":"Jira", "url":"http://myJira.com"},{"type":"Jenkins", "url":"http://myjenkins.com"}]';
 		
 //		cleanup:
 //		this.measureMentorConfigRepository.deleteAll();

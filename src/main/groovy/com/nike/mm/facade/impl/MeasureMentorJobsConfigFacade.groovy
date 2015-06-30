@@ -3,7 +3,7 @@ package com.nike.mm.facade.impl
 import com.nike.mm.service.ICronService
 import groovy.json.JsonSlurper
 import groovy.util.logging.Slf4j
-import org.jasypt.util.text.StrongTextEncryptor
+import org.jasypt.util.text.TextEncryptor
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
@@ -34,7 +34,7 @@ class MeasureMentorJobsConfigFacade implements IMeasureMentorJobsConfigFacade {
     @Autowired
     ICronService cronService
 
-    @Autowired StrongTextEncryptor strongTextEncryptor;
+    @Autowired TextEncryptor textEncryptor;
 
     @Override
     MeasureMentorJobsConfigDto findById(final String id) {
@@ -84,7 +84,7 @@ class MeasureMentorJobsConfigFacade implements IMeasureMentorJobsConfigFacade {
                 name: entity.name,
                 jobOn: entity.jobOn,
                 cron: entity.cron,
-                config: new JsonSlurper().parseText(this.strongTextEncryptor.decrypt(new String(Base64.getDecoder().decode(entity.encryptedConfig))))
+                config: new JsonSlurper().parseText(this.textEncryptor.decrypt(new String(Base64.getDecoder().decode(entity.encryptedConfig))))
         ] as MeasureMentorJobsConfigDto
     }
 }

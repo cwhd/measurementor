@@ -7,7 +7,8 @@ angular.module("generalLayout").factory("generalLayout", function($state, $mdToa
             viewTitle: "",
             showLogOutBtn: false,
             toastMessageText: "",
-            toastMessageType: ""
+            toastMessageType: "",
+            jobsListCurrentPageNumber: 0
         },
         logOut: function() {
             this.data.showLogOutBtn = false;

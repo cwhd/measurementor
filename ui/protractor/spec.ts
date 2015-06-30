@@ -10,6 +10,12 @@ declare
 var expect: any;
 declare
 var by: any;
+declare
+var require: any;
+declare
+var global: any;
+
+var Reflect = require("reflect-metadata");
 
 class SignInView {
     userNameInput: any;

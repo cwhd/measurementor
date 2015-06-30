@@ -5,9 +5,5 @@ spring:
             repositories:
                 enabled: true
 mm:
-    proxy:
-        set_proxy: false
-        url: connsvr.nike.com
-        port: 8080
     encrypt:
         password: Password123

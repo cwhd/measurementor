@@ -3,7 +3,7 @@ var angular, describe, beforeEach, module, inject, spyOn, it, expect;
 describe("JobsListCtrl", function() {
     var rootScope, scope, ctrl, stateName, stateParams, httpBackend;
 
-    beforeEach(module("jobsConfig"));
+    beforeEach(module("jobsConfig", "generalLayout"));
 
     beforeEach(module(function($provide) {
         $provide.factory("constants", function() { //mocking factory
@@ -91,19 +91,23 @@ describe("JobsListCtrl", function() {
         expect(jobsConfig.runJob).toHaveBeenCalled();
     }));
 
-    it("JobsListCtrl onPrevious function checks", inject(function(jobsConfig) {
+    it("JobsListCtrl onNext function checks", inject(function(jobsConfig, generalLayout) {
         spyOn(scope, "getData");
-
-        scope.onPrevious();
-        expect(scope.showSpinner).toEqual(true);
-        expect(scope.getData).toHaveBeenCalled();
-    }));
-
-    it("JobsListCtrl onNext function checks", inject(function(jobsConfig) {
-        spyOn(scope, "getData");
+        generalLayout.data.jobsListCurrentPageNumber = 0;
 
         scope.onNext();
         expect(scope.showSpinner).toEqual(true);
+        expect(generalLayout.data.jobsListCurrentPageNumber).toEqual(1);
+        expect(scope.getData).toHaveBeenCalled();
+    }));
+
+    it("JobsListCtrl onPrevious function checks", inject(function(jobsConfig, generalLayout) {
+        spyOn(scope, "getData");
+        generalLayout.data.jobsListCurrentPageNumber = 1;
+
+        scope.onPrevious();
+        expect(scope.showSpinner).toEqual(true);
+        expect(generalLayout.data.jobsListCurrentPageNumber).toEqual(0);
         expect(scope.getData).toHaveBeenCalled();
     }));
 });

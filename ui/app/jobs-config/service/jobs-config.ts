@@ -2,7 +2,6 @@ declare
 var angular: any;
 
 angular.module("jobsConfig").factory("jobsConfig", function($http, $q, constants, generalLayout) {
-
     var jobsConfig = {
         getJobs: function(url) {
             var deferred = $q.defer();
@@ -59,11 +58,24 @@ angular.module("jobsConfig").factory("jobsConfig", function($http, $q, constants
                 if (onSuccess) {
                     onSuccess();
                 }
-
             }).
             error(function(data, status, headers, config) {
+                var errorMessages = [];
+                var errorMessage = "";
+                var fieldName = "";
+
+                if (data && data.message) {
+                    while (data.message.indexOf("default message") >= 0) {
+                        data.message = data.message.substring(data.message.indexOf("default message") + 17);
+                        fieldName = data.message.substring(0, data.message.indexOf("]"));
+                        data.message = data.message.substring(data.message.indexOf("default message") + 17);
+                        errorMessage = data.message.substring(0, data.message.indexOf("]"));
+                        errorMessages.push({ field: fieldName, message: errorMessage});
+                    }
+                }
+
                 if (onError) {
-                    onError();
+                    onError(errorMessages);
                 }
             });
         },

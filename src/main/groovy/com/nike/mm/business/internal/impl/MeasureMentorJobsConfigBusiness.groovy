@@ -3,7 +3,7 @@ package com.nike.mm.business.internal.impl
 import groovy.json.JsonBuilder
 import groovy.json.JsonSlurper
 
-import org.jasypt.util.text.StrongTextEncryptor
+import org.jasypt.util.text.TextEncryptor
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
@@ -19,7 +19,7 @@ class MeasureMentorJobsConfigBusiness implements IMeasureMentorJobsConfigBusines
 	
 	@Autowired IMeasureMentorJobsConfigRepository measureMentorConfigRepository
 	
-	@Autowired StrongTextEncryptor strongTextEncryptor;
+	@Autowired TextEncryptor textEncryptor;
 
 	@Override Page<MeasureMentorJobsConfig> findAll(Pageable pageable) {
 		return this.measureMentorConfigRepository.findAll(pageable);
@@ -29,7 +29,7 @@ class MeasureMentorJobsConfigBusiness implements IMeasureMentorJobsConfigBusines
 		MeasureMentorJobsConfig rmmc = this.measureMentorConfigRepository.findOne(id);
 		MeasureMentorJobsConfigDto rdto = null
 		if (rmmc) {
-			String configString = this.strongTextEncryptor.decrypt(new String(Base64.getDecoder().decode(rmmc.encryptedConfig)))
+			String configString = this.textEncryptor.decrypt(new String(Base64.getDecoder().decode(rmmc.encryptedConfig)))
 			rdto = [
 					id: rmmc.id,
 					name: rmmc.name,
@@ -47,7 +47,7 @@ class MeasureMentorJobsConfigBusiness implements IMeasureMentorJobsConfigBusines
 				name:dto.name,
 				cron: dto.cron,
 				jobOn:dto.jobOn,
-				encryptedConfig: Base64.getEncoder().encodeToString(this.strongTextEncryptor.encrypt(configString).getBytes())
+				encryptedConfig: Base64.getEncoder().encodeToString(this.textEncryptor.encrypt(configString).getBytes())
 		] as MeasureMentorJobsConfig
 		if ( dto.id ) {
 			mmjc.id = dto.id

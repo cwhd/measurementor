@@ -1,6 +1,5 @@
 package com.nike.mm.rest
 
-import com.nike.mm.dto.JobHistoryDto
 import com.nike.mm.dto.MeasureMentorJobsConfigDto
 import com.nike.mm.facade.IMeasureMentorJobsConfigFacade
 import com.nike.mm.rest.impl.MeasureMentorJobsConfigRest
@@ -8,9 +7,6 @@ import org.springframework.data.domain.PageImpl
 import org.springframework.data.web.PagedResourcesAssembler
 import spock.lang.Specification
 
-/**
- * Created by rparr2 on 6/13/15.
- */
 class MeasureMentorJobsConfigRestUnitSpec extends Specification {
 
     IMeasureMentorJobsConfigRest measureMentorJobsConfigRest
