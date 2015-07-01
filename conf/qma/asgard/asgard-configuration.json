@@ -4,7 +4,7 @@
         "group": "qm-automation",
         "type": "Standalone Application",
         "description": "Measurementor aggregates data from the SDLC and allows you to create dashboards for measuring your team.",
-        "owner": "cdav18",
+        "owner": "Chris Davis",
         "email": "chris.davis@nike.com",
         "tags": ["measure", "agile", "qm"],
         "monitorBucketType": "APPLICATION",
