@@ -116,17 +116,19 @@ class MeasureMentorRunFacade implements IMeasureMentorRunFacade {
         // retrieve the last time this job/plugin was run successfully
         Date lastRunDate = this.jobHistoryBusiness.findLastSuccessfulJobRanForJobidAndPlugin(request)
 
+        //todo
         IMeasureMentorBusiness plugin = this.findByType(request.pluginType)
         if (null == plugin) {
             String errorMessage = MessageFormat.format(NO_MATCHING_PLUGIN, request.pluginType)
             responses.add(createFailureResponse(request.pluginType, errorMessage))
-        } else if (plugin.validateConfig(request.config)) {
-            responses.add(plugin.updateDataWithResponse(lastRunDate, request))
         } else {
-            String errorMessage = MessageFormat.format(INVALID_CONFIG, request.pluginType)
-            responses.add(createFailureResponse(request.pluginType, errorMessage))
+            String errorMessage = plugin.validateConfig(request.config)
+            if (errorMessage) {
+                responses.add(createFailureResponse(request.pluginType, errorMessage))
+            } else {
+                responses.add(plugin.updateDataWithResponse(lastRunDate, request.config))
+            }
         }
-
     }
 
     private static JobRunResponseDto createFailureResponse(String pluginType, String errorMessage) {

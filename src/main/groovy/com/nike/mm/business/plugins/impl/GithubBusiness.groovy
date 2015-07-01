@@ -1,5 +1,6 @@
 package com.nike.mm.business.plugins.impl
 
+import com.google.common.collect.Lists
 import com.nike.mm.dto.JobRunResponseDto
 import com.nike.mm.entity.JobHistory
 import org.apache.commons.lang3.StringUtils
@@ -32,20 +33,17 @@ class GithubBusiness extends AbstractBusiness implements IGithubBusiness {
 
     @Override
     String validateConfig(Object config) {
-        StringBuilder sb = new StringBuilder()
+        List<String> errorMessages = Lists.newArrayList()
         if (!config.url) {
-            sb.append(prefixWithType("Missing url"))
-            sb.append(StringUtils.SPACE)
+            errorMessages.add(MISSING_URL)
         }
         if (!config.access_token) {
-            sb.append(prefixWithType("Missing access token"))
-            sb.append(" // ")
+            errorMessages.add("Missing access token")
         }
         if (!config.repository_owner) {
-            sb.append(prefixWithType("Missing repository owner"))
-            sb.append(" // ")
+            errorMessages.add("Missing repository owner")
         }
-        return sb.toString().reverse().replaceFirst(" // ", StringUtils.EMPTY).reverse();
+        return buildValidationErrorString(errorMessages)
     }
 
     @Override
