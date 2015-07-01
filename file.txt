@@ -1,0 +1,1 @@
+us-west-2: ami-3bb6b10b
