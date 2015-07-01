@@ -1,6 +1,6 @@
 {
     "application": {
-        "name": "measurementor",
+        "name": "measurementor2",
         "group": "qm-automation",
         "type": "Standalone Application",
         "description": "Measurementor aggregates data from the SDLC and allows you to create dashboards for measuring your team.",
