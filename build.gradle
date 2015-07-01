@@ -97,3 +97,9 @@ tasks.war.dependsOn copyWebApp
 tasks.run.dependsOn copyWebApp
 tasks.bootRun.dependsOn copyWebApp
 tasks.clean.dependsOn cleanOutputFolders
+
+continuousDelivery { 
+    setZuulElb 'http://qm-zuul.tools.nikecloud.com'
+    setAsgardConfigLocation '/conf/qma/asgard/asgard-configuration.json'
+    setRacks(['checkmarx', 'sonar'])
+}
