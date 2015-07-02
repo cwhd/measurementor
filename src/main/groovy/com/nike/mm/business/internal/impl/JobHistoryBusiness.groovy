@@ -79,7 +79,7 @@ class JobHistoryBusiness implements IJobHistoryBusiness {
     Date findLastSuccessfulJobRanForJobidAndPlugin(JobRunRequestDto request) {
         log.debug("Retrieving job history for {} plugin {}", request.jobid, request.pluginType)
 
-        Date lastRunDate = new SimpleDateFormat("dd/MM/yyyy").parse("01/01/2015");
+        Date lastRunDate = new Date(0);
 
         Page<JobConfigHistory> results = this.jobConfigHistoryRepository.findByJobidAndStatusAndType(request.jobid,
                 JobHistory.Status.success, request.pluginType, getDefaultDescEndDatePagerequest())
