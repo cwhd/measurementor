@@ -99,5 +99,4 @@ tasks.buildWebApp.dependsOn installNpm, installBower
 tasks.copyWebApp.dependsOn buildWebApp
 tasks.war.dependsOn copyWebApp
 tasks.run.dependsOn copyWebApp
-tasks.bootRun.dependsOn copyWebApp
 tasks.clean.dependsOn cleanOutputFolders
