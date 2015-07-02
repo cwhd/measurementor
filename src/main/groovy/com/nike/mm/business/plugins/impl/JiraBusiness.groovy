@@ -67,16 +67,18 @@ class JiraBusiness extends AbstractBusiness implements IJiraBusiness {
         if (!config.credentials) {
             validationErrors.add(MISSING_CREDENTIALS)
         }
-        if (!config.proxyUrl) {
-            validationErrors.add(MISSING_PROXY_URL)
-        }
-        if (!config.proxyPort) {
-            validationErrors.add(MISSING_PROXY_PORT)
-        } else {
-            if (!config.proxyPort.toString().isInteger() || (0 >= config.proxyPort.toString().toInteger())) {
-                validationErrors.add(INVALID_PROXY_PORT)
-            }
-        }
+        // TODO put proxy settings into optional 'proxy' substructure
+//        if (!config.proxyUrl) {
+//            validationErrors.add(MISSING_PROXY_URL)
+//        }
+//        if (!config.proxyPort) {
+//            validationErrors.add(MISSING_PROXY_PORT)
+//        } else {
+//            if (!config.proxyPort.toString().isInteger() || (0 >= config.proxyPort.toString().toInteger())) {
+//                validationErrors.add(INVALID_PROXY_PORT)
+//            }
+//        }
+        // TODO validate project config
         return buildValidationErrorString(validationErrors)
     }
 
@@ -86,10 +88,10 @@ class JiraBusiness extends AbstractBusiness implements IJiraBusiness {
         this.getProjects(configInfo).each { def projectName ->
             def path = "/rest/api/2/search"
 
-            def jiraQuery      = "project=$projectName AND updateDate>" + lastRunDate.getTime()
-            log.error("Query: " + jiraQuery)
+            def jiraQuery      = "project=$projectName AND updated > '" + lastRunDate.format("yyyy-MM-dd HH:mm") + "'"
+            log.debug("Query: " + jiraQuery)
             def query          = [jql: jiraQuery, expand: "changelog", startAt: 0, maxResults: 100, fields: "*all"]
-            def proxyDto       = [url: configInfo.proxyUrl, port: configInfo.proxyPort] as ProxyDto
+            def proxyDto       =  configInfo.proxyUrl ? [url: configInfo.proxyUrl, port: configInfo.proxyPort] as ProxyDto : null
             HttpRequestDto dto = [url: configInfo.url, path: path, query: query, credentials: configInfo.credentials, proxyDto: proxyDto] as HttpRequestDto
 
             reccordsCount = this.updateProjectData(projectName, dto, configInfo.projectConfigs[projectName])
@@ -100,7 +102,7 @@ class JiraBusiness extends AbstractBusiness implements IJiraBusiness {
 
 	List<String> getProjects(final Object configInfo) {
 		def path            = "/rest/api/2/project"
-        def proxyDto        = [url: configInfo.proxyUrl, port: configInfo.proxyPort] as ProxyDto
+        def proxyDto        = configInfo.proxyUrl ? [url: configInfo.proxyUrl, port: configInfo.proxyPort] as ProxyDto : null
 		HttpRequestDto dto  = [url: configInfo.url, path: path, query:[start: 0, limit: 300], credentials: configInfo.credentials, proxyDto: proxyDto] as HttpRequestDto
 		return this.jiraWsRepository.getProjectsList(dto)
 	}
