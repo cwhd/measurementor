@@ -22,6 +22,8 @@ class Jira {
 	String issuetype
 	int movedForward
 	int movedBackward
+	Integer recidivism
+	String[] fixedVersions
 	int storyPoints
 	String[] assignees //this is actually a map of stuff
 	String[] tags
