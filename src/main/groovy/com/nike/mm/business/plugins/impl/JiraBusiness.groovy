@@ -259,6 +259,18 @@ class JiraBusiness extends AbstractBusiness implements IJiraBusiness {
          */
         ChangelogHistoryItemDto(final def i, final def taskStatusMap, final def OtherItemsDto otherItemsDto) {
 
+            // add default create entry
+            def firstHistory = [
+                    dataType: "PTS",
+                    timestamp: JiraBusiness.this.utilitiesService.cleanJiraDate(i.fields.created),
+                    changeField: "status",
+                    newValue: "Open",
+                    changedBy: JiraBusiness.this.utilitiesService.cleanEmail(i.fields.creator?.emailAddress),
+                    key: i.key,
+                    issueType: otherItemsDto.issueType
+            ] as JiraHistory
+            JiraBusiness.this.jiraHistoryEsRepository.save(firstHistory)
+
             for (def h : i.changelog.histories) {
                 for (def t : h.items) {
                     //NOTE the following conditionals flatten history into stuff we can work with easier
