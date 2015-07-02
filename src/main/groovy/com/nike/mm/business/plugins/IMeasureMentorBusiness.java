@@ -19,15 +19,9 @@ public interface IMeasureMentorBusiness {
      * Validates the config. As every object has its own business for configuration this serves to ensure configuration is right
      * before the job starts executing.
      * @param config - The config object to validate.
-     * @return - True if valid else false.
+     * @return - error message if validation failed, null or empty String otherwise
      */
-    boolean validateConfig(Object config);
-
-    /**
-     * Run the system, get the data, put it into ES.
-     * @param configInfo - The configuration information that was validated in the validateConfig(String) method.
-     */
-    void updateData(Object configInfo);
+    String validateConfig(Object config);
 
     /**
      * Run the system, get the data, put it into ES and report on it.

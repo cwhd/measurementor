@@ -5,11 +5,10 @@ import com.nike.mm.business.plugins.impl.GithubBusiness
 import com.nike.mm.entity.Github
 import com.nike.mm.repository.es.plugins.IGithubEsRepository
 import com.nike.mm.repository.ws.IGithubWsRepository
+import org.apache.commons.lang3.StringUtils
 import spock.lang.Specification
 
-/**
- * Created by rparr2 on 6/13/15.
- */
+
 class GithubBusinessUnitSpec extends Specification {
 
     IGithubBusiness githubBusiness
@@ -42,10 +41,10 @@ class GithubBusinessUnitSpec extends Specification {
         def config = [url:'http://nike.com', access_token: "access_token", repository_owner: 'testy']
 
         when:
-        boolean valid = this.githubBusiness.validateConfig(config)
+        String errorMessage = this.githubBusiness.validateConfig(config)
 
         then:
-        valid
+        StringUtils.isEmpty(errorMessage)
     }
 
     def "invalid missing repo owner" () {
@@ -54,10 +53,10 @@ class GithubBusinessUnitSpec extends Specification {
         def config = [url:'http://nike.com', access_token: "access_token"]
 
         when:
-        boolean valid = this.githubBusiness.validateConfig(config)
+        String errorMessage = this.githubBusiness.validateConfig(config)
 
         then:
-        !valid
+        !StringUtils.isEmpty(errorMessage)
     }
 
     def "invalid missing access token" () {
@@ -66,10 +65,10 @@ class GithubBusinessUnitSpec extends Specification {
         def config = [url:'http://nike.com', repository_owner: 'testy']
 
         when:
-        boolean valid = this.githubBusiness.validateConfig(config)
+        String errorMessage = this.githubBusiness.validateConfig(config)
 
         then:
-        !valid
+        !StringUtils.isEmpty(errorMessage)
     }
 
     def "invalid missing url" () {
@@ -78,19 +77,20 @@ class GithubBusinessUnitSpec extends Specification {
         def config = [access_token: "access_token", repository_owner: 'testy']
 
         when:
-        boolean valid = this.githubBusiness.validateConfig(config)
+        String errorMessage = this.githubBusiness.validateConfig(config)
 
         then:
-        !valid
+        !StringUtils.isEmpty(errorMessage)
     }
 
     def "no  repositories found" () {
 
         setup:
         def configinfo = [url:'http://nike.com', access_token:'access_token', repository_owner:'repoowner']
+        def fromDate = Date.parse( 'dd-MM-yyyy', "01-01-2001" )
 
         when:
-        def rlist = this.githubBusiness.updateData(configinfo)
+        def rlist = this.githubBusiness.updateDataWithResponse(fromDate, configinfo)
 
         then:
         1 * this.githubWsRepository.findAllRepositories(_) >> []
@@ -99,9 +99,10 @@ class GithubBusinessUnitSpec extends Specification {
     def "one repository found no commits no pulls" () {
         setup:
         def configinfo = [url:'http://nike.com', access_token:'access_token', repository_owner:'repoowner']
+        def fromDate = Date.parse( 'dd-MM-yyyy', "01-01-2001" )
 
         when:
-        def rlist = this.githubBusiness.updateData(configinfo)
+        def rlist = this.githubBusiness.updateDataWithResponse(fromDate, configinfo)
 
         then:
         1 * this.githubWsRepository.findAllRepositories(_)          >> ['repo1']
@@ -113,9 +114,10 @@ class GithubBusinessUnitSpec extends Specification {
     def "one repository found with commits but no pulls" () {
         setup:
         def configinfo = [url:'http://nike.com', access_token:'access_token', repository_owner:'repoowner']
+        def fromDate = Date.parse( 'dd-MM-yyyy', "01-01-2001" )
 
         when:
-        def rlist = this.githubBusiness.updateData(configinfo)
+        def rlist = this.githubBusiness.updateDataWithResponse(fromDate, configinfo)
 
         then:
         1 * this.githubWsRepository.findAllRepositories(_)          >> ['repo1']
@@ -127,9 +129,10 @@ class GithubBusinessUnitSpec extends Specification {
     def "one repository found no  commits but pulls" () {
         setup:
         def configinfo = [url:'http://nike.com', access_token:'access_token', repository_owner:'repoowner']
+        def fromDate = Date.parse( 'dd-MM-yyyy', "01-01-2001" )
 
         when:
-        def rlist = this.githubBusiness.updateData(configinfo)
+        def rlist = this.githubBusiness.updateDataWithResponse(fromDate, configinfo)
 
         then:
         1 * this.githubWsRepository.findAllRepositories(_)          >> ['repo1']
@@ -141,9 +144,10 @@ class GithubBusinessUnitSpec extends Specification {
     def "one repository found with commits and pull requests" () {
         setup:
         def configinfo = [url:'http://nike.com', access_token:'access_token', repository_owner:'repoowner']
+        def fromDate = Date.parse( 'dd-MM-yyyy', "01-01-2001" )
 
         when:
-        def rlist = this.githubBusiness.updateData(configinfo)
+        def rlist = this.githubBusiness.updateDataWithResponse(fromDate, configinfo)
 
         then:
         1 * this.githubWsRepository.findAllRepositories(_)          >> ['repo1']

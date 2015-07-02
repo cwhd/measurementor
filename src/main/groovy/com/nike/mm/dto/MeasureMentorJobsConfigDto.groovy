@@ -1,5 +1,6 @@
 package com.nike.mm.dto
 
+import com.nike.mm.rest.validation.annotation.ValidConfig
 import com.nike.mm.rest.validation.annotation.ValidCron
 import com.nike.mm.rest.validation.annotation.ValidJobId
 import org.hibernate.validator.constraints.NotEmpty
@@ -19,6 +20,7 @@ class MeasureMentorJobsConfigDto {
     boolean jobOn
 
     @NotNull(message = "{job.config.mandatory}")
+    @ValidConfig
     Object config
 
     @NotEmpty(message = "{job.cron.mandatory}")

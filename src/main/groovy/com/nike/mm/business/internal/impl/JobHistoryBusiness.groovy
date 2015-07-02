@@ -24,7 +24,7 @@ import java.text.SimpleDateFormat
 class JobHistoryBusiness implements IJobHistoryBusiness {
 
     /**
-     * Error message when a plugin failed for a givne reason
+     * Error message when a plugin failed for a given reason
      */
     public static final String PLUGIN_FAILED = "Plugin {0} failed: "
 
@@ -77,9 +77,9 @@ class JobHistoryBusiness implements IJobHistoryBusiness {
 
     @Override
     Date findLastSuccessfulJobRanForJobidAndPlugin(JobRunRequestDto request) {
-        log.debug("Retrieving job history for {}/{}", request.jobid, request.pluginType)
+        log.debug("Retrieving job history for {} plugin {}", request.jobid, request.pluginType)
 
-        Date lastRunDate = new SimpleDateFormat("dd/MM/yyyy").parse("01/01/1901");
+        Date lastRunDate = new SimpleDateFormat("dd/MM/yyyy").parse("01/01/2015");
 
         Page<JobConfigHistory> results = this.jobConfigHistoryRepository.findByJobidAndStatusAndType(request.jobid,
                 JobHistory.Status.success, request.pluginType, getDefaultDescEndDatePagerequest())
@@ -133,6 +133,8 @@ class JobHistoryBusiness implements IJobHistoryBusiness {
     }
 
     static PageRequest getDefaultDescEndDatePagerequest() {
-        new PageRequest(0, 1, new Sort(Sort.Direction.DESC, END_DATE))
+        //todo found a workaround
+        new PageRequest(0, 1)
+//        new PageRequest(0, 1, new Sort(Sort.Direction.DESC, END_DATE))
     }
 }

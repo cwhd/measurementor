@@ -6,7 +6,6 @@ angular.module("jobsConfig").controller("JobsListCtrl", function($rootScope, $sc
     generalLayout.data.viewTitle = "List of jobs";
     $scope.showSpinner = true;
 
-
     var currentPage = "api/jobs-config?page=" + generalLayout.data.jobsListCurrentPageNumber + "&size=5&sort=name,asc";
 
     $scope.getData = function(url: string) {

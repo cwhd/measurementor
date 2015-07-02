@@ -75,17 +75,38 @@ class MeasureMentorRunFacade implements IMeasureMentorRunFacade {
         }
     }
 
+    @Override
+    String validateConfig(Object config) {
+        String errorMessage
+        IMeasureMentorBusiness plugin = this.findByType(config.type)
+        if (!plugin) {
+            errorMessage = MessageFormat.format(NO_MATCHING_PLUGIN, config.type)
+        } else {
+            errorMessage = plugin.validateConfig(config)
+        }
+
+        return errorMessage
+    }
+
     private static List<JobRunRequestDto> createRequestsFromConfig(String jobid, def configs) {
 
         List<JobRunRequestDto> list = Lists.newArrayList()
-        configs.each { config ->
-            JobRunRequestDto request = new JobRunRequestDto()
-            request.jobid = jobid
-            request.config = config
-            request.pluginType = config.type
-            list.add(request)
+        if (isCollectionOrArray(configs)) {
+            configs.each { config ->
+                list.add(createRequestfromConfig(jobid, config))
+            }
+        } else {
+            list.add(createRequestfromConfig(jobid, configs))
         }
         return list
+    }
+
+    private static JobRunRequestDto createRequestfromConfig(String jobid, def config) {
+        JobRunRequestDto request = new JobRunRequestDto()
+        request.jobid = jobid
+        request.config = config
+        request.pluginType = config.type
+        return request
     }
 
     private void invokePlugin(JobRunRequestDto request, List<JobRunResponseDto> responses) {
@@ -95,17 +116,19 @@ class MeasureMentorRunFacade implements IMeasureMentorRunFacade {
         // retrieve the last time this job/plugin was run successfully
         Date lastRunDate = this.jobHistoryBusiness.findLastSuccessfulJobRanForJobidAndPlugin(request)
 
+        //todo
         IMeasureMentorBusiness plugin = this.findByType(request.pluginType)
         if (null == plugin) {
             String errorMessage = MessageFormat.format(NO_MATCHING_PLUGIN, request.pluginType)
             responses.add(createFailureResponse(request.pluginType, errorMessage))
-        } else if (plugin.validateConfig(request.config)) {
-            responses.add(plugin.updateDataWithResponse(lastRunDate, request.config))
         } else {
-            String errorMessage = MessageFormat.format(INVALID_CONFIG, request.pluginType)
-            responses.add(createFailureResponse(request.pluginType, errorMessage))
+            String errorMessage = plugin.validateConfig(request.config)
+            if (errorMessage) {
+                responses.add(createFailureResponse(request.pluginType, errorMessage))
+            } else {
+                responses.add(plugin.updateDataWithResponse(lastRunDate, request.config))
+            }
         }
-
     }
 
     private static JobRunResponseDto createFailureResponse(String pluginType, String errorMessage) {
@@ -120,5 +143,9 @@ class MeasureMentorRunFacade implements IMeasureMentorRunFacade {
             }
         }
         return null;
+    }
+
+    private static boolean isCollectionOrArray(Object value) {
+        [Collection, Object[]].any { it.isAssignableFrom(value.getClass()) }
     }
 }

@@ -1,5 +1,6 @@
 package com.nike.mm.business.plugins.impl
 
+import com.google.common.collect.Lists
 import com.nike.mm.dto.HttpRequestDto
 import com.nike.mm.dto.JobRunResponseDto
 import com.nike.mm.dto.ProxyDto
@@ -11,6 +12,7 @@ import com.nike.mm.repository.es.plugins.IJiraHistoryEsRepository
 import com.nike.mm.repository.ws.IJiraWsRepository
 import com.nike.mm.service.IUtilitiesService
 import groovy.util.logging.Slf4j
+import org.apache.commons.lang3.StringUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
@@ -20,9 +22,30 @@ import java.util.concurrent.TimeUnit;
 
 @Service
 @Slf4j
-class JiraBusiness implements IJiraBusiness {
+class JiraBusiness extends AbstractBusiness implements IJiraBusiness {
 
-	@Autowired IJiraWsRepository jiraWsRepository
+
+    /**
+     * Error message when proxy url is missing
+     */
+    static final String MISSING_PROXY_URL = "Missing proxy url"
+
+    /**
+     * Error message when proxy port is missing
+     */
+    static final String MISSING_PROXY_PORT = "Missing proxy port"
+
+    /**
+     * Error message when proxy port is not a positive integer
+     */
+    static final String INVALID_PROXY_PORT = "Proxy must be a positive integer"
+
+    /**
+     * Error message when credentials are missing
+     */
+    static final String MISSING_CREDENTIALS = "Missing credentials"
+
+    @Autowired IJiraWsRepository jiraWsRepository
 
     @Autowired IUtilitiesService utilitiesService
 
@@ -35,42 +58,60 @@ class JiraBusiness implements IJiraBusiness {
 		return "Jira";
 	}
 
-	@Override
-	boolean validateConfig(Object config) {
-		return config.url ? true:false;
-	}
-
-	@Override
-	void updateData(final Object configInfo) {
-		this.getProjects(configInfo).each { def projectName ->
-            def path            = "/rest/api/2/search"
-
-            //TODO: UpdateDate to the jql
-            def jiraQuery       = "project=$projectName"
-            def query           = [jql: jiraQuery, expand:"changelog",startAt: 0, maxResults: 100, fields:"*all"]
-            HttpRequestDto dto  = [url: configInfo.url, path: path, query:query, credentials: configInfo.credentials, proxyDto:[]as ProxyDto] as HttpRequestDto
-            this.updateProjectData(projectName, dto, configInfo.projectConfigs[projectName])
+    @Override
+    String validateConfig(Object config) {
+        List<String> validationErrors = Lists.newArrayList()
+        if (!config.url) {
+            validationErrors.add(MISSING_URL)
         }
-	}
+        if (!config.credentials) {
+            validationErrors.add(MISSING_CREDENTIALS)
+        }
+        if (!config.proxyUrl) {
+            validationErrors.add(MISSING_PROXY_URL)
+        }
+        if (!config.proxyPort) {
+            validationErrors.add(MISSING_PROXY_PORT)
+        } else {
+            if (!config.proxyPort.toString().isInteger() || (0 >= config.proxyPort.toString().toInteger())) {
+                validationErrors.add(INVALID_PROXY_PORT)
+            }
+        }
+        return buildValidationErrorString(validationErrors)
+    }
 
     @Override
     JobRunResponseDto updateDataWithResponse(Date lastRunDate, Object configInfo) {
-        updateData(configInfo)
-        return [type: type(), status: JobHistory.Status.success, reccordsCount: 0] as JobRunResponseDto
+        int reccordsCount = 0
+        this.getProjects(configInfo).each { def projectName ->
+            def path = "/rest/api/2/search"
+
+            def jiraQuery      = "project=$projectName AND updateDate>" + lastRunDate.getTime()
+            log.error("Query: " + jiraQuery)
+            def query          = [jql: jiraQuery, expand: "changelog", startAt: 0, maxResults: 100, fields: "*all"]
+            def proxyDto       = [url: configInfo.proxyUrl, port: configInfo.proxyPort] as ProxyDto
+            HttpRequestDto dto = [url: configInfo.url, path: path, query: query, credentials: configInfo.credentials, proxyDto: proxyDto] as HttpRequestDto
+
+            reccordsCount = this.updateProjectData(projectName, dto, configInfo.projectConfigs[projectName])
+        }
+        def jobResponseDto = new JobRunResponseDto(type: type(), status: JobHistory.Status.success, recordsCount: reccordsCount)
+        return jobResponseDto
     }
 
 	List<String> getProjects(final Object configInfo) {
 		def path            = "/rest/api/2/project"
-		HttpRequestDto dto  = [url: configInfo.url, path: path, query:[start: 0, limit: 300], credentials: configInfo.credentials, proxyDto:[]as ProxyDto] as HttpRequestDto
+        def proxyDto        = [url: configInfo.proxyUrl, port: configInfo.proxyPort] as ProxyDto
+		HttpRequestDto dto  = [url: configInfo.url, path: path, query:[start: 0, limit: 300], credentials: configInfo.credentials, proxyDto: proxyDto] as HttpRequestDto
 		return this.jiraWsRepository.getProjectsList(dto)
 	}
 
-    def updateProjectData(final String projectName, final HttpRequestDto dto, final Object projectConfig) {
+    int updateProjectData(final String projectName, final HttpRequestDto dto, final Object projectConfig) {
         boolean keepGoing = false
+        int updatedReccordsCount = 0
 
         def json = this.jiraWsRepository.getDataForProject(dto)
 
-        if (json.issues?.size() > 0 ) {
+        if (json && json.issues?.size() > 0 ) {
             keepGoing = true
             def movedToDev
             json.issues.each{ def i ->
@@ -81,13 +122,15 @@ class JiraBusiness implements IJiraBusiness {
                 }
                 LeadTimeDevTimeDto leadTimeDevTimeDto               = new LeadTimeDevTimeDto(i, changelogHistoryItemDto.movedToDevList.min())
                 this.saveJiraData(projectName, i, changelogHistoryItemDto, leadTimeDevTimeDto, otherItemsDto)
+                updatedReccordsCount ++
             }
         }
         if(keepGoing) {
             JiraBusiness.log.debug("NEXT PAGE starting at $dto.query.startAt")
             dto.query.startAt += dto.query.maxResults
-            this.updateProjectData(projectName, dto, projectConfig)
+            updatedReccordsCount += this.updateProjectData(projectName, dto, projectConfig)
         }
+        return updatedReccordsCount
     }
 
     def saveJiraData(final String projectName,

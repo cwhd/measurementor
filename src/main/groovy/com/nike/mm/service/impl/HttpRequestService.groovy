@@ -17,9 +17,10 @@ class HttpRequestService implements IHttpRequestService {
 
 		http.ignoreSSLIssues()
 
-		if(httpRequestDto.proxyDto?.setProxy) {
-			http.setProxy(httpRequestDto.proxyDto.url, httpRequestDto.proxyDto.port, null)
-		}
+        if(httpRequestDto.proxyDto) {
+            http.setProxy(httpRequestDto.proxyDto.url, httpRequestDto.proxyDto.port, null)
+        }
+
 		http.request( GET, JSON ) { req ->
 			uri.path = http.getUri().getPath() + httpRequestDto.path
 			if(httpRequestDto.query) {
