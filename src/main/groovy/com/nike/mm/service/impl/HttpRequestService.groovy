@@ -21,6 +21,7 @@ class HttpRequestService implements IHttpRequestService {
 			http.setProxy(httpRequestDto.proxyDto.url, httpRequestDto.proxyDto.port, null)
 		}
 		http.request( GET, JSON ) { req ->
+			println http.getUri().getPath() + httpRequestDto.path
 			uri.path = http.getUri().getPath() + httpRequestDto.path
 			if(httpRequestDto.query) {
 				uri.query = httpRequestDto.query
