@@ -50,6 +50,25 @@
 							</div>
 							<div ng-if="history.isOpen" class="paddingLeft2X paddingTop1X paddingBottom1X listItemExpandAnimation">
 								{{::history.comments}}
+<!-- 								<md-list>
+									<md-subheader class="md-no-sticky" style="font-size: 1.6rem;">Details</md-subheader>
+									<md-list-item class="md-3-line" ng-if="::!history.jobHistoryDetails.length">
+										<div class="md-list-item-text">No data found</div>	
+									</md-list-item>		
+									<md-list-item class="md-3-line" style="padding: 0px;" ng-repeat="historyDetailsItem in ::history.jobHistoryDetails">
+										<div class="borderBottom" style="width: 100%;">	
+											<div layout="row" style="width: 100%; outline: 0px; cursor: pointer;" ng-click="onDisplayDetails(history.id)">
+												<md-content flex="50" flex-md="50" flex-gt-md="50" class="paddingLeft2X">
+													Type: 
+												</md-content>
+												<md-content flex="50" flex-md="50" flex-gt-md="50">
+													Status:
+												</md-content>
+											</div>
+										</div>	
+									</md-list-item>
+								</md-list> -->
+
 							</div>	
 						</div>	
 					</md-list-item>

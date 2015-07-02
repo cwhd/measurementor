@@ -13,6 +13,7 @@ var runner = new benchpress.Runner([
         'tree': 'baseline'
     })
 ]);
+
 var baseUrl = 'http://localhost:8080';
 
 var SignInView = (function() {
@@ -63,6 +64,7 @@ describe('deep tree baseline', function() {
         //browser.get(baseUrl + '');
         return runner.sample({
             id: 'measurementor',
+            //bindings: [benchpress.bind(benchpress.Options.CAPTURE_FRAMES).toValue(true)],
             execute: function() {
                 browser.ignoreSynchronization = false;
 
@@ -71,6 +73,7 @@ describe('deep tree baseline', function() {
 
                 signInView.userNameInput.sendKeys("Oleg");
                 signInView.passwordInput.sendKeys("123");
+
                 signInView.logInBtn.click();
 
                 var generalLayoutView = new GeneralLayoutView();
@@ -79,8 +82,9 @@ describe('deep tree baseline', function() {
                 // expect(sValue).toEqual("List of jobs");
 
                 var jobsListView = new JobsListView();
-
+                //console.time('frameCapture');
                 jobsListView.firstFolderBtn.click();
+                //console.timeEnd('frameCapture');
                 jobsListView.firstDetailsBtn.click();
                 sValue = generalLayoutView.toolbarLabel.getText();
                 // expect(sValue).toEqual("Job details");

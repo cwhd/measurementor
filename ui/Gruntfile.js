@@ -60,7 +60,7 @@ module.exports = function(grunt) {
                 options: {
                     jshintrc: '.jshintrc'
                 },
-                src: ['build/*.js', "build/app/*/*.js", 'build/app/*/partial/*/*js', 'build/app/*/service/*js', 'build/app/*/filter/*js']
+                src: ['build/*.js', "build/app/*/*.js", 'build/app/*/partial/*/*js', 'build/app/*/service/*js', 'build/app/*/filter/*js', 'build/app/*/directive/*js']
             }
         },
         clean: {
@@ -192,7 +192,7 @@ module.exports = function(grunt) {
         //   }
         typescript: {
             base: {
-                src: ['app/*/partial/*/*.ts', 'app/*/service/*.ts', 'app/*/filter/*.ts', 'app/*/*.ts', '*.ts', 'protractor/*.ts'],
+                src: ['app/*/partial/*/*.ts', 'app/*/service/*.ts', 'app/*/filter/*.ts', 'app/*/directive/*.ts', 'app/*/*.ts', '*.ts', 'protractor/*.ts'],
                 dest: 'build',
                 options: {
                     module: 'amd', //or commonjs 
@@ -204,8 +204,8 @@ module.exports = function(grunt) {
                 }
             },
             during_watch: {
-                src: ['app/*/partial/*/*.ts', 'app/*/service/*.ts', 'app/*/filter/*.ts', 'app/*/*.ts', '*.ts', 'protractor/*.ts'],
-                dest: '../public/build',
+                src: ['app/*/partial/*/*.ts', 'app/*/service/*.ts', 'app/*/filter/*.ts', 'app/*/directive/*.ts', 'app/*/*.ts', '*.ts', 'protractor/*.ts'],
+                dest: '../src/main/webapp/build',
                 options: {
                     module: 'amd', //or commonjs 
                     target: 'es5', //or es3 
@@ -235,7 +235,7 @@ module.exports = function(grunt) {
                 files: [ //this files data is also updated in the watch handler, if updated change there too
                     '<%= dom_munger.data.appjs %>',
                     'bower_components/angular-mocks/angular-mocks.js',
-                createFolderGlobs('build/**/*-spec.js')
+                    createFolderGlobs('build/**/*-spec.js')
                 ],
                 logLevel: 'LOG_DEBUG',
                 autoWatch: false, //watching is handled by grunt-contrib-watch
@@ -244,7 +244,8 @@ module.exports = function(grunt) {
                 preprocessors: {
                     'build/app/*/partial/*/!(*spec*)': 'coverage',
                     'build/app/*/service/!(*spec*)': 'coverage',
-                    'build/app/*/filter/!(*spec*)': 'coverage'
+                    'build/app/*/filter/!(*spec*)': 'coverage',
+                    'build/app/*/directive/!(*spec*)': 'coverage'
                 },
                 reporters: ['dots', 'junit', 'mocha', 'coverage'],
                 junitReporter: {
@@ -287,7 +288,7 @@ module.exports = function(grunt) {
             //find the appropriate unit test for the changed file
             var spec = filepath;
             if (filepath.lastIndexOf('-spec.ts') === -1) {
-                spec = "../public/build/" + filepath.substring(0, filepath.length - 3) + '-spec.js';
+                spec = "../src/main/webapp/build/" + filepath.substring(0, filepath.length - 3) + '-spec.js';
             }
 
             //if the spec exists then lets run it
@@ -303,7 +304,7 @@ module.exports = function(grunt) {
         if (filepath.lastIndexOf('starter-template.less') !== -1) {
             //var destPathForLessCompiler = "../public/test.css"; // + filepath.substring(0, filepath.length - 4) + "css";
             grunt.config('less.during_watch.files', {
-                "../public/assets/css/starter-template.css": filepath
+                "../src/main/webapp/assets/css/starter-template.css": filepath
             });
             grunt.config('less.during_watch.verbose', true);
             tasksToRun.push('less:during_watch');
@@ -317,7 +318,7 @@ module.exports = function(grunt) {
 
         grunt.config('copy.during_watch.files', [{
             src: filepath,
-            dest: '../public/' + filepath
+            dest: '../src/main/webapp/' + filepath
         }]);
         grunt.config('copy.during_watch.verbose', true);
         tasksToRun.push('copy:during_watch');

@@ -1,7 +1,7 @@
 declare
 var angular;
 
-angular.module("jobsConfig").controller("JobHistoryCtrl", function($scope, $state, $stateParams, $timeout, jobsConfig, generalLayout) {
+angular.module("jobsConfig").controller("JobHistoryCtrl", function($scope, $state, $filter, $stateParams, $timeout, jobsConfig, generalLayout) {
     generalLayout.checkLogInStatus();
     generalLayout.data.viewTitle = "Job history";
     $scope.showSpinner = true;
@@ -30,6 +30,11 @@ angular.module("jobsConfig").controller("JobHistoryCtrl", function($scope, $stat
         $scope.showSpinner = true;
         $scope.getData($scope.jobHistoryData.links.next.href);
     };
+
+    // $scope.onDisplayDetails = function(id) {
+    //     $scope.jobHistoryData[0].isOpen = true;
+    //     $scope.jobHistoryData[0].jobHistoryDetails = [{}, {}, {}];
+    // };
 
     $scope.onBack = function() {
         $scope.showSpinner = true;
