@@ -1,5 +1,6 @@
 package com.nike.mm.business.plugins.impl
 
+import com.google.common.collect.Lists
 import com.nike.mm.business.plugins.IStashBusiness
 import com.nike.mm.dto.HttpRequestDto
 import com.nike.mm.dto.JobRunResponseDto
@@ -10,6 +11,7 @@ import com.nike.mm.repository.es.plugins.IStashEsRepository
 import com.nike.mm.repository.ws.IStashWsRepository
 import com.nike.mm.service.IUtilitiesService
 import groovyx.net.http.HTTPBuilder
+import org.apache.commons.lang3.StringUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
@@ -21,6 +23,8 @@ class StashBusiness extends AbstractBusiness implements IStashBusiness {
     static final String MISSING_URL = "Missing url"
 
     static final String INVALID_URL = "Invalid url"
+
+    static final String MISSING_CREDENTIALS = "Missing Credentials"
 
     @Autowired
     IStashWsRepository stashWsRepository
@@ -38,9 +42,9 @@ class StashBusiness extends AbstractBusiness implements IStashBusiness {
 
     @Override
     String validateConfig(Object config) {
-        String errorMessage = null
+        List<String> errorMessages = Lists.newArrayList()
         if (!config.url) {
-            errorMessage = prefixWithType(MISSING_URL)
+            errorMessages.add(MISSING_URL)
         } else {
             try {
                 new HTTPBuilder(config.url).get(path: '') { response ->
@@ -48,12 +52,14 @@ class StashBusiness extends AbstractBusiness implements IStashBusiness {
                 }
             }
             catch (e) {
-                errorMessage = prefixWithType(INVALID_URL)
+                errorMessages.add(INVALID_URL)
             }
         }
-        //todo are credentials mandatory?
+        if (!config.credentials) {
+            errorMessages.add(MISSING_CREDENTIALS)
+        }
 
-        return errorMessage
+        return buildValidationErrorString(errorMessages)
     }
 
     @Override

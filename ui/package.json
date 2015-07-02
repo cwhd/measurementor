@@ -3,6 +3,8 @@
     "version": "0.0.0",
     "devDependencies": {
         "grunt": "~0.4",
+        "grunt-cli": "0.1.x",
+        "bower": "1.4.x",
         "grunt-angular-templates": "~0.5",
         "grunt-browser-output": "0.1.0",
         "grunt-contrib-clean": "~0.5",

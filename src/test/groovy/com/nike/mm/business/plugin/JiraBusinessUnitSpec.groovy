@@ -47,20 +47,98 @@ class JiraBusinessUnitSpec extends Specification {
 
     def "confirm valid config"() {
 
+        setup:
+        def config = [url:"http://google.com", credentials: "credentials", proxyUrl: "proxyUrl", proxyPort: 8080]
+
         when:
-        String errorMessage = this.jiraBusiness.validateConfig([url:"http://google.com"])
+        String errorMessage = this.jiraBusiness.validateConfig(config)
 
         then:
         StringUtils.isEmpty(errorMessage)
     }
 
-    def "invalid config"() {
+    def "invalid config - emtpy"() {
+
+        setup:
+        def config = []
 
         when:
         String errorMessage = this.jiraBusiness.validateConfig([])
 
         then:
-        !StringUtils.isEmpty(errorMessage)
+        errorMessage  == "Jira: Missing url, Jira: Missing credentials, Jira: Missing proxy url, Jira: Missing proxy port"
+    }
+
+    def "invalid config - no credentials, proxy url or proxy port"() {
+
+        setup:
+        def config = [url:"http://google.com"]
+
+        when:
+        String errorMessage = this.jiraBusiness.validateConfig(config)
+
+        then:
+        errorMessage  == "Jira: Missing credentials, Jira: Missing proxy url, Jira: Missing proxy port"
+    }
+
+    def "invalid config - no proxy url or proxy port"() {
+
+        setup:
+        def config = [url:"http://google.com", credentials: "credentials"]
+
+        when:
+        String errorMessage = this.jiraBusiness.validateConfig(config)
+
+        then:
+        errorMessage  == "Jira: Missing proxy url, Jira: Missing proxy port"
+    }
+
+    def "invalid config - no proxy port"() {
+
+        setup:
+        def config = [url:"http://google.com", credentials: "credentials", proxyUrl: "proxyUrl"]
+
+        when:
+        String errorMessage = this.jiraBusiness.validateConfig(config)
+
+        then:
+        errorMessage  == "Jira: Missing proxy port"
+    }
+
+    def "invalid config - non integer proxy port"() {
+
+        setup:
+        def config = [url:"http://google.com", credentials: "credentials", proxyUrl: "proxyUrl", proxyPort: "string"]
+
+        when:
+        String errorMessage = this.jiraBusiness.validateConfig(config)
+
+        then:
+        errorMessage  == "Jira: Proxy must be a positive integer"
+    }
+
+    def "invalid config - negative integer proxy port"() {
+
+        setup:
+        def config = [url:"http://google.com", credentials: "credentials", proxyUrl: "proxyUrl", proxyPort: -5]
+
+        when:
+        String errorMessage = this.jiraBusiness.validateConfig(config)
+
+        then:
+        errorMessage  == "Jira: Proxy must be a positive integer"
+    }
+
+    def "invalid config - zero integer proxy port"() {
+
+        setup:
+        def config = [url:"http://google.com", credentials: "credentials", proxyUrl: "proxyUrl", proxyPort: 0]
+
+        when:
+        String errorMessage = this.jiraBusiness.validateConfig(config)
+
+        then:
+        errorMessage  == "Jira: Missing proxy port"
     }
 
     def "update data and general workflow"() {

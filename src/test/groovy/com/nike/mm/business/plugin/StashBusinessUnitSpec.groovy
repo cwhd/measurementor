@@ -41,6 +41,18 @@ class StashBusinessUnitSpec extends Specification {
         type == "Stash"
     }
 
+    def "invalid config - emtpy"() {
+
+        setup:
+        def config = []
+
+        when:
+        String errorMessage = this.stashBusiness.validateConfig(config)
+
+        then:
+        errorMessage  == "Stash: Missing url, Stash: Missing Credentials"
+    }
+
     def "validate config url is valid" () {
 
         setup:
@@ -50,7 +62,7 @@ class StashBusinessUnitSpec extends Specification {
         String errorMessage = this.stashBusiness.validateConfig(configInfo)
 
         then:
-        StringUtils.isEmpty(errorMessage)
+        errorMessage == "Stash: Missing Credentials"
     }
 
     def "validate config url is not valid" () {
@@ -62,7 +74,7 @@ class StashBusinessUnitSpec extends Specification {
         String errorMessage = this.stashBusiness.validateConfig(configInfo)
 
         then:
-        !StringUtils.isEmpty(errorMessage)
+        errorMessage == "Stash: Invalid url, Stash: Missing Credentials"
     }
 
     def "no projects returned"() {
