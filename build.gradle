@@ -44,6 +44,7 @@ war {
 
 configurations {
     providedRuntime
+    compile.exclude module: "spring-boot-starter-tomcat"
 }
 
 war {
