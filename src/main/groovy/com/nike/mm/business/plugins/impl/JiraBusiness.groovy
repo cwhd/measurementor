@@ -82,19 +82,20 @@ class JiraBusiness extends AbstractBusiness implements IJiraBusiness {
 
     @Override
     JobRunResponseDto updateDataWithResponse(Date lastRunDate, Object configInfo) {
-        int reccordsCount = 0
+        int recordsCount = 0
         this.getProjects(configInfo).each { def projectName ->
-            def path = "/rest/api/2/search"
 
-            def jiraQuery      = "project=$projectName AND updateDate>" + lastRunDate.getTime()
-            log.error("Query: " + jiraQuery)
-            def query          = [jql: jiraQuery, expand: "changelog", startAt: 0, maxResults: 100, fields: "*all"]
-            def proxyDto       = [url: configInfo.proxyUrl, port: configInfo.proxyPort] as ProxyDto
+            def path = "/rest/api/2/search"
+            def jiraQuery = "project=$projectName AND updatedDate>" + lastRunDate.getTime() + " order by updatedDate asc"
+            def query = [jql: jiraQuery, expand: "changelog", startAt: 0, maxResults: 100, fields: "*all"]
+            def proxyDto = [url: configInfo.proxyUrl, port: configInfo.proxyPort] as ProxyDto
             HttpRequestDto dto = [url: configInfo.url, path: path, query: query, credentials: configInfo.credentials, proxyDto: proxyDto] as HttpRequestDto
 
-            reccordsCount = this.updateProjectData(projectName, dto)
+
+            recordsCount += this.updateProjectData(projectName, dto)
         }
-        def jobResponseDto = new JobRunResponseDto(type: type(), status: JobHistory.Status.success, recordsCount: reccordsCount)
+
+        def jobResponseDto = new JobRunResponseDto(type: type(), status: JobHistory.Status.success, recordsCount: recordsCount)
         return jobResponseDto
     }
 
@@ -107,7 +108,7 @@ class JiraBusiness extends AbstractBusiness implements IJiraBusiness {
 
     int updateProjectData(final String projectName, final HttpRequestDto dto) {
         boolean keepGoing = false
-        int updatedReccordsCount = 0
+        int updatedRecordsCount = 0
 
         def json = this.jiraWsRepository.getDataForProject(dto)
 
@@ -123,15 +124,19 @@ class JiraBusiness extends AbstractBusiness implements IJiraBusiness {
                 LeadTimeDevTimeDto leadTimeDevTimeDto               = new LeadTimeDevTimeDto(i, changelogHistoryItemDto.movedToDevList.min())
                 OtherItemsDto otherItemsDto                         = new OtherItemsDto(i)
                 this.saveJiraData(projectName, i, changelogHistoryItemDto, leadTimeDevTimeDto, otherItemsDto)
-                updatedReccordsCount ++
+                updatedRecordsCount ++
             }
+            log.error("Retrieved {} records for Project {} ",updatedRecordsCount, projectName)
+        } else {
+            log.error("Skipping project {} as no updated records where found", projectName)
         }
+
         if(keepGoing) {
             JiraBusiness.log.debug("NEXT PAGE starting at $dto.query.startAt")
             dto.query.startAt += dto.query.maxResults
-            updatedReccordsCount += this.updateProjectData(projectName, dto)
+            updatedRecordsCount += this.updateProjectData(projectName, dto)
         }
-        return updatedReccordsCount
+        return updatedRecordsCount
     }
 
     def saveJiraData(final String projectName,
