@@ -1,8 +1,7 @@
 package com.nike.mm.business.internal.impl
 
-import org.springframework.stereotype.Service
-
 import com.nike.mm.business.internal.IMeasureMentorRunBusiness
+import org.springframework.stereotype.Service
 
 @Service
 class MeasureMentorRunBusiness implements IMeasureMentorRunBusiness {
@@ -16,7 +15,7 @@ class MeasureMentorRunBusiness implements IMeasureMentorRunBusiness {
 	void startJob(String jobid) {
 		if ( this.isJobRunning(jobid)) {
 			//TODO Handle this better.
-			throw new RuntimeException('Job already running: $jobid')
+			throw new RuntimeException("Job already running: $jobid")
 		}
 		this.runningJobs.add(jobid);
 	}

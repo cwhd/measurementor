@@ -1,7 +1,5 @@
 package com.nike.mm.facade;
 
-import java.util.List;
-
 /**
  * Main facade to run a configuration script for the system.
  *

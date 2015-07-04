@@ -1,13 +1,12 @@
 package com.nike.mm.rest.assembler
 
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.*
-
+import com.nike.mm.dto.JobHistoryDto
+import com.nike.mm.rest.impl.JobHistoryRest
 import org.springframework.hateoas.Resource
 import org.springframework.hateoas.mvc.ResourceAssemblerSupport
 import org.springframework.stereotype.Component
 
-import com.nike.mm.dto.JobHistoryDto
-import com.nike.mm.rest.impl.JobHistoryRest
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo
 
 @Component
 class JobHistoryResourceAssembler extends ResourceAssemblerSupport<JobHistoryDto, Resource>{

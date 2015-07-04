@@ -1,9 +1,9 @@
 package com.nike.mm.repository.ws;
 
-import java.util.List;
-
 import com.nike.mm.dto.HttpRequestDto;
 import com.nike.mm.entity.Github;
+
+import java.util.List;
 
 public interface IGithubWsRepository {
 

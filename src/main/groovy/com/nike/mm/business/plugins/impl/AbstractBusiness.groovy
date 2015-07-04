@@ -1,6 +1,7 @@
 package com.nike.mm.business.plugins.impl
 
 import com.nike.mm.business.plugins.IMeasureMentorBusiness
+import com.nike.mm.dto.ProxyDto
 import org.apache.commons.lang3.StringUtils
 
 import java.text.MessageFormat
@@ -42,5 +43,13 @@ abstract class AbstractBusiness implements IMeasureMentorBusiness {
             sb.append(prefixWithType(errorMessage))
         }
         sb.toString()
+    }
+
+    def getProxyDto(final Object configInfo) {
+        def rproxy = [] as ProxyDto
+        if (configInfo.proxyUrl) {
+            rproxy = [url: configInfo.proxyUrl, port: configInfo.proxyPort] as ProxyDto
+        }
+        return rproxy
     }
 }

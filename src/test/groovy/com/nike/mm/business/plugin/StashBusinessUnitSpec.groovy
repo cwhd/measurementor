@@ -3,14 +3,12 @@ package com.nike.mm.business.plugin
 import com.nike.mm.business.plugin.data.StashDataForTests
 import com.nike.mm.business.plugins.IStashBusiness
 import com.nike.mm.business.plugins.impl.StashBusiness
+import com.nike.mm.entity.Stash
 import com.nike.mm.repository.es.plugins.IStashEsRepository
 import com.nike.mm.repository.ws.IStashWsRepository
 import com.nike.mm.service.IUtilitiesService
-import com.nike.mm.entity.Stash
 import com.nike.mm.service.impl.UtilitiesService
-import org.apache.commons.lang3.StringUtils
 import spock.lang.Specification
-
 
 class StashBusinessUnitSpec extends Specification {
 
@@ -50,7 +48,7 @@ class StashBusinessUnitSpec extends Specification {
         String errorMessage = this.stashBusiness.validateConfig(config)
 
         then:
-        errorMessage  == "Stash: Missing url, Stash: Missing Credentials"
+        errorMessage  == "Stash: Missing url"
     }
 
     def "validate config url is valid" () {
@@ -62,7 +60,7 @@ class StashBusinessUnitSpec extends Specification {
         String errorMessage = this.stashBusiness.validateConfig(configInfo)
 
         then:
-        errorMessage == "Stash: Missing Credentials"
+        !errorMessage
     }
 
     def "validate config url is not valid" () {
@@ -74,7 +72,7 @@ class StashBusinessUnitSpec extends Specification {
         String errorMessage = this.stashBusiness.validateConfig(configInfo)
 
         then:
-        errorMessage == "Stash: Invalid url, Stash: Missing Credentials"
+        errorMessage == "Stash: Invalid url"
     }
 
     def "no projects returned"() {
@@ -147,7 +145,7 @@ class StashBusinessUnitSpec extends Specification {
     def "find one project and one repo and page commits once" () {
 
         setup:
-        def config = [url:"http://made.up", credentials:"credentials"]
+        def config = [url:"http://made.up", credentials:"credentials", proxyUrl:"", proxyPort:0]
         def fromDate = Date.parse( 'dd-MM-yyyy', "01-01-2001" )
 
         when:
@@ -166,7 +164,7 @@ class StashBusinessUnitSpec extends Specification {
     def "find one project and one repo but record before from date" () {
 
         setup:
-        def config = [url:"http://made.up", credentials:"credentials"]
+        def config = [url:"http://made.up", credentials:"credentials", proxyUrl:"", proxyPort:0]
         def fromDate = Date.parse( 'dd-MM-yyyy', "01-01-2001" )
 
         when:
@@ -185,7 +183,7 @@ class StashBusinessUnitSpec extends Specification {
     def "find one project and one repo and get the pull requests" () {
 
         setup:
-        def config = [url:"http://made.up", credentials:"credentials"]
+        def config = [url:"http://made.up", credentials:"credentials", proxyUrl:"", proxyPort:0]
         def fromDate = Date.parse( 'dd-MM-yyyy', "01-01-2001" )
 
         when:
@@ -204,7 +202,7 @@ class StashBusinessUnitSpec extends Specification {
     def "find one project and one repo and get the pull requests with multiple pages" () {
 
         setup:
-        def config = [url:"http://made.up", credentials:"credentials"]
+        def config = [url:"http://made.up", credentials:"credentials", proxyUrl:"", proxyPort:0]
         def fromDate = Date.parse( 'dd-MM-yyyy', "01-01-2001" )
 
         when:

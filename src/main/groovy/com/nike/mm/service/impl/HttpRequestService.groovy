@@ -2,12 +2,14 @@ package com.nike.mm.service.impl
 
 import com.nike.mm.dto.HttpRequestDto
 import com.nike.mm.service.IHttpRequestService
+import groovy.util.logging.Slf4j
 import groovyx.net.http.HTTPBuilder
 import org.springframework.stereotype.Service
 
 import static groovyx.net.http.ContentType.JSON
 import static groovyx.net.http.Method.GET
 
+@Slf4j
 @Service
 class HttpRequestService implements IHttpRequestService {
 	
@@ -22,7 +24,7 @@ class HttpRequestService implements IHttpRequestService {
         }
 
 		http.request( GET, JSON ) { req ->
-			println http.getUri().getPath() + httpRequestDto.path
+			log.debug("Request path: " + http.getUri().getPath() + httpRequestDto.path)
 			uri.path = http.getUri().getPath() + httpRequestDto.path
 			if(httpRequestDto.query) {
 				uri.query = httpRequestDto.query
@@ -45,7 +47,7 @@ class HttpRequestService implements IHttpRequestService {
 			//TODO i should handle this failure better
 			response.failure = { resp ->
 //				log.error("HTTP Fail! $resp")
-				println "Erk"
+				log.debug("Erk $resp.status")
 //				log.debug(resp.getData())
 //				log.debug(resp.getHeaders())
 				return null

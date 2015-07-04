@@ -1,13 +1,12 @@
 package com.nike.mm.rest.assembler
 
-import org.springframework.hateoas.Resource
-import org.springframework.hateoas.mvc.ResourceAssemblerSupport
-import org.springframework.stereotype.Component;
-
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.*;
-
 import com.nike.mm.dto.MeasureMentorJobsConfigDto
 import com.nike.mm.rest.impl.MeasureMentorJobsConfigRest
+import org.springframework.hateoas.Resource
+import org.springframework.hateoas.mvc.ResourceAssemblerSupport
+import org.springframework.stereotype.Component
+
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo
 
 @Component
 class MeasureMentorJobsConfigResourceAssembler extends ResourceAssemblerSupport<MeasureMentorJobsConfigDto, Resource>{

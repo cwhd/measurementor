@@ -1,10 +1,9 @@
 package com.nike.mm.rest;
 
+import com.nike.mm.dto.MeasureMentorJobsConfigDto;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.PagedResources;
-
-import com.nike.mm.dto.MeasureMentorJobsConfigDto;
 
 /**
  * API for publicly working with the configuration of Jobs in the MeasureMentor.

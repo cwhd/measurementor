@@ -4,17 +4,17 @@ import com.google.common.collect.Lists
 import com.nike.mm.business.plugins.IStashBusiness
 import com.nike.mm.dto.HttpRequestDto
 import com.nike.mm.dto.JobRunResponseDto
-import com.nike.mm.dto.ProxyDto
 import com.nike.mm.entity.JobHistory
 import com.nike.mm.entity.Stash
 import com.nike.mm.repository.es.plugins.IStashEsRepository
 import com.nike.mm.repository.ws.IStashWsRepository
 import com.nike.mm.service.IUtilitiesService
+import groovy.util.logging.Slf4j
 import groovyx.net.http.HTTPBuilder
-import org.apache.commons.lang3.StringUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
+@Slf4j
 @Service
 class StashBusiness extends AbstractBusiness implements IStashBusiness {
 
@@ -23,8 +23,6 @@ class StashBusiness extends AbstractBusiness implements IStashBusiness {
     static final String MISSING_URL = "Missing url"
 
     static final String INVALID_URL = "Invalid url"
-
-    static final String MISSING_CREDENTIALS = "Missing Credentials"
 
     @Autowired
     IStashWsRepository stashWsRepository
@@ -43,9 +41,7 @@ class StashBusiness extends AbstractBusiness implements IStashBusiness {
     @Override
     String validateConfig(Object config) {
         List<String> errorMessages = Lists.newArrayList()
-        if (!config.url) {
-            errorMessages.add(MISSING_URL)
-        } else {
+        if (config.url) {
             try {
                 new HTTPBuilder(config.url).get(path: '') { response ->
                     response.statusLine.statusCode == 200
@@ -54,9 +50,8 @@ class StashBusiness extends AbstractBusiness implements IStashBusiness {
             catch (e) {
                 errorMessages.add(INVALID_URL)
             }
-        }
-        if (!config.credentials) {
-            errorMessages.add(MISSING_CREDENTIALS)
+        } else {
+            errorMessages.add(MISSING_URL)
         }
 
         return buildValidationErrorString(errorMessages)
@@ -65,20 +60,23 @@ class StashBusiness extends AbstractBusiness implements IStashBusiness {
     @Override
     JobRunResponseDto updateDataWithResponse(Date lastRunDate, Object configInfo) {
         String path = "/rest/api/1.0/projects";
-        HttpRequestDto dto = [url: configInfo.url, path: path, query: [start: 0, limit: 300], credentials: configInfo
-                .credentials, proxyDto: [] as ProxyDto] as HttpRequestDto
+        def proxyDto = this.getProxyDto(configInfo)
+        HttpRequestDto dto = new HttpRequestDto(url: configInfo.url, path: path,
+                query: [start: 0, limit: 300], credentials: configInfo.credentials,
+                proxyDto: proxyDto)
         for (String projectKey : this.stashWsRepository.findAllProjects(dto)) {
             this.updateProject(projectKey, configInfo, lastRunDate)
         }
-        //todo deal with errors
-        return [type: type(), status: JobHistory.Status.success, reccordsCount: 0] as JobRunResponseDto
+        //todo deal with errors and count
+        return new JobRunResponseDto(type: type(), status: JobHistory.Status.success, recordsCount: 0)
     }
 
     void updateProject(final String projectKey, final Object configInfo, final Date fromDate) {
 
         def path = "/rest/api/1.0/projects/$projectKey/repos"
-        HttpRequestDto dto = [url: configInfo.url, path: path, query: [start: 0, limit: 300], credentials: configInfo
-                .credentials, proxyDto: [] as ProxyDto] as HttpRequestDto
+        HttpRequestDto dto = [url             : configInfo.url, path: path, query: [start: 0, limit: 300], credentials:
+                configInfo
+                        .credentials, proxyDto: this.getProxyDto(configInfo)] as HttpRequestDto
         for (Expando expando : this.stashWsRepository.findAllReposForProject(projectKey, dto)) {
             this.updateCommitDataForRepo(expando, configInfo, fromDate)
             this.updatePullDataForRepo(expando, configInfo, fromDate)
@@ -87,8 +85,8 @@ class StashBusiness extends AbstractBusiness implements IStashBusiness {
 
     void updateCommitDataForRepo(final Expando expando, final Object configInfo, final Date fromDate) {
         def path = "/rest/api/1.0/projects/$expando.projectKey/repos/$expando.repo/commits"
-        HttpRequestDto dto = [url: configInfo.url, path: path, query: [start: 0, limit: 300], credentials: configInfo
-                .credentials, proxyDto: [] as ProxyDto] as HttpRequestDto
+        HttpRequestDto dto = new HttpRequestDto(url: configInfo.url, path: path, query: [start: 0, limit: 300],
+                credentials: configInfo.credentials, proxyDto: this.getProxyDto(configInfo))
         this.updateCommitDataForRepoRecusive(expando, dto, fromDate)
     }
 
@@ -101,7 +99,14 @@ class StashBusiness extends AbstractBusiness implements IStashBusiness {
                 if (updatedDate >= fromDate) {
                     def locDelta = this.getChangedLinesOfCode(expando, dto, i.id)
                     def stashData = this.stashEsRepository.findOne(i.id)
-                    if (!stashData) { //if we have a commit already i guess it would never change, no need to update it
+                    if (stashData) {
+                        stashData.linesRemoved = locDelta.removedLOC
+                        stashData.linesAdded = locDelta.addedLOC
+                        stashData.repo = this.utilitiesService.makeNonTokenFriendly(expando.repo)
+                        stashData.stashProject = this.utilitiesService.makeNonTokenFriendly(expando.project)
+                        stashData.commitCount = 1
+                    } else {
+                        //if we have a commit already i guess it would never change, no need to update it
                         stashData = [
                                 id          : i.id,
                                 created     : new Date(i.authorTimestamp), //comes back as epoch time, which sucks
@@ -114,12 +119,6 @@ class StashBusiness extends AbstractBusiness implements IStashBusiness {
                                 linesRemoved: locDelta.removedLOC,
                                 commitCount : 1
                         ] as Stash
-                    } else {
-                        stashData.linesRemoved = locDelta.removedLOC
-                        stashData.linesAdded = locDelta.addedLOC
-                        stashData.repo = this.utilitiesService.makeNonTokenFriendly(expando.repo)
-                        stashData.stashProject = this.utilitiesService.makeNonTokenFriendly(expando.project)
-                        stashData.commitCount = 1
                     }
                     this.stashEsRepository.save(stashData)
                 } else {
@@ -128,15 +127,17 @@ class StashBusiness extends AbstractBusiness implements IStashBusiness {
             }
             if (!json.isLastPage && !hitFromDate) {
                 dto.query.start += dto.query.limit
-                this.updateCommitDataForRepo(expando, dto, fromDate)
+                this.updateCommitDataForRepoRecusive(expando, dto, fromDate)
             }
         }
     }
 
     void updatePullDataForRepo(final Expando expando, final Object configInfo, final fromDate) {
         def path = "/rest/api/1.0/projects/$expando.projectKey/repos/$expando.repo/pull-requests"
-        HttpRequestDto dto = [url: configInfo.url, path: path, query: [start: 0, limit: 300, state: "all"],
-                              credentials: configInfo.credentials, proxyDto: [] as ProxyDto] as HttpRequestDto
+        def proxyDto = this.getProxyDto(configInfo)
+        HttpRequestDto dto = new HttpRequestDto(url: configInfo.url, path: path, query: [start: 0, limit: 300, state:
+                "all"],
+                credentials: configInfo.credentials, proxyDto: proxyDto)
         this.updatePullDataForRepoRecursively(expando, dto, fromDate)
     }
 
@@ -145,7 +146,7 @@ class StashBusiness extends AbstractBusiness implements IStashBusiness {
         def hitFromDate = false
         if (json) {
             for (def i : json.values) {
-                println "UPDATE DATE: " + i.updatedDate
+                log.debug("UPDATE DATE: " + i.updatedDate)
                 final Date updatedDate = new Date(i.updatedDate)
                 if (updatedDate >= fromDate) {
                     this.stashEsRepository.save(createStashDataObject(expando, dto, i))
@@ -155,7 +156,7 @@ class StashBusiness extends AbstractBusiness implements IStashBusiness {
             }
             if (!json.isLastPage && !hitFromDate) {
                 dto.query.start += dto.query.limit
-                this.updatePullDataForRepo(expando, dto, fromDate)
+                this.updatePullDataForRepoRecursively(expando, dto, fromDate)
             }
         }
     }
@@ -171,9 +172,9 @@ class StashBusiness extends AbstractBusiness implements IStashBusiness {
 
     private Stash createStashDataObject(final Expando expando, HttpRequestDto dto, final def i) {
         Date createdDate = new Date(i.createdDate)
-        println "Key: $createdDate.time-$i.author.user.id"
+        log.debug("Key: $createdDate.time-$i.author.user.id")
         def commitCount = this.getCommitCount(dto, i.id)
-        println "CommitCount: " + commitCount
+        log.debug("CommitCount: $commitCount")
         Stash stashData = this.stashEsRepository.findOne("$createdDate.time-$i.author.user.id")
         if (stashData) {
             stashData.created = createdDate
@@ -216,10 +217,8 @@ class StashBusiness extends AbstractBusiness implements IStashBusiness {
      */
     def getCommitCount(HttpRequestDto dto, prNumber) {
         try {
-            HttpRequestDto countdto = [url: dto.url, path: "$dto.path/$prNumber/commits", query: [state: "all",
-                                                                                                  start: 0, limit:
-                                                                                                          300],
-                                       credentials: dto.credentials, proxyDto: dto.proxyDto] as HttpRequestDto
+            HttpRequestDto countdto = new HttpRequestDto(url: dto.url, path: "$dto.path/$prNumber/commits",
+                    query: [state: "all", start: 0, limit: 300], credentials: dto.credentials, proxyDto: dto.proxyDto)
             def json = this.stashWsRepository.findCommitCount(dto)
             if (json) {
                 return json.size
@@ -234,8 +233,8 @@ class StashBusiness extends AbstractBusiness implements IStashBusiness {
     def getChangedLinesOfCode(final Expando expando, final HttpRequestDto dto, final String sha) {
         try {
             def path = "/rest/api/1.0/projects/$expando.projectKey/repos/$expando.repo/commits/$sha/diff"
-            HttpRequestDto shadto = [url: dto.url, path: path, query: [start: 0, limit: 300], credentials: dto
-                    .credentials, proxyDto: [] as ProxyDto] as HttpRequestDto
+            HttpRequestDto shadto = [url  : dto.url, path: path, query: [start: 0, limit: 300], credentials: dto
+                    .credentials, proxyDto: dto.proxyDto] as HttpRequestDto
             def json = this.stashWsRepository.findCommitDataFromSha(shadto)
             def addedLOC = 0
             def removedLOC = 0

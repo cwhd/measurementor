@@ -3,16 +3,16 @@ package com.nike.mm.business.plugins.impl
 import com.nike.mm.business.plugins.IJenkinsBusiness
 import com.nike.mm.dto.HttpRequestDto
 import com.nike.mm.dto.JobRunResponseDto
-import com.nike.mm.dto.ProxyDto
 import com.nike.mm.entity.Jenkins
 import com.nike.mm.entity.JobHistory
 import com.nike.mm.repository.es.plugins.IJenkinsEsRepository
 import com.nike.mm.repository.ws.IJenkinsWsRepository
 import com.nike.mm.service.IUtilitiesService
-import org.apache.commons.lang3.StringUtils
+import groovy.util.logging.Slf4j
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
+@Slf4j
 @Service
 class JenkinsBusiness extends AbstractBusiness implements IJenkinsBusiness {
 
@@ -38,64 +38,74 @@ class JenkinsBusiness extends AbstractBusiness implements IJenkinsBusiness {
 
     @Override
     JobRunResponseDto updateDataWithResponse(Date lastRunDate, Object configInfo) {
-        this.findJobs(lastRunDate, configInfo)
-        return [type: type(), status: JobHistory.Status.success, reccordsCount: 0] as JobRunResponseDto
+        int recordsCount = this.findJobs(lastRunDate, configInfo)
+        return new JobRunResponseDto(type: type(), status: JobHistory.Status.success, recordsCount: recordsCount)
     }
 
-    void findJobs(final Date fromDate, final Object configInfo){
+    int findJobs(final Date lastRunDate, final Object configInfo){
+        int recordsCount = 0
 		String path = "/api/json";
-        println "1.Path: $path"
-		HttpRequestDto dto = [url: configInfo.url, path: path, query:[start: 0, limit: 300], credentials: configInfo.credentials, proxyDto:[]as ProxyDto] as HttpRequestDto
+        log.debug("1.Path: $path")
+		HttpRequestDto dto = [url: configInfo.url, path: path, query:[start: 0, limit: 300], credentials: configInfo.credentials, proxyDto: this.getProxyDto(configInfo)] as HttpRequestDto
         def json = this.jenkinsWsRepository.findListOfJobs(dto)
-        json.jobs.each { def i ->
-			def newPath = this.utilitiesService.getPathFromUrl(i.url)
-			println "newPath: $newPath"
-            this.findListOfJobsJobs(configInfo, newPath)
-		}
+        if (json && json.jobs) {
+            json.jobs.each { def i ->
+                def newPath = this.utilitiesService.getPathFromUrl(i.url)
+                log.debug("newPath: $newPath")
+                recordsCount += this.findListOfJobsJobs(configInfo, newPath)
+            }
+        }
+        return recordsCount
 	}
 
-    void findListOfJobsJobs(final Object configInfo, final String jobsJobPath) {
-
+    int findListOfJobsJobs(final Object configInfo, final String jobsJobPath) {
+        int recordsCount = 0
         String path = jobsJobPath + "api/json";
-        println "2.Path: $path"
-        HttpRequestDto dto = [url: configInfo.url, path: path, query:[start: 0, limit: 300], credentials: configInfo.credentials, proxyDto:[]as ProxyDto] as HttpRequestDto
+        log.debug("2.Path: $path")
+        HttpRequestDto dto = [url: configInfo.url, path: path, query:[start: 0, limit: 300], credentials: configInfo.credentials, proxyDto:this.getProxyDto(configInfo)] as HttpRequestDto
         def json = this.jenkinsWsRepository.findListOfJobsJobs(dto)
         json.jobs.each { def i ->
             def newPath = this.utilitiesService.getPathFromUrl(i.url)
-            this.findListOfJobsJobsJobs(configInfo, newPath)
+            recordsCount += this.findListOfJobsJobsJobs(configInfo, newPath)
         }
+        return recordsCount
     }
-    void findListOfJobsJobsJobs(final Object configInfo, final String jobsJobPath) {
 
+    int findListOfJobsJobsJobs(final Object configInfo, final String jobsJobPath) {
+        int recordsCount = 0
         String path = jobsJobPath + "api/json";
-        println "3.Path: $path"
-        HttpRequestDto dto = [url: configInfo.url, path: path, query:[start: 0, limit: 300], credentials: configInfo.credentials, proxyDto:[]as ProxyDto] as HttpRequestDto
+        log.debug("3.Path: $path")
+        HttpRequestDto dto = [url: configInfo.url, path: path, query:[start: 0, limit: 300], credentials: configInfo.credentials, proxyDto:this.getProxyDto(configInfo)] as HttpRequestDto
         def json = this.jenkinsWsRepository.findListOfBuilds(dto)
 
         json.jobs.each { def i ->
             def newPath = this.utilitiesService.getPathFromUrl(i.url)
 
-            this.findBuildInformation(configInfo, newPath)
+            recordsCount += this.findBuildInformation(configInfo, newPath)
         }
+        return recordsCount
     }
 
-    void findBuildInformation(final Object configInfo, final String finalPath) {
+    int findBuildInformation(final Object configInfo, final String finalPath) {
+        int recordsCount = 0
         String path = finalPath + "api/json";
-        println "4.Path: $path"
-        HttpRequestDto dto = [url: configInfo.url, path: path, query:[start: 0, limit: 300], credentials: configInfo.credentials, proxyDto:[]as ProxyDto] as HttpRequestDto
+        log.debug("4.Path: $path")
+        HttpRequestDto dto = [url: configInfo.url, path: path, query:[start: 0, limit: 300], credentials: configInfo.credentials, proxyDto:this.getProxyDto(configInfo)] as HttpRequestDto
 
         def json = this.jenkinsWsRepository.findBuildInformation(dto)
         json.builds.each { def b ->
             def newPath = this.utilitiesService.getPathFromUrl(b.url)
-            println "5.ewnewNWEPath: $newPath"
-            findAndSaveBuildData(configInfo, newPath)
+            log.debug("5.ewnewNWEPath: $newPath")
+            recordsCount += findAndSaveBuildData(configInfo, newPath)
         }
+        return recordsCount
     }
 
-    void findAndSaveBuildData(final Object configInfo, final String finalPath) {
+    int findAndSaveBuildData(final Object configInfo, final String finalPath) {
+        int recordsCount = 0
         String path = finalPath + "api/json";
-        println "6.Path: $path"
-        HttpRequestDto dto = [url: configInfo.url, path: path, query:[start: 0, limit: 300], credentials: configInfo.credentials, proxyDto:[]as ProxyDto] as HttpRequestDto
+        log.debug("6.Path: $path")
+        HttpRequestDto dto = [url: configInfo.url, path: path, query:[start: 0, limit: 300], credentials: configInfo.credentials, proxyDto:this.getProxyDto(configInfo)] as HttpRequestDto
         def json = this.jenkinsWsRepository.findFinalBuildInformation(dto)
         if (json) {
             def cleanTimestamp = this.utilitiesService.convertTimestampFromString(json.timestamp)
@@ -150,6 +160,9 @@ class JenkinsBusiness extends AbstractBusiness implements IJenkinsBusiness {
                         dataType: "CI"] as Jenkins
             }
             this.jenkinsEsRepository.save(jenkinsData)
+            recordsCount ++
         }
+        return recordsCount
     }
+
 }

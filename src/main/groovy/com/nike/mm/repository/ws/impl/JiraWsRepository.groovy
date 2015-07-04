@@ -1,7 +1,6 @@
 package com.nike.mm.repository.ws.impl
 
 import com.nike.mm.dto.HttpRequestDto
-import com.nike.mm.dto.JiraRequestDto
 import com.nike.mm.repository.ws.IJiraWsRepository
 import com.nike.mm.service.IHttpRequestService
 import org.springframework.beans.factory.annotation.Autowired

@@ -1,17 +1,15 @@
 package com.nike.mm.business.plugins.impl
 
 import com.google.common.collect.Lists
+import com.nike.mm.business.plugins.IGithubBusiness
+import com.nike.mm.dto.HttpRequestDto
 import com.nike.mm.dto.JobRunResponseDto
+import com.nike.mm.entity.Github
 import com.nike.mm.entity.JobHistory
-import org.apache.commons.lang3.StringUtils
+import com.nike.mm.repository.es.plugins.IGithubEsRepository
+import com.nike.mm.repository.ws.IGithubWsRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
-
-import com.nike.mm.business.plugins.IGithubBusiness;
-import com.nike.mm.dto.HttpRequestDto
-import com.nike.mm.entity.Github
-import com.nike.mm.repository.es.plugins.IGithubEsRepository;
-import com.nike.mm.repository.ws.IGithubWsRepository
 
 @Service
 class GithubBusiness extends AbstractBusiness implements IGithubBusiness {

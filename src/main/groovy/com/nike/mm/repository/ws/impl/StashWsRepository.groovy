@@ -1,7 +1,6 @@
 package com.nike.mm.repository.ws.impl
 
 import com.nike.mm.dto.HttpRequestDto
-import com.nike.mm.entity.Stash
 import com.nike.mm.repository.ws.IStashWsRepository
 import com.nike.mm.service.IHttpRequestService
 import org.springframework.beans.factory.annotation.Autowired
@@ -19,12 +18,14 @@ class StashWsRepository implements IStashWsRepository {
     List<String> findAllProjects(final HttpRequestDto dto) {
         def json = this.httpRequestService.callRestfulUrl(dto)
         def projectList = []
-        for (def project : json.values) {
-            projectList.add(project.key)
-        }
-        if (!json.isLastPage) {
-            dto.query.start = dto.query.start + dto.query.limit
-            projectList.addAll(this.findAllProjects(dto))
+        if (json) {
+            for (def project : json.values) {
+                projectList.add(project.key)
+            }
+            if (!json.isLastPage) {
+                dto.query.start = dto.query.start + dto.query.limit
+                projectList.addAll(this.findAllProjects(dto))
+            }
         }
         return projectList
     }

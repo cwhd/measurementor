@@ -1,10 +1,9 @@
 package com.nike.mm.repository.es.internal;
 
+import com.nike.mm.entity.JobHistory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
-
-import com.nike.mm.entity.JobHistory;
 
 public interface IJobHistoryRepository extends ElasticsearchRepository<JobHistory, Long> {
 

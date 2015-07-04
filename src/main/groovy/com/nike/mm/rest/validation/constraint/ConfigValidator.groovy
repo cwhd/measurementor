@@ -1,7 +1,6 @@
 package com.nike.mm.rest.validation.constraint
 
 import com.google.common.collect.Lists
-import com.nike.mm.facade.impl.MeasureMentorJobsConfigFacade
 import com.nike.mm.facade.impl.MeasureMentorRunFacade
 import com.nike.mm.rest.validation.annotation.ValidConfig
 import org.springframework.beans.factory.annotation.Autowired
@@ -26,9 +25,7 @@ class ConfigValidator implements ConstraintValidator<ValidConfig, Object> {
     @Override
     boolean isValid(Object value, ConstraintValidatorContext context) {
         List<String> errorMessages = Lists.newArrayList()
-        if (!value) {
-            addViolation(CONFIGURATION_MANDATORY, errorMessages)
-        } else {
+        if (value) {
             boolean isCollection = isCollectionOrArray(value)
             if (isCollection) {
                 value.each {config ->
@@ -37,6 +34,8 @@ class ConfigValidator implements ConstraintValidator<ValidConfig, Object> {
             } else {
                 validateSingleConfig(value, errorMessages)
             }
+        } else {
+            addViolation(CONFIGURATION_MANDATORY, errorMessages)
         }
 
         boolean isValid = true
@@ -56,10 +55,10 @@ class ConfigValidator implements ConstraintValidator<ValidConfig, Object> {
 
     private void validateSingleConfig(Object config, List<String> errorMessages) {
         String errorMessage
-        if (!config.type) {
-            errorMessage = TYPE_FIELD_MANDATORY
-        } else {
+        if (config.type) {
             errorMessage = this.measureMentorRunFacade.validateConfig(config)
+        } else {
+            errorMessage = TYPE_FIELD_MANDATORY
         }
         if (errorMessage) {
             addViolation(errorMessage, errorMessages)

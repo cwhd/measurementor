@@ -1,10 +1,9 @@
 package com.nike.mm.repository.es.plugins;
 
-import java.util.List;
-
+import com.nike.mm.entity.Github;
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
 
-import com.nike.mm.entity.Github;
+import java.util.List;
 
 
 public interface IGithubEsRepository extends ElasticsearchRepository<Github, Long>  {

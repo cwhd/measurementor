@@ -1,6 +1,7 @@
 package com.nike.mm.business.plugins.impl
 
 import com.google.common.collect.Lists
+import com.nike.mm.business.plugins.IJiraBusiness
 import com.nike.mm.dto.HttpRequestDto
 import com.nike.mm.dto.JobRunResponseDto
 import com.nike.mm.dto.ProxyDto
@@ -12,18 +13,14 @@ import com.nike.mm.repository.es.plugins.IJiraHistoryEsRepository
 import com.nike.mm.repository.ws.IJiraWsRepository
 import com.nike.mm.service.IUtilitiesService
 import groovy.util.logging.Slf4j
-import org.apache.commons.lang3.StringUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
-import com.nike.mm.business.plugins.IJiraBusiness
+import java.util.concurrent.TimeUnit
 
-import java.util.concurrent.TimeUnit;
-
-@Service
 @Slf4j
+@Service
 class JiraBusiness extends AbstractBusiness implements IJiraBusiness {
-
 
     /**
      * Error message when proxy url is missing
@@ -45,18 +42,22 @@ class JiraBusiness extends AbstractBusiness implements IJiraBusiness {
      */
     static final String MISSING_CREDENTIALS = "Missing credentials"
 
-    @Autowired IJiraWsRepository jiraWsRepository
+    @Autowired
+    IJiraWsRepository jiraWsRepository
 
-    @Autowired IUtilitiesService utilitiesService
+    @Autowired
+    IUtilitiesService utilitiesService
 
-    @Autowired IJiraHistoryEsRepository jiraHistoryEsRepository
+    @Autowired
+    IJiraHistoryEsRepository jiraHistoryEsRepository
 
-    @Autowired IJiraEsRepository jiraEsRepository
+    @Autowired
+    IJiraEsRepository jiraEsRepository
 
-	@Override
-	String type() {
-		return "Jira";
-	}
+    @Override
+    String type() {
+        return "Jira";
+    }
 
     @Override
     String validateConfig(Object config) {
@@ -86,25 +87,29 @@ class JiraBusiness extends AbstractBusiness implements IJiraBusiness {
         this.getProjects(configInfo).each { def projectName ->
 
             def path = "/rest/api/2/search"
-            def jiraQuery = "project=$projectName AND updatedDate>" + lastRunDate.getTime() + " order by updatedDate asc"
+            def jiraQuery = "project=$projectName AND updatedDate>" + lastRunDate.getTime() + " order by updatedDate " +
+                    "asc"
             def query = [jql: jiraQuery, expand: "changelog", startAt: 0, maxResults: 100, fields: "*all"]
             def proxyDto = [url: configInfo.proxyUrl, port: configInfo.proxyPort] as ProxyDto
-            HttpRequestDto dto = [url: configInfo.url, path: path, query: query, credentials: configInfo.credentials, proxyDto: proxyDto] as HttpRequestDto
+            HttpRequestDto dto = [url: configInfo.url, path: path, query: query, credentials: configInfo.credentials,
+                                  proxyDto: proxyDto] as HttpRequestDto
 
 
             recordsCount += this.updateProjectData(projectName, dto)
         }
 
-        def jobResponseDto = new JobRunResponseDto(type: type(), status: JobHistory.Status.success, recordsCount: recordsCount)
+        def jobResponseDto = new JobRunResponseDto(type: type(), status: JobHistory.Status.success, recordsCount:
+                recordsCount)
         return jobResponseDto
     }
 
-	List<String> getProjects(final Object configInfo) {
-		def path            = "/rest/api/2/project"
-        def proxyDto        = [url: configInfo.proxyUrl, port: configInfo.proxyPort] as ProxyDto
-		HttpRequestDto dto  = [url: configInfo.url, path: path, query:[start: 0, limit: 300], credentials: configInfo.credentials, proxyDto: proxyDto] as HttpRequestDto
-		return this.jiraWsRepository.getProjectsList(dto)
-	}
+    List<String> getProjects(final Object configInfo) {
+        def path = "/rest/api/2/project"
+        def proxyDto = [url: configInfo.proxyUrl, port: configInfo.proxyPort] as ProxyDto
+        HttpRequestDto dto = [url: configInfo.url, path: path, query: [start: 0, limit: 300], credentials: configInfo
+                .credentials, proxyDto: proxyDto] as HttpRequestDto
+        return this.jiraWsRepository.getProjectsList(dto)
+    }
 
     int updateProjectData(final String projectName, final HttpRequestDto dto) {
         boolean keepGoing = false
@@ -112,26 +117,27 @@ class JiraBusiness extends AbstractBusiness implements IJiraBusiness {
 
         def json = this.jiraWsRepository.getDataForProject(dto)
 
-        if (json && json.issues?.size() > 0 ) {
+        if (json && json.issues && json.issues?.size() > 0) {
             keepGoing = true
             def movedToDev
-            json.issues.each{ def i ->
+            json.issues.each { def i ->
 
                 ChangelogHistoryItemDto changelogHistoryItemDto = new ChangelogHistoryItemDto()
                 if (i.changelog) {
-                    changelogHistoryItemDto  = new ChangelogHistoryItemDto(i)
+                    changelogHistoryItemDto = new ChangelogHistoryItemDto(i)
                 }
-                LeadTimeDevTimeDto leadTimeDevTimeDto               = new LeadTimeDevTimeDto(i, changelogHistoryItemDto.movedToDevList.min())
-                OtherItemsDto otherItemsDto                         = new OtherItemsDto(i)
+                LeadTimeDevTimeDto leadTimeDevTimeDto = new LeadTimeDevTimeDto(i, changelogHistoryItemDto
+                        .movedToDevList.min())
+                OtherItemsDto otherItemsDto = new OtherItemsDto(i)
                 this.saveJiraData(projectName, i, changelogHistoryItemDto, leadTimeDevTimeDto, otherItemsDto)
-                updatedRecordsCount ++
+                updatedRecordsCount++
             }
-            log.error("Retrieved {} records for Project {} ",updatedRecordsCount, projectName)
+            log.error("Retrieved {} records for Project {} ", updatedRecordsCount, projectName)
         } else {
             log.error("Skipping project {} as no updated records where found", projectName)
         }
 
-        if(keepGoing) {
+        if (keepGoing) {
             JiraBusiness.log.debug("NEXT PAGE starting at $dto.query.startAt")
             dto.query.startAt += dto.query.maxResults
             updatedRecordsCount += this.updateProjectData(projectName, dto)
@@ -145,63 +151,64 @@ class JiraBusiness extends AbstractBusiness implements IJiraBusiness {
                      final LeadTimeDevTimeDto leadTimeDevTimeDto,
                      final OtherItemsDto otherItemsDto) {
         //TODO - need a way to figure out estimates based on input
-        def estimateHealth = this.utilitiesService.estimateHealth(otherItemsDto.storyPoints, leadTimeDevTimeDto.devTime, 13, 9, [1, 2, 3, 5, 8, 13])
+        def estimateHealth = this.utilitiesService.estimateHealth(otherItemsDto.storyPoints, leadTimeDevTimeDto
+                .devTime, 13, 9, [1, 2, 3, 5, 8, 13])
 
         def jiraData = this.jiraEsRepository.findOne(i.key)
         if (jiraData) {
-            jiraData.createdBy          = this.utilitiesService.cleanEmail(i.fields.creator?.emailAddress)
-            jiraData.issuetype          = otherItemsDto.issueType
-            jiraData.movedForward       = changelogHistoryItemDto.moveForward
-            jiraData.movedBackward      = changelogHistoryItemDto.moveBackward
-            jiraData.storyPoints        = otherItemsDto.storyPoints
-            jiraData.finished           = this.utilitiesService.cleanJiraDate(i.fields.resolutiondate)
-            jiraData.assignees          = changelogHistoryItemDto.assignees
-            jiraData.tags               = i.fields.labels
-            jiraData.dataType           = "PTS"
-            jiraData.leadTime           = leadTimeDevTimeDto.leadTime
-            jiraData.devTime            = leadTimeDevTimeDto.devTime
-            jiraData.commentCount       = i.fields.comment?.total
-            jiraData.jiraProject        = projectName
-            jiraData.rawEstimateHealth  = estimateHealth.raw
-            jiraData.estimateHealth     = estimateHealth.result
-            jiraData.components         = otherItemsDto.components
-            jiraData.product            = otherItemsDto.product
+            jiraData.createdBy = this.utilitiesService.cleanEmail(i.fields.creator?.emailAddress)
+            jiraData.issuetype = otherItemsDto.issueType
+            jiraData.movedForward = changelogHistoryItemDto.moveForward
+            jiraData.movedBackward = changelogHistoryItemDto.moveBackward
+            jiraData.storyPoints = otherItemsDto.storyPoints
+            jiraData.finished = this.utilitiesService.cleanJiraDate(i.fields.resolutiondate)
+            jiraData.assignees = changelogHistoryItemDto.assignees
+            jiraData.tags = i.fields.labels
+            jiraData.dataType = "PTS"
+            jiraData.leadTime = leadTimeDevTimeDto.leadTime
+            jiraData.devTime = leadTimeDevTimeDto.devTime
+            jiraData.commentCount = i.fields.comment?.total
+            jiraData.jiraProject = projectName
+            jiraData.rawEstimateHealth = estimateHealth.raw
+            jiraData.estimateHealth = estimateHealth.result
+            jiraData.components = otherItemsDto.components
+            jiraData.product = otherItemsDto.product
         } else {
             jiraData = [
-                    key: i.key,
-                    created:            this.utilitiesService.cleanJiraDate(i.fields.created),
-                    createdBy:          this.utilitiesService.cleanEmail(i.fields.creator?.emailAddress),
-                    issuetype:          otherItemsDto.issueType,
-                    movedForward:       changelogHistoryItemDto.moveForward,
-                    movedBackward:      changelogHistoryItemDto.moveBackward,
-                    storyPoints:        otherItemsDto.storyPoints,
-                    finished:           this.utilitiesService.cleanJiraDate(i.fields.resolutiondate),
-                    assignees:          changelogHistoryItemDto.assignees,
-                    tags:               i.fields.labels,
-                    dataType:           "PTS",
-                    leadTime:           leadTimeDevTimeDto.leadTime,
-                    devTime:            leadTimeDevTimeDto.devTime,
-                    commentCount:       i.fields.comment?.total,
-                    jiraProject:        projectName,
-                    estimateHealth:     estimateHealth.result,
-                    rawEstimateHealth:  estimateHealth.raw,
-                    components:         otherItemsDto.components,
-                    product:            otherItemsDto.product] as Jira
+                    key              : i.key,
+                    created          : this.utilitiesService.cleanJiraDate(i.fields.created),
+                    createdBy        : this.utilitiesService.cleanEmail(i.fields.creator?.emailAddress),
+                    issuetype        : otherItemsDto.issueType,
+                    movedForward     : changelogHistoryItemDto.moveForward,
+                    movedBackward    : changelogHistoryItemDto.moveBackward,
+                    storyPoints      : otherItemsDto.storyPoints,
+                    finished         : this.utilitiesService.cleanJiraDate(i.fields.resolutiondate),
+                    assignees        : changelogHistoryItemDto.assignees,
+                    tags             : i.fields.labels,
+                    dataType         : "PTS",
+                    leadTime         : leadTimeDevTimeDto.leadTime,
+                    devTime          : leadTimeDevTimeDto.devTime,
+                    commentCount     : i.fields.comment?.total,
+                    jiraProject      : projectName,
+                    estimateHealth   : estimateHealth.result,
+                    rawEstimateHealth: estimateHealth.raw,
+                    components       : otherItemsDto.components,
+                    product          : otherItemsDto.product] as Jira
         }
         this.jiraEsRepository.save(jiraData)
     }
 
     class OtherItemsDto {
-        String issueType    = ""
-        List components  = []
-        String product      = ""
+        String issueType = ""
+        List components = []
+        String product = ""
         Integer storyPoints = 0
 
         OtherItemsDto(final def i) {
-            this.issueType      = this.getIssueType(i)
-            this.components     = this.getComponentsList(i)
-            this.product        = this.getProductString(i)
-            this.storyPoints    = this.getStoryPoints(i)
+            this.issueType = this.getIssueType(i)
+            this.components = this.getComponentsList(i)
+            this.product = this.getProductString(i)
+            this.storyPoints = this.getStoryPoints(i)
         }
 
         String getIssueType(final def i) {
@@ -214,7 +221,7 @@ class JiraBusiness extends AbstractBusiness implements IJiraBusiness {
 
         List getComponentsList(final def i) {
             List components = []
-            for(def c : i.fields.components) {
+            for (def c : i.fields.components) {
                 components.add(c.name)
             }
             return components
@@ -222,9 +229,9 @@ class JiraBusiness extends AbstractBusiness implements IJiraBusiness {
 
         String getProductString(final def i) {
             String product = ""
-            if(i.fields.customfield_12040) {
+            if (i.fields.customfield_12040) {
                 product = i.fields.customfield_12040.value
-                if(i.fields.customfield_12040.child) {
+                if (i.fields.customfield_12040.child) {
                     product += " " + i.fields.customfield_12040.child.value
                 }
             }
@@ -241,14 +248,16 @@ class JiraBusiness extends AbstractBusiness implements IJiraBusiness {
     }
 
     class ChangelogHistoryItemDto {
-        def moveForward     = 0
-        def moveBackward    = 0
-        def assignees       = []
-        def movedToDevList  = []
+        def moveForward = 0
+        def moveBackward = 0
+        def assignees = []
+        def movedToDevList = []
 
-        //NOTE we need to set the map so we know what direction things are moving in; this relates to the moveForward & moveBackward stuff
+        //NOTE we need to set the map so we know what direction things are moving in; this relates to the moveForward
+        // & moveBackward stuff
         //TODO this needs to be a parameter that gets passed in based on the project
-        def taskStatusMap = ["In Definition": 1, "Dev Ready":2, "Dev":3, "QA Ready":4, "QA":5, "Deploy Ready":6, "Done":7]
+        def taskStatusMap = ["In Definition": 1, "Dev Ready": 2, "Dev": 3, "QA Ready": 4, "QA": 5, "Deploy Ready": 6,
+                             "Done": 7]
 
         /**
          * Default constructor in the case that we have no change log information
@@ -280,15 +289,15 @@ class JiraBusiness extends AbstractBusiness implements IJiraBusiness {
                     def history = JiraBusiness.this.jiraHistoryEsRepository.findOne(h.id)
 
                     //not sure we care about updates
-                    if(history == null) {
+                    if (history == null) {
                         history = [
-                                dataType: "PTS",
-                                sourceId: h.id,
-                                timestamp: h.created,
+                                dataType   : "PTS",
+                                sourceId   : h.id,
+                                timestamp  : h.created,
                                 changeField: t.field,
-                                newValue: t.toString,
-                                changedBy: h.author.emailAddress,
-                                key: i.key
+                                newValue   : t.toString,
+                                changedBy  : h.author.emailAddress,
+                                key        : i.key
                         ] as JiraHistory
                         JiraBusiness.this.jiraHistoryEsRepository.save(history)
                     }
@@ -302,29 +311,29 @@ class JiraBusiness extends AbstractBusiness implements IJiraBusiness {
         def devTime = 0
 
         LeadTimeDevTimeDto(def i, def movedToDev) {
-            println "FIELDS: " + i.fields.created
+            log.debug("Fields: " + i.fields.created)
             def createdDate = JiraBusiness.this.utilitiesService.cleanJiraDate(i.fields.created)
             def fin = JiraBusiness.this.utilitiesService.cleanJiraDate(i.fields.resolutiondate)
             if (createdDate) {
                 def endLeadTime = new Date()
-                if(fin) {
+                if (fin) {
                     endLeadTime = fin
                 }
                 long duration = endLeadTime.getTime() - createdDate.getTime()
                 leadTime = TimeUnit.MILLISECONDS.toDays(duration)
-                if(leadTime == 0) {
+                if (leadTime == 0) {
                     leadTime = 1
                 }
             }
 
             if (movedToDev) {
                 def endLeadTime = new Date()
-                if(fin) {
+                if (fin) {
                     endLeadTime = fin
                 }
                 long duration = endLeadTime.getTime() - movedToDev.getTime()
                 devTime = TimeUnit.MILLISECONDS.toDays(duration)
-                if(devTime == 0) {
+                if (devTime == 0) {
                     devTime = 1
                 }
             }
