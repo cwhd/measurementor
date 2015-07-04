@@ -2,6 +2,7 @@ package com.nike.mm
 
 import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration
+import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchAutoConfiguration
 import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchDataAutoConfiguration
 import org.springframework.boot.context.web.SpringBootServletInitializer
@@ -14,6 +15,7 @@ import org.springframework.scheduling.annotation.EnableScheduling
 @ComponentScan
 @EnableAsync
 @EnableScheduling
+@SpringBootApplication
 class MeasurementorApplication extends SpringBootServletInitializer {
 
     static void main(String[] args) {
