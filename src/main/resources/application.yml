@@ -7,3 +7,5 @@ mm:
         port: 9300
         cluster:
             name: elasticsearch
+    plugin:
+        defaultStartDate: 03/07/2015

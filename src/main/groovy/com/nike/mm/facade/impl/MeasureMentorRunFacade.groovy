@@ -26,11 +26,6 @@ class MeasureMentorRunFacade implements IMeasureMentorRunFacade {
      */
     public static final String NO_MATCHING_PLUGIN = "No measure mentor configured for: {0}"
 
-    /**
-     * Error message when a configuration cannot be validated successfully
-     */
-    public static final String INVALID_CONFIG = "Config not valid config for: {0}"
-
 
     @Autowired
     Set<IMeasureMentorBusiness> measureMentorBusinesses
@@ -49,7 +44,7 @@ class MeasureMentorRunFacade implements IMeasureMentorRunFacade {
 
     @Override
     void runJobId(String jobid) {
-        log.debug("Running job ID {} ", jobid)
+        log.debug("Running job ID $jobid")
 
         def startDate = this.dateService.currentDateTime
 
@@ -111,12 +106,11 @@ class MeasureMentorRunFacade implements IMeasureMentorRunFacade {
 
     private void invokePlugin(JobRunRequestDto request, List<JobRunResponseDto> responses) {
 
-        log.debug("Invoking plugin {}", request.pluginType)
+        log.debug("Invoking plugin $request.pluginType")
 
         // retrieve the last time this job/plugin was run successfully
         Date lastRunDate = this.jobHistoryBusiness.findLastSuccessfulJobRanForJobidAndPlugin(request)
 
-        //todo
         IMeasureMentorBusiness plugin = this.findByType(request.pluginType)
         if (null == plugin) {
             String errorMessage = MessageFormat.format(NO_MATCHING_PLUGIN, request.pluginType)

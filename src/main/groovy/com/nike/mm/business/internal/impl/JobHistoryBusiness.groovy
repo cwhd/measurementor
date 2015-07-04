@@ -10,9 +10,11 @@ import com.nike.mm.repository.es.internal.IJobHistoryRepository
 import groovy.util.logging.Slf4j
 import org.apache.commons.lang3.StringUtils
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
+import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
 
 import java.text.MessageFormat
@@ -43,6 +45,9 @@ class JobHistoryBusiness implements IJobHistoryBusiness {
     @Autowired
     IJobConfigHistoryRepository jobConfigHistoryRepository
 
+    @Value('${mm.plugin.defaultStartDate}')
+    String defaultStartDate
+
     @Override
     JobHistory save(JobHistory jobHistory) {
         this.jobHistoryRepository.save(jobHistory);
@@ -51,7 +56,7 @@ class JobHistoryBusiness implements IJobHistoryBusiness {
     @Override
     JobHistory findLastSuccessfulJobRanForJobid(String jobid) {
         Page<JobHistory> rpage = this.jobHistoryRepository.findByJobidAndStatus(jobid, JobHistory.Status.success,
-                getDefaultDescEndDatePagerequest())
+                getDefaultDescEndDatePageRequest())
         JobHistory rjh = null;
         if (rpage.content.size() > 0) {
             rjh = rpage.content[0];
@@ -61,7 +66,7 @@ class JobHistoryBusiness implements IJobHistoryBusiness {
 
     @Override
     JobHistory findJobsLastBuildStatus(String jobid) {
-        Page<JobHistory> rpage = this.jobHistoryRepository.findByJobid(jobid, getDefaultDescEndDatePagerequest())
+        Page<JobHistory> rpage = this.jobHistoryRepository.findByJobid(jobid, getDefaultDescEndDatePageRequest())
         JobHistory rjh = null;
         if (rpage.content.size() > 0) {
             rjh = rpage.content[0];
@@ -76,12 +81,12 @@ class JobHistoryBusiness implements IJobHistoryBusiness {
 
     @Override
     Date findLastSuccessfulJobRanForJobidAndPlugin(JobRunRequestDto request) {
-        log.debug("Retrieving job history for {} plugin {}", request.jobid, request.pluginType)
+        log.debug("Retrieving job history for $request.jobid plugin $request.pluginType")
 
-        Date lastRunDate = new SimpleDateFormat("dd/MM/yyyy").parse("01/01/2015");
+        Date lastRunDate = new SimpleDateFormat("dd/MM/yyyy").parse(this.defaultStartDate);
 
         Page<JobConfigHistory> results = this.jobConfigHistoryRepository.findByJobidAndStatusAndType(request.jobid,
-                JobHistory.Status.success, request.pluginType, getDefaultDescEndDatePagerequest())
+                JobHistory.Status.success, request.pluginType, getDefaultDescEndDatePageRequest())
         if (0 != results.content.size()) {
             lastRunDate = results.content[0].endDate
         }
@@ -131,9 +136,7 @@ class JobHistoryBusiness implements IJobHistoryBusiness {
         }
     }
 
-    static PageRequest getDefaultDescEndDatePagerequest() {
-        //todo found a workaround
-        new PageRequest(0, 1)
-//        new PageRequest(0, 1, new Sort(Sort.Direction.DESC, END_DATE))
+    static PageRequest getDefaultDescEndDatePageRequest() {
+        new PageRequest(0, 1, new Sort(Sort.Direction.DESC, END_DATE))
     }
 }
