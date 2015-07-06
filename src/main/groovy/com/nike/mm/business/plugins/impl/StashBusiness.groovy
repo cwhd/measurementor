@@ -39,8 +39,8 @@ class StashBusiness extends AbstractBusiness implements IStashBusiness {
     }
 
     @Override
-    String validateConfig(Object config) {
-        List<String> errorMessages = Lists.newArrayList()
+    String validateConfig(final Object config) {
+        final List<String> errorMessages = Lists.newArrayList()
         if (config.url) {
             try {
                 new HTTPBuilder(config.url).get(path: '') { response ->
@@ -58,13 +58,13 @@ class StashBusiness extends AbstractBusiness implements IStashBusiness {
     }
 
     @Override
-    JobRunResponseDto updateDataWithResponse(Date lastRunDate, Object configInfo) {
-        String path = "/rest/api/1.0/projects";
-        def proxyDto = this.getProxyDto(configInfo)
-        HttpRequestDto dto = new HttpRequestDto(url: configInfo.url, path: path,
+    JobRunResponseDto updateDataWithResponse(final Date lastRunDate, final Object configInfo) {
+        final String path = "/rest/api/1.0/projects";
+        final def proxyDto = this.getProxyDto(configInfo)
+        final HttpRequestDto dto = new HttpRequestDto(url: configInfo.url, path: path,
                 query: [start: 0, limit: 300], credentials: configInfo.credentials,
                 proxyDto: proxyDto)
-        for (String projectKey : this.stashWsRepository.findAllProjects(dto)) {
+        for (final String projectKey : this.stashWsRepository.findAllProjects(dto)) {
             this.updateProject(projectKey, configInfo, lastRunDate)
         }
         //todo deal with errors and count
@@ -73,25 +73,25 @@ class StashBusiness extends AbstractBusiness implements IStashBusiness {
 
     void updateProject(final String projectKey, final Object configInfo, final Date fromDate) {
 
-        def path = "/rest/api/1.0/projects/$projectKey/repos"
-        HttpRequestDto dto = [url             : configInfo.url, path: path, query: [start: 0, limit: 300], credentials:
+        final def path = "/rest/api/1.0/projects/$projectKey/repos"
+        final HttpRequestDto dto = [url             : configInfo.url, path: path, query: [start: 0, limit: 300], credentials:
                 configInfo
                         .credentials, proxyDto: this.getProxyDto(configInfo)] as HttpRequestDto
-        for (Expando expando : this.stashWsRepository.findAllReposForProject(projectKey, dto)) {
+        for (final Expando expando : this.stashWsRepository.findAllReposForProject(projectKey, dto)) {
             this.updateCommitDataForRepo(expando, configInfo, fromDate)
             this.updatePullDataForRepo(expando, configInfo, fromDate)
         }
     }
 
     void updateCommitDataForRepo(final Expando expando, final Object configInfo, final Date fromDate) {
-        def path = "/rest/api/1.0/projects/$expando.projectKey/repos/$expando.repo/commits"
-        HttpRequestDto dto = new HttpRequestDto(url: configInfo.url, path: path, query: [start: 0, limit: 300],
+        final def path = "/rest/api/1.0/projects/$expando.projectKey/repos/$expando.repo/commits"
+        final HttpRequestDto dto = new HttpRequestDto(url: configInfo.url, path: path, query: [start: 0, limit: 300],
                 credentials: configInfo.credentials, proxyDto: this.getProxyDto(configInfo))
         this.updateCommitDataForRepoRecusive(expando, dto, fromDate)
     }
 
-    void updateCommitDataForRepoRecusive(final Expando expando, HttpRequestDto dto, final Date fromDate) {
-        def json = this.stashWsRepository.findAllCommits(dto)
+    void updateCommitDataForRepoRecusive(final Expando expando, final HttpRequestDto dto, final Date fromDate) {
+        final def json = this.stashWsRepository.findAllCommits(dto)
         def hitFromDate = false
         if (json) {
             for (def i : json.values) {
@@ -133,16 +133,16 @@ class StashBusiness extends AbstractBusiness implements IStashBusiness {
     }
 
     void updatePullDataForRepo(final Expando expando, final Object configInfo, final fromDate) {
-        def path = "/rest/api/1.0/projects/$expando.projectKey/repos/$expando.repo/pull-requests"
-        def proxyDto = this.getProxyDto(configInfo)
+        final def path = "/rest/api/1.0/projects/$expando.projectKey/repos/$expando.repo/pull-requests"
+        final def proxyDto = this.getProxyDto(configInfo)
         HttpRequestDto dto = new HttpRequestDto(url: configInfo.url, path: path, query: [start: 0, limit: 300, state:
                 "all"],
                 credentials: configInfo.credentials, proxyDto: proxyDto)
         this.updatePullDataForRepoRecursively(expando, dto, fromDate)
     }
 
-    void updatePullDataForRepoRecursively(final Expando expando, HttpRequestDto dto, final fromDate) {
-        def json = this.stashWsRepository.findAllPullRequests(dto)
+    void updatePullDataForRepoRecursively(final Expando expando, final HttpRequestDto dto, final fromDate) {
+        final def json = this.stashWsRepository.findAllPullRequests(dto)
         def hitFromDate = false
         if (json) {
             for (def i : json.values) {
@@ -162,7 +162,7 @@ class StashBusiness extends AbstractBusiness implements IStashBusiness {
     }
 
     private List getListOfReviewers(def i) {
-        def reviewers = []
+        final def reviewers = []
         i.reviewers.each { def r ->
             //TODO would be great to get WHAT they did here...
             reviewers.add(this.utilitiesService.cleanEmail(r.user.emailAddress))
@@ -170,10 +170,10 @@ class StashBusiness extends AbstractBusiness implements IStashBusiness {
         return reviewers
     }
 
-    private Stash createStashDataObject(final Expando expando, HttpRequestDto dto, final def i) {
-        Date createdDate = new Date(i.createdDate)
+    private Stash createStashDataObject(final Expando expando, final HttpRequestDto dto, final def i) {
+        final Date createdDate = new Date(i.createdDate)
         log.debug("Key: $createdDate.time-$i.author.user.id")
-        def commitCount = this.getCommitCount(dto, i.id)
+        final def commitCount = this.getCommitCount(dto, i.id)
         log.debug("CommitCount: $commitCount")
         Stash stashData = this.stashEsRepository.findOne("$createdDate.time-$i.author.user.id")
         if (stashData) {
@@ -215,43 +215,35 @@ class StashBusiness extends AbstractBusiness implements IStashBusiness {
      * @param prNumber the ID from the request to the PR
      * @return the count of commits on this PR
      */
-    def getCommitCount(HttpRequestDto dto, prNumber) {
-        try {
-            HttpRequestDto countdto = new HttpRequestDto(url: dto.url, path: "$dto.path/$prNumber/commits",
-                    query: [state: "all", start: 0, limit: 300], credentials: dto.credentials, proxyDto: dto.proxyDto)
-            def json = this.stashWsRepository.findCommitCount(dto)
-            if (json) {
-                return json.size
-            } else {
-                return 0
-            }
-        } catch (Exception e) {
+    def getCommitCount(final HttpRequestDto dto, prNumber) {
+//        final HttpRequestDto countdto = new HttpRequestDto(url: dto.url, path: "$dto.path/$prNumber/commits",
+//                query: [state: "all", start: 0, limit: 300], credentials: dto.credentials, proxyDto: dto.proxyDto)
+        final def json = this.stashWsRepository.findCommitCount(dto)
+        if (json) {
+            return json.size
+        } else {
             return 0
         }
     }
 
     def getChangedLinesOfCode(final Expando expando, final HttpRequestDto dto, final String sha) {
-        try {
-            def path = "/rest/api/1.0/projects/$expando.projectKey/repos/$expando.repo/commits/$sha/diff"
-            HttpRequestDto shadto = [url  : dto.url, path: path, query: [start: 0, limit: 300], credentials: dto
-                    .credentials, proxyDto: dto.proxyDto] as HttpRequestDto
-            def json = this.stashWsRepository.findCommitDataFromSha(shadto)
-            def addedLOC = 0
-            def removedLOC = 0
-            for (def d in json.diffs) {
-                for (def h in d.hunks) {
-                    for (def s in h.segments) {
-                        if (s.type == "ADDED") {
-                            addedLOC += s.lines.size()
-                        } else if (s.type == "REMOVED") {
-                            removedLOC += s.lines.size()
-                        }
+        def path = "/rest/api/1.0/projects/$expando.projectKey/repos/$expando.repo/commits/$sha/diff"
+        HttpRequestDto shadto = [url  : dto.url, path: path, query: [start: 0, limit: 300], credentials: dto
+                .credentials, proxyDto: dto.proxyDto] as HttpRequestDto
+        def json = this.stashWsRepository.findCommitDataFromSha(shadto)
+        def addedLOC = 0
+        def removedLOC = 0
+        for (def d in json.diffs) {
+            for (def h in d.hunks) {
+                for (def s in h.segments) {
+                    if (s.type == "ADDED") {
+                        addedLOC += s.lines.size()
+                    } else if (s.type == "REMOVED") {
+                        removedLOC += s.lines.size()
                     }
                 }
             }
-            return [addedLOC: addedLOC, removedLOC: removedLOC]
-        } catch (Exception e) {
-            return [addedLOC: 0, removedLOC: 0]
         }
+        return [addedLOC: addedLOC, removedLOC: removedLOC]
     }
 }
