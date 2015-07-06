@@ -119,7 +119,6 @@ class JiraBusiness extends AbstractBusiness implements IJiraBusiness {
 
         if (json && json.issues && json.issues?.size() > 0) {
             keepGoing = true
-            def movedToDev
             json.issues.each { def i ->
 
                 ChangelogHistoryItemDto changelogHistoryItemDto = new ChangelogHistoryItemDto()
