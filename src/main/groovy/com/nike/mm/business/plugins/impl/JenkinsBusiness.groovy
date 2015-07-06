@@ -77,11 +77,12 @@ class JenkinsBusiness extends AbstractBusiness implements IJenkinsBusiness {
         log.debug("3.Path: $path")
         HttpRequestDto dto = [url: configInfo.url, path: path, query:[start: 0, limit: 300], credentials: configInfo.credentials, proxyDto:this.getProxyDto(configInfo)] as HttpRequestDto
         def json = this.jenkinsWsRepository.findListOfBuilds(dto)
+        if (json && json.jobs) {
+            json.jobs.each { def i ->
+                def newPath = this.utilitiesService.getPathFromUrl(i.url)
 
-        json.jobs.each { def i ->
-            def newPath = this.utilitiesService.getPathFromUrl(i.url)
-
-            recordsCount += this.findBuildInformation(configInfo, newPath)
+                recordsCount += this.findBuildInformation(configInfo, newPath)
+            }
         }
         return recordsCount
     }
@@ -93,10 +94,12 @@ class JenkinsBusiness extends AbstractBusiness implements IJenkinsBusiness {
         HttpRequestDto dto = [url: configInfo.url, path: path, query:[start: 0, limit: 300], credentials: configInfo.credentials, proxyDto:this.getProxyDto(configInfo)] as HttpRequestDto
 
         def json = this.jenkinsWsRepository.findBuildInformation(dto)
-        json.builds.each { def b ->
-            def newPath = this.utilitiesService.getPathFromUrl(b.url)
-            log.debug("5.ewnewNWEPath: $newPath")
-            recordsCount += findAndSaveBuildData(configInfo, newPath)
+        if (json && json.builds) {
+            json.builds.each { def b ->
+                def newPath = this.utilitiesService.getPathFromUrl(b.url)
+                log.debug("5.ewnewNWEPath: $newPath")
+                recordsCount += findAndSaveBuildData(configInfo, newPath)
+            }
         }
         return recordsCount
     }
