@@ -10,8 +10,10 @@ import com.nike.mm.dto.JobRunResponseDto
 import com.nike.mm.entity.JobHistory
 import com.nike.mm.facade.IMeasureMentorRunFacade
 import com.nike.mm.service.IDateService
+import groovy.json.JsonSlurper
 import groovy.util.logging.Slf4j
 import groovyx.gpars.GParsPool
+import org.jasypt.util.text.TextEncryptor
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
@@ -25,7 +27,6 @@ class MeasureMentorRunFacade implements IMeasureMentorRunFacade {
      * Error message when no plugin found in a given configuration
      */
     public static final String NO_MATCHING_PLUGIN = "No measure mentor configured for: {0}"
-
 
     @Autowired
     Set<IMeasureMentorBusiness> measureMentorBusinesses
@@ -42,17 +43,22 @@ class MeasureMentorRunFacade implements IMeasureMentorRunFacade {
     @Autowired
     IDateService dateService
 
+    @Autowired
+    TextEncryptor textEncryptor
+
     @Override
     void runJobId(String jobid) {
         log.debug("Running job ID $jobid")
 
-        def startDate = this.dateService.currentDateTime
+        final def startDate = this.dateService.currentDateTime
 
         try {
             this.measureMentorRunBusiness.startJob(jobid)
-            def configDto = this.measureMentorConfigBusiness.findById(jobid)
+            final def entity = this.measureMentorConfigBusiness.findById(jobid)
+            final def config = new JsonSlurper().parseText(this.textEncryptor.decrypt(new String(Base64.getDecoder().decode
+                    (entity.encryptedConfig))))
 
-            List<JobRunRequestDto> requests = createRequestsFromConfig(jobid, configDto.config)
+            List<JobRunRequestDto> requests = createRequestsFromConfig(jobid, config)
 
             List<JobRunResponseDto> responses = Lists.newArrayListWithCapacity(requests.size())
 

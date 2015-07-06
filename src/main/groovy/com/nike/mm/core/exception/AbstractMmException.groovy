@@ -2,7 +2,7 @@ package com.nike.mm.core.exception
 
 abstract class AbstractMmException extends RuntimeException {
 
-    AbstractMmException(String message) {
+    AbstractMmException(final String message) {
         super(message)
     }
 }

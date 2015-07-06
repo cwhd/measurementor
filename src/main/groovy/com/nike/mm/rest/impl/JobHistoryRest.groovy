@@ -17,15 +17,18 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @RequestMapping("/api/jobs-history")
 class JobHistoryRest implements IJobHistoryRest {
-	
-	@Autowired IJobHistoryFacade jobHistoryFacade
-	
-	@Autowired JobHistoryResourceAssembler jobHistoryResourceAssembler
 
-	@Override
-	@RequestMapping(value = "/{jobid}", method = RequestMethod.GET, produces = "application/json")
-	PagedResources<JobHistoryDto> pageThrough(@PathVariable final String jobid, Pageable pageable, PagedResourcesAssembler assembler) {
-		Page<JobHistoryDto> dtos = this.jobHistoryFacade.findAllByJobid(jobid, pageable)
-		return assembler.toResource( dtos, this.jobHistoryResourceAssembler );
-	}
+    @Autowired
+    IJobHistoryFacade jobHistoryFacade
+
+    @Autowired
+    JobHistoryResourceAssembler jobHistoryResourceAssembler
+
+    @Override
+    @RequestMapping(value = "/{jobid}", method = RequestMethod.GET, produces = "application/json")
+    PagedResources<JobHistoryDto> pageThrough(
+            @PathVariable final String jobid, final Pageable pageable, final PagedResourcesAssembler assembler) {
+        Page<JobHistoryDto> dtos = this.jobHistoryFacade.findAllByJobid(jobid, pageable)
+        return assembler.toResource(dtos, this.jobHistoryResourceAssembler);
+    }
 }

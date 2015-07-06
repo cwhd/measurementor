@@ -8,6 +8,7 @@ import com.nike.mm.entity.JobHistory
 import com.nike.mm.entity.MeasureMentorJobsConfig
 import com.nike.mm.facade.IMeasureMentorJobsConfigFacade
 import com.nike.mm.service.ICronService
+import groovy.json.JsonBuilder
 import groovy.json.JsonSlurper
 import groovy.util.logging.Slf4j
 import org.jasypt.util.text.TextEncryptor
@@ -33,18 +34,19 @@ class MeasureMentorJobsConfigFacade implements IMeasureMentorJobsConfigFacade {
     @Autowired
     ICronService cronService
 
-    @Autowired TextEncryptor textEncryptor;
+    @Autowired
+    TextEncryptor textEncryptor
 
     @Override
     MeasureMentorJobsConfigDto findById(final String id) {
-        return this.measureMentorJobsConfigBusiness.findById(id);
+        return this.toDto(this.measureMentorJobsConfigBusiness.findById(id))
     }
 
     @Override
-    MeasureMentorJobsConfigDto saveJobsConfig(MeasureMentorJobsConfigDto dto) {
+    MeasureMentorJobsConfigDto saveJobsConfig(final MeasureMentorJobsConfigDto dto) {
 
         // persist changes
-        MeasureMentorJobsConfig entity = this.measureMentorJobsConfigBusiness.saveConfig(dto)
+        final MeasureMentorJobsConfig entity = this.measureMentorJobsConfigBusiness.saveConfig(parseDto(dto))
 
         // create/update cron job
         this.cronService.processJob(entity.id)
@@ -54,14 +56,14 @@ class MeasureMentorJobsConfigFacade implements IMeasureMentorJobsConfigFacade {
 
     @Override
     Page<MeasureMentorJobsConfigDto> findListOfJobs(final Pageable pageable) {
-        Page rpage = this.measureMentorJobsConfigBusiness.findAll(pageable);
-        List<MeasureMentorJobsConfigDto> dtos = [];
-        for (MeasureMentorJobsConfig entity : rpage.content) {
+        final Page rpage = this.measureMentorJobsConfigBusiness.findAll(pageable);
+        final List<MeasureMentorJobsConfigDto> dtos = [];
+        for (final MeasureMentorJobsConfig entity : rpage.content) {
 
             MeasureMentorJobsConfigDto dto = this.toDto(entity)
 
             JobHistory jh = jobHistoryBusiness.findJobsLastBuildStatus(entity.id);
-            if (jh != null) {
+            if (jh) {
                 dto.lastbuildstatus = jh.status
                 dto.lastBuildDate = jh.endDate
             }
@@ -76,14 +78,33 @@ class MeasureMentorJobsConfigFacade implements IMeasureMentorJobsConfigFacade {
      * @param entity
      * @return MeasureMentorJobsConfigDto instance
      */
-    private MeasureMentorJobsConfigDto toDto(MeasureMentorJobsConfig entity) {
+    private MeasureMentorJobsConfigDto toDto(final MeasureMentorJobsConfig entity) {
+        MeasureMentorJobsConfigDto dto = null
+        if (entity) {
+            dto = new MeasureMentorJobsConfigDto(
+                    id: entity.id,
+                    name: entity.name,
+                    jobOn: entity.jobOn,
+                    cron: entity.cron,
+                    config: new JsonSlurper().parseText(this.textEncryptor.decrypt(new String(Base64.getDecoder().decode
+                            (entity.encryptedConfig)))))
+        }
+        return dto
+    }
 
-        MeasureMentorJobsConfigDto dto = [
-                id: entity.id,
-                name: entity.name,
-                jobOn: entity.jobOn,
-                cron: entity.cron,
-                config: new JsonSlurper().parseText(this.textEncryptor.decrypt(new String(Base64.getDecoder().decode(entity.encryptedConfig))))
-        ] as MeasureMentorJobsConfigDto
+    /**
+     * Transform a MeasureMentorJobsConfigDto instance to a MeasureMentorJobsConfig instance
+     * @param dto
+     * @return entity
+     */
+    private MeasureMentorJobsConfig parseDto(final MeasureMentorJobsConfigDto dto) {
+
+        final String configString = new JsonBuilder(dto.config).toPrettyString()
+        return new MeasureMentorJobsConfig(id: dto.id,
+                name: dto.name,
+                cron: dto.cron,
+                jobOn: dto.jobOn,
+                encryptedConfig: Base64.getEncoder().encodeToString(this.textEncryptor.encrypt(configString).bytes)
+        )
     }
 }

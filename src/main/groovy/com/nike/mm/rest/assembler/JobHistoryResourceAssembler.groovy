@@ -17,14 +17,14 @@ class JobHistoryResourceAssembler extends ResourceAssemblerSupport<JobHistoryDto
 	}
 	
 	@Override
-	public Resource toResource(JobHistoryDto entity) {
+	public Resource toResource(final JobHistoryDto entity) {
 		return new Resource<JobHistoryDto>(entity, linkTo(JobHistoryRest.class).slash(entity.getId()).withSelfRel());
 	}
 
 	@Override
-    public List<Resource> toResources(Iterable<? extends JobHistoryDto> entities) {
-        List<Resource> resources = new ArrayList<Resource>();
-        for(JobHistoryDto entity : entities) {
+    public List<Resource> toResources(final Iterable<? extends JobHistoryDto> entities) {
+        final List<Resource> resources = new ArrayList<Resource>();
+        for(final JobHistoryDto entity : entities) {
             resources.add(new Resource<JobHistoryDto>(entity, linkTo(JobHistoryRest.class).slash(entity.getId()).withSelfRel()));
         }
         return resources;

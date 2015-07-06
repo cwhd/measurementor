@@ -33,13 +33,13 @@ class MeasureMentorJobsConfigRest implements IMeasureMentorJobsConfigRest {
     }
 
     @Override
-    @RequestMapping(value = "/{id}", method = RequestMethod.GET)
+    @RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = "application/json")
     public MeasureMentorJobsConfigDto findById(@PathVariable final String id) {
         return this.measureMentorJobsConfigFacade.findById(id);
     }
 
     @Override
-    @RequestMapping(method = RequestMethod.POST)
+    @RequestMapping(method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
     public MeasureMentorJobsConfigDto save(@RequestBody @Valid MeasureMentorJobsConfigDto dto) {
         return this.measureMentorJobsConfigFacade.saveJobsConfig(dto);
     }
