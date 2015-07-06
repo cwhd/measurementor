@@ -19,7 +19,7 @@ class HttpRequestService implements IHttpRequestService {
 
 		http.ignoreSSLIssues()
 
-        if(httpRequestDto.proxyDto) {
+        if(httpRequestDto.proxyDto && httpRequestDto.proxyDto.url) {
             http.setProxy(httpRequestDto.proxyDto.url, httpRequestDto.proxyDto.port, null)
         }
 
