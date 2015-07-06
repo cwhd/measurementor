@@ -6,6 +6,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchAutoConfiguration
 import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchDataAutoConfiguration
 import org.springframework.boot.context.web.SpringBootServletInitializer
+import org.springframework.cloud.netflix.eureka.EnableEurekaClient
 import org.springframework.context.annotation.ComponentScan
 import org.springframework.scheduling.annotation.EnableAsync
 import org.springframework.scheduling.annotation.EnableScheduling
@@ -16,6 +17,7 @@ import org.springframework.scheduling.annotation.EnableScheduling
 @EnableAsync
 @EnableScheduling
 @SpringBootApplication
+@EnableEurekaClient
 class MeasurementorApplication extends SpringBootServletInitializer {
 
     static void main(String[] args) {
