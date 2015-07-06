@@ -18,17 +18,17 @@ class ConfigValidator implements ConstraintValidator<ValidConfig, Object> {
     MeasureMentorRunFacade measureMentorRunFacade
 
     @Override
-    void initialize(ValidConfig constraintAnnotation) {
+    void initialize(final ValidConfig constraintAnnotation) {
 
     }
 
     @Override
-    boolean isValid(Object value, ConstraintValidatorContext context) {
-        List<String> errorMessages = Lists.newArrayList()
+    boolean isValid(final Object value, final ConstraintValidatorContext context) {
+        final List<String> errorMessages = Lists.newArrayList()
         if (value) {
-            boolean isCollection = isCollectionOrArray(value)
+            final boolean isCollection = isCollectionOrArray(value)
             if (isCollection) {
-                value.each {config ->
+                value.each { final config ->
                     validateSingleConfig(config, errorMessages)
                 }
             } else {
@@ -42,19 +42,19 @@ class ConfigValidator implements ConstraintValidator<ValidConfig, Object> {
         if (errorMessages.size()) {
             isValid = false
             context.disableDefaultConstraintViolation()
-            errorMessages.each { errorMessage ->
+            errorMessages.each { final errorMessage ->
                 context.buildConstraintViolationWithTemplate(errorMessage).addConstraintViolation()
             }
         }
         return isValid
     }
 
-    private static boolean isCollectionOrArray(Object value) {
+    private static boolean isCollectionOrArray(final Object value) {
         [Collection, Object[]].any { it.isAssignableFrom(value.getClass()) }
     }
 
-    private void validateSingleConfig(Object config, List<String> errorMessages) {
-        String errorMessage
+    private void validateSingleConfig(final Object config, final List<String> errorMessages) {
+        final String errorMessage
         if (config.type) {
             errorMessage = this.measureMentorRunFacade.validateConfig(config)
         } else {
@@ -65,7 +65,7 @@ class ConfigValidator implements ConstraintValidator<ValidConfig, Object> {
         }
     }
 
-    private static void addViolation(String errorMessage, List<String> errorMessages) {
+    private static void addViolation(final String errorMessage, final List<String> errorMessages) {
         errorMessages.add(errorMessage)
     }
 }
