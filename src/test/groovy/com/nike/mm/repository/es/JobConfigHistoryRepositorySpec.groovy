@@ -1,8 +1,8 @@
 package com.nike.mm.repository.es
 
 import com.nike.mm.MeasurementorApplication
-import com.nike.mm.entity.JobConfigHistory
-import com.nike.mm.entity.JobHistory
+import com.nike.mm.entity.internal.JobConfigHistory
+import com.nike.mm.entity.internal.JobHistory
 import com.nike.mm.repository.es.internal.IJobConfigHistoryRepository
 import org.junit.Test
 import org.junit.runner.RunWith

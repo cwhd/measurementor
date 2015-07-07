@@ -1,7 +1,7 @@
 package com.nike.mm.facade
 
 import com.nike.mm.business.internal.IJobHistoryBusiness
-import com.nike.mm.entity.JobHistory
+import com.nike.mm.entity.internal.JobHistory
 import com.nike.mm.facade.impl.JobHistoryFacade
 import org.springframework.data.domain.PageImpl
 import spock.lang.Specification

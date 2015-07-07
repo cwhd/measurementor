@@ -1,6 +1,6 @@
 package com.nike.mm.repository.es.plugins;
 
-import com.nike.mm.entity.Github;
+import com.nike.mm.entity.plugins.Github;
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
 
 import java.util.List;

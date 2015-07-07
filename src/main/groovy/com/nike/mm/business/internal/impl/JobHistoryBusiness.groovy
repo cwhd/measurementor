@@ -3,8 +3,8 @@ package com.nike.mm.business.internal.impl
 import com.nike.mm.business.internal.IJobHistoryBusiness
 import com.nike.mm.dto.JobRunRequestDto
 import com.nike.mm.dto.JobRunResponseDto
-import com.nike.mm.entity.JobConfigHistory
-import com.nike.mm.entity.JobHistory
+import com.nike.mm.entity.internal.JobConfigHistory
+import com.nike.mm.entity.internal.JobHistory
 import com.nike.mm.repository.es.internal.IJobConfigHistoryRepository
 import com.nike.mm.repository.es.internal.IJobHistoryRepository
 import groovy.util.logging.Slf4j

@@ -4,8 +4,8 @@ import com.nike.mm.business.internal.IJobHistoryBusiness
 import com.nike.mm.business.internal.IMeasureMentorJobsConfigBusiness
 import com.nike.mm.business.internal.IMeasureMentorRunBusiness
 import com.nike.mm.dto.MeasureMentorJobsConfigDto
-import com.nike.mm.entity.JobHistory
-import com.nike.mm.entity.MeasureMentorJobsConfig
+import com.nike.mm.entity.internal.JobHistory
+import com.nike.mm.entity.internal.MeasureMentorJobsConfig
 import com.nike.mm.facade.IMeasureMentorJobsConfigFacade
 import com.nike.mm.service.ICronService
 import groovy.json.JsonBuilder

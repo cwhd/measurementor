@@ -1,20 +1,16 @@
 package com.nike.mm.repository.es
 
+import com.nike.mm.MeasurementorApplication
+import com.nike.mm.entity.internal.MeasureMentorJobsConfig
+import com.nike.mm.repository.es.internal.IMeasureMentorJobsConfigRepository
 import org.jasypt.util.text.TextEncryptor
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.SpringApplicationConfiguration
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner
 import org.springframework.test.context.web.WebAppConfiguration
-
 import spock.lang.Specification
-
-import com.nike.mm.MeasurementorApplication
-import com.nike.mm.entity.MeasureMentorJobsConfig;
-import com.nike.mm.repository.es.internal.IMeasureMentorJobsConfigRepository;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = MeasurementorApplication.class)

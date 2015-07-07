@@ -1,6 +1,6 @@
 package com.nike.mm.business.internal;
 
-import com.nike.mm.entity.MeasureMentorJobsConfig;
+import com.nike.mm.entity.internal.MeasureMentorJobsConfig;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 

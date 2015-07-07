@@ -7,7 +7,7 @@ import com.nike.mm.business.internal.IMeasureMentorRunBusiness
 import com.nike.mm.business.plugins.IMeasureMentorBusiness
 import com.nike.mm.dto.JobRunRequestDto
 import com.nike.mm.dto.JobRunResponseDto
-import com.nike.mm.entity.JobHistory
+import com.nike.mm.entity.internal.JobHistory
 import com.nike.mm.facade.IMeasureMentorRunFacade
 import com.nike.mm.service.IDateService
 import groovy.json.JsonSlurper

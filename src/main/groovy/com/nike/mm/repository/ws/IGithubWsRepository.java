@@ -1,7 +1,7 @@
 package com.nike.mm.repository.ws;
 
 import com.nike.mm.dto.HttpRequestDto;
-import com.nike.mm.entity.Github;
+import com.nike.mm.entity.plugins.Github;
 
 import java.util.List;
 

@@ -2,7 +2,7 @@ package com.nike.mm.facade.impl
 
 import com.nike.mm.business.internal.IJobHistoryBusiness
 import com.nike.mm.dto.JobHistoryDto
-import com.nike.mm.entity.JobHistory
+import com.nike.mm.entity.internal.JobHistory
 import com.nike.mm.facade.IJobHistoryFacade
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Page

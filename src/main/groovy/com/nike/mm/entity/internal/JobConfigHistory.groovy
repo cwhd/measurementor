@@ -1,11 +1,10 @@
-package com.nike.mm.entity
+package com.nike.mm.entity.internal
 
 import org.springframework.data.annotation.Id
 import org.springframework.data.elasticsearch.annotations.Document
 import org.springframework.data.elasticsearch.annotations.Field
 import org.springframework.data.elasticsearch.annotations.FieldIndex
 import org.springframework.data.elasticsearch.annotations.FieldType
-
 
 @Document(indexName = "measurementor", type="jobpluginhistory")
 class JobConfigHistory {

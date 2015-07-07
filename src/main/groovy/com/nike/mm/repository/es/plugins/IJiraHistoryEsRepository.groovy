@@ -1,6 +1,6 @@
 package com.nike.mm.repository.es.plugins
 
-import com.nike.mm.entity.JiraHistory
+import com.nike.mm.entity.plugins.JiraHistory
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository
 
 /**

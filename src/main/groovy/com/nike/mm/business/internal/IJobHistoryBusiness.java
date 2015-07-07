@@ -2,7 +2,7 @@ package com.nike.mm.business.internal;
 
 import com.nike.mm.dto.JobRunRequestDto;
 import com.nike.mm.dto.JobRunResponseDto;
-import com.nike.mm.entity.JobHistory;
+import com.nike.mm.entity.internal.JobHistory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 

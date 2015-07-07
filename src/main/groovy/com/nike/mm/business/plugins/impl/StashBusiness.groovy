@@ -4,8 +4,8 @@ import com.google.common.collect.Lists
 import com.nike.mm.business.plugins.IStashBusiness
 import com.nike.mm.dto.HttpRequestDto
 import com.nike.mm.dto.JobRunResponseDto
-import com.nike.mm.entity.JobHistory
-import com.nike.mm.entity.Stash
+import com.nike.mm.entity.internal.JobHistory
+import com.nike.mm.entity.plugins.Stash
 import com.nike.mm.repository.es.plugins.IStashEsRepository
 import com.nike.mm.repository.ws.IStashWsRepository
 import com.nike.mm.service.IUtilitiesService

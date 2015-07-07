@@ -1,7 +1,7 @@
 package com.nike.mm.repository.es
 
 import com.nike.mm.MeasurementorApplication
-import com.nike.mm.entity.JobHistory
+import com.nike.mm.entity.internal.JobHistory
 import com.nike.mm.repository.es.internal.IJobHistoryRepository
 import org.junit.Test
 import org.junit.runner.RunWith

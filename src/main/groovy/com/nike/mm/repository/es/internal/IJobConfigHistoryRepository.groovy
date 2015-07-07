@@ -1,7 +1,7 @@
 package com.nike.mm.repository.es.internal
 
-import com.nike.mm.entity.JobConfigHistory
-import com.nike.mm.entity.JobHistory
+import com.nike.mm.entity.internal.JobConfigHistory
+import com.nike.mm.entity.internal.JobHistory
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository

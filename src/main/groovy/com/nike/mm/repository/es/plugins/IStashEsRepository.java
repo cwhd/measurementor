@@ -1,6 +1,6 @@
 package com.nike.mm.repository.es.plugins;
 
-import com.nike.mm.entity.Stash;
+import com.nike.mm.entity.plugins.Stash;
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
 
 /**

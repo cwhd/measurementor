@@ -2,7 +2,7 @@ package com.nike.mm.business.plugin
 
 import com.nike.mm.business.plugins.IGithubBusiness
 import com.nike.mm.business.plugins.impl.GithubBusiness
-import com.nike.mm.entity.Github
+import com.nike.mm.entity.plugins.Github
 import com.nike.mm.repository.es.plugins.IGithubEsRepository
 import com.nike.mm.repository.ws.IGithubWsRepository
 import org.apache.commons.lang3.StringUtils

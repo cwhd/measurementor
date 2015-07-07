@@ -1,7 +1,7 @@
 package com.nike.mm.business.internal
 
 import com.nike.mm.business.internal.impl.MeasureMentorJobsConfigBusiness
-import com.nike.mm.entity.MeasureMentorJobsConfig
+import com.nike.mm.entity.internal.MeasureMentorJobsConfig
 import com.nike.mm.repository.es.internal.IMeasureMentorJobsConfigRepository
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest

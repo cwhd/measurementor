@@ -5,9 +5,9 @@ import com.nike.mm.business.plugins.IJiraBusiness
 import com.nike.mm.dto.HttpRequestDto
 import com.nike.mm.dto.JobRunResponseDto
 import com.nike.mm.dto.ProxyDto
-import com.nike.mm.entity.Jira
-import com.nike.mm.entity.JiraHistory
-import com.nike.mm.entity.JobHistory
+import com.nike.mm.entity.internal.JobHistory
+import com.nike.mm.entity.plugins.Jira
+import com.nike.mm.entity.plugins.JiraHistory
 import com.nike.mm.repository.es.plugins.IJiraEsRepository
 import com.nike.mm.repository.es.plugins.IJiraHistoryEsRepository
 import com.nike.mm.repository.ws.IJiraWsRepository

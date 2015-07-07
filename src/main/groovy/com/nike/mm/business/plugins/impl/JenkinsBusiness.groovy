@@ -3,8 +3,8 @@ package com.nike.mm.business.plugins.impl
 import com.nike.mm.business.plugins.IJenkinsBusiness
 import com.nike.mm.dto.HttpRequestDto
 import com.nike.mm.dto.JobRunResponseDto
-import com.nike.mm.entity.Jenkins
-import com.nike.mm.entity.JobHistory
+import com.nike.mm.entity.internal.JobHistory
+import com.nike.mm.entity.plugins.Jenkins
 import com.nike.mm.repository.es.plugins.IJenkinsEsRepository
 import com.nike.mm.repository.ws.IJenkinsWsRepository
 import com.nike.mm.service.IUtilitiesService

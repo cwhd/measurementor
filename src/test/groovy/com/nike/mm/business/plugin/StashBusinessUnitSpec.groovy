@@ -3,7 +3,7 @@ package com.nike.mm.business.plugin
 import com.nike.mm.business.plugin.data.StashDataForTests
 import com.nike.mm.business.plugins.IStashBusiness
 import com.nike.mm.business.plugins.impl.StashBusiness
-import com.nike.mm.entity.Stash
+import com.nike.mm.entity.plugins.Stash
 import com.nike.mm.repository.es.plugins.IStashEsRepository
 import com.nike.mm.repository.ws.IStashWsRepository
 import com.nike.mm.service.IUtilitiesService

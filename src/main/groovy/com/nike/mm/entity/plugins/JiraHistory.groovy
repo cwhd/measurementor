@@ -1,4 +1,4 @@
-package com.nike.mm.entity
+package com.nike.mm.entity.plugins
 
 import org.springframework.data.annotation.Id
 import org.springframework.data.elasticsearch.annotations.Document

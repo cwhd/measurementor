@@ -4,7 +4,7 @@ import com.nike.mm.business.internal.IJobHistoryBusiness
 import com.nike.mm.business.internal.IMeasureMentorJobsConfigBusiness
 import com.nike.mm.business.internal.IMeasureMentorRunBusiness
 import com.nike.mm.business.plugins.IMeasureMentorBusiness
-import com.nike.mm.entity.MeasureMentorJobsConfig
+import com.nike.mm.entity.internal.MeasureMentorJobsConfig
 import com.nike.mm.facade.impl.MeasureMentorRunFacade
 import com.nike.mm.service.IDateService
 import org.jasypt.util.text.BasicTextEncryptor

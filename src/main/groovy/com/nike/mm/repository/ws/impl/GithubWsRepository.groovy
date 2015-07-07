@@ -1,7 +1,7 @@
 package com.nike.mm.repository.ws.impl
 
 import com.nike.mm.dto.HttpRequestDto
-import com.nike.mm.entity.Github
+import com.nike.mm.entity.plugins.Github
 import com.nike.mm.repository.es.plugins.IGithubEsRepository
 import com.nike.mm.repository.ws.IGithubWsRepository
 import com.nike.mm.service.IHttpRequestService
