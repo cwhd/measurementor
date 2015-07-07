@@ -233,17 +233,42 @@ class StashBusiness extends AbstractBusiness implements IStashBusiness {
         def json = this.stashWsRepository.findCommitDataFromSha(shadto)
         def addedLOC = 0
         def removedLOC = 0
-        for (def d in json.diffs) {
-            for (def h in d.hunks) {
-                for (def s in h.segments) {
-                    if (s.type == "ADDED") {
-                        addedLOC += s.lines.size()
-                    } else if (s.type == "REMOVED") {
-                        removedLOC += s.lines.size()
-                    }
+        if (json?.diffs) {
+            if (json.diffs.hunks) {
+                for (def e in json.diffs.hunks) {
+//                    if ("segments" == e.key ) {
+                        for (def s in e.segments) {
+                            String e1 = ""
+//                        for (def s in e.segments) {
+                            if ("ADDED" == s.type) {
+                                addedLOC += s.lines.size()
+                            } else if ("REMOVED" == s.type) {
+                                removedLOC += s.lines.size()
+                            }
+//                        }
+                        }
+//                    }
                 }
             }
         }
         return [addedLOC: addedLOC, removedLOC: removedLOC]
     }
+
+//    private def extractAttribute(final def input, final String key) {
+//        if (input) {
+//            if (isCollectionOrArray(input)) {
+//                String isCollection = "true"
+//            } else {
+//                if (Map.isAssignableFrom(input.getClass())) {
+//                    if (input.key) {
+//                        String test = ""
+//                    }
+//                }
+//            }
+//        }
+//    }
+//
+//    private boolean isCollectionOrArray(Object value) {
+//        [Collection, Object[]].any { it.isAssignableFrom(value.getClass()) }
+//    }
 }

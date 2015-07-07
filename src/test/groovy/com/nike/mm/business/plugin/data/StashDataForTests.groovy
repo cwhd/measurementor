@@ -53,6 +53,12 @@ class StashDataForTests {
                                                                             destination: 1,
                                                                             line: "package com.nike.tone.foundation.servlets.authentication;",
                                                                             truncated: false
+                                                                    ],
+                                                                    [
+                                                                            source: 0,
+                                                                            destination: 1,
+                                                                            line: "package com.nike.tone.foundation.servlets.authentication;",
+                                                                            truncated: false
                                                                     ]
                                                             ]
                                                     ],
