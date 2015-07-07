@@ -2,7 +2,7 @@ mm:
     encrypt:
         password: Password123
     elasticsearch:
-        local: true
+        embedded: true
         address: localhost
         port: 9300
         cluster:

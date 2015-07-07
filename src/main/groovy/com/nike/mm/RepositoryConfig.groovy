@@ -37,8 +37,8 @@ class RepositoryConfig {
     /**
      * Switch to use the embeded elasticsaerch or a remote instance
      */
-    @Value('${mm.elasticsearch.local}')
-    private boolean elasticsearchLocal;
+    @Value('${mm.elasticsearch.embedded}')
+    private boolean elasticsearchEmbedded;
 
     /**
      * Override the default elasticsearch autoconfig elasticsearchTemplate
@@ -55,7 +55,7 @@ class RepositoryConfig {
      */
     @Bean
     public Client client(){
-        if(elasticsearchLocal) {
+        if(elasticsearchEmbedded) {
             return new NodeBuilder().local(true).node().client();
         }
         Settings settings = ImmutableSettings.settingsBuilder().put('cluster.name', elasticsearchClusterName).build();
