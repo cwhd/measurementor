@@ -94,9 +94,33 @@ class JobHistoryBusiness implements IJobHistoryBusiness {
     }
 
     @Override
-    void saveJobRunResults(String jobid, Date startDate, Date endDate, List<JobRunResponseDto> responses) {
+    JobHistory createJobHistory(final String jobid, final Date startDate) {
 
-        StringBuilder sb = new StringBuilder(StringUtils.EMPTY)
+        final JobHistory jh = new JobHistory(
+                jobid: jobid,
+                startDate: startDate)
+
+        return this.jobHistoryRepository.save(jh)
+    }
+
+    @Override
+    JobConfigHistory createJobPluginHistory(
+            final String jobid, final String jobHistoryId, final String pluginType) {
+
+        final JobHistory jh = this.jobHistoryRepository.findOne(jobHistoryId)
+
+        JobConfigHistory jch = new JobConfigHistory(
+                jobid: jobid,
+                jobHistoryid: jh.id,
+                type: pluginType,
+                startDate: jh.startDate)
+        return this.jobConfigHistoryRepository.save(jch)
+    }
+
+    @Override
+    void saveJobRunResults(final String jobid, final Date endDate, final List<JobRunResponseDto> responses) {
+
+        final StringBuilder sb = new StringBuilder(StringUtils.EMPTY)
         responses.each { response ->
             if (response.errorMessage) {
                 sb.append(MessageFormat.format(PLUGIN_FAILED, response.type))
@@ -104,34 +128,30 @@ class JobHistoryBusiness implements IJobHistoryBusiness {
                 sb.append(StringUtils.CR)
             }
         }
-        String messages = sb.toString()
+        final String messages = sb.toString()
 
-        JobHistory jh = [
-                jobid    : jobid,
-                startDate: startDate,
-                endDate  : endDate,
-                status   : JobHistory.Status.success,
-                comments : SUCCESS
+        //todo come up with custom method
+        final JobHistory jh = this.jobHistoryRepository.findOne(jobid)
 
-        ] as JobHistory
+        jh.endDate = endDate
         if (messages) {
             jh.status = JobHistory.Status.error
             jh.comments = messages
+        } else {
+            jh.status = JobHistory.Status.success
         }
+        this.jobHistoryRepository.save(jh)
 
-        jh = this.jobHistoryRepository.save(jh)
-
-        responses.each { response ->
-            JobConfigHistory jch = [
-                    jobid       : jobid,
+        responses.each { final response ->
+            final JobConfigHistory jch = new JobConfigHistory(
+                    jobid: jobid,
                     jobHistoryid: jh.id,
-                    type        : response.type,
-                    startDate   : startDate,
-                    endDate     : endDate,
+                    type: response.type,
+                    startDate: jh.startDate,
+                    endDate: endDate,
                     recordsCount: response.recordsCount,
-                    status      : response.status,
-                    comments    : response.errorMessage
-            ] as JobConfigHistory
+                    status: response.status,
+                    comments: response.errorMessage)
             this.jobConfigHistoryRepository.save(jch)
         }
     }

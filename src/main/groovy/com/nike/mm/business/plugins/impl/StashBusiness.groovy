@@ -107,7 +107,7 @@ class StashBusiness extends AbstractBusiness implements IStashBusiness {
                         stashData.commitCount = 1
                     } else {
                         //if we have a commit already i guess it would never change, no need to update it
-                        stashData = [
+                        stashData = new Stash(
                                 id          : i.id,
                                 created     : new Date(i.authorTimestamp), //comes back as epoch time, which sucks
                                 author      : this.utilitiesService.cleanEmail(i.author.emailAddress),
@@ -117,8 +117,7 @@ class StashBusiness extends AbstractBusiness implements IStashBusiness {
                                 dataType    : "SCM",
                                 linesAdded  : locDelta.addedLOC,
                                 linesRemoved: locDelta.removedLOC,
-                                commitCount : 1
-                        ] as Stash
+                                commitCount : 1)
                     }
                     this.stashEsRepository.save(stashData)
                 } else {
@@ -190,8 +189,7 @@ class StashBusiness extends AbstractBusiness implements IStashBusiness {
             stashData.timeOpen = this.utilitiesService.getDifferenceBetweenDatesInHours(i.createdDate, i.updatedDate)
 //                            stashData.commitCount = commitCount
         } else {
-            stashData = [
-
+            stashData = new Stash(
                     id          : "$createdDate.time-$i.author.user.id",
                     created     : createdDate,
                     updated     : new Date(i.updatedDate),
@@ -205,7 +203,7 @@ class StashBusiness extends AbstractBusiness implements IStashBusiness {
                     state       : i.state,
                     timeOpen    : this.utilitiesService.getDifferenceBetweenDatesInHours(i.createdDate, i.updatedDate)
 //                                    commitCount : commitCount
-            ] as Stash
+            )
         }
     }
 

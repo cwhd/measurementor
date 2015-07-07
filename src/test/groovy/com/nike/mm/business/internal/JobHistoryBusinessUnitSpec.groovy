@@ -109,12 +109,16 @@ class JobHistoryBusinessUnitSpec extends Specification {
 
     def "Save job run results without plugin results" () {
 
+        setup:
+        def jh = new JobHistory(id: "jobid")
+
         when:
-        this.jobHistoryBusiness.saveJobRunResults("jobid", new Date(), new Date(), Collections.emptyList())
+        this.jobHistoryBusiness.saveJobRunResults("jobid", new Date(), Collections.emptyList())
 
         then:
+        1 * this.jobHistoryRepository.findOne("jobid") >> jh
         0 * this.jobConfigHistoryRepository.save(_)
-        1 * this.jobHistoryRepository.save(_)
+        1 * this.jobHistoryRepository.save(jh)
     }
 
     def "Save job run results with plugin results" () {
@@ -125,10 +129,11 @@ class JobHistoryBusinessUnitSpec extends Specification {
         def jh = [id: "jobHistoryId"] as JobHistory
 
         when:
-        this.jobHistoryBusiness.saveJobRunResults("jobid", new Date(), new Date(), pluginResults)
+        this.jobHistoryBusiness.saveJobRunResults("jobid", new Date(), pluginResults)
 
         then:
-        1 * this.jobHistoryRepository.save(_)                  >> jh
+        1 * this.jobHistoryRepository.findOne("jobid") >> jh
+        1 * this.jobHistoryRepository.save(jh)         >> jh
         2 * this.jobConfigHistoryRepository.save(_)
     }
 

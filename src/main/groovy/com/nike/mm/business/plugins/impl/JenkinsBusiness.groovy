@@ -44,13 +44,13 @@ class JenkinsBusiness extends AbstractBusiness implements IJenkinsBusiness {
 
     int findJobs(final Date lastRunDate, final Object configInfo){
         int recordsCount = 0
-		String path = "/api/json";
+        final String path = "/api/json";
         log.debug("1.Path: $path")
-		HttpRequestDto dto = [url: configInfo.url, path: path, query:[start: 0, limit: 300], credentials: configInfo.credentials, proxyDto: this.getProxyDto(configInfo)] as HttpRequestDto
-        def json = this.jenkinsWsRepository.findListOfJobs(dto)
+        final HttpRequestDto dto = [url: configInfo.url, path: path, query:[start: 0, limit: 300], credentials: configInfo.credentials, proxyDto: this.getProxyDto(configInfo)] as HttpRequestDto
+        final def json = this.jenkinsWsRepository.findListOfJobs(dto)
         if (json && json.jobs) {
             json.jobs.each { def i ->
-                def newPath = this.utilitiesService.getPathFromUrl(i.url)
+                final def newPath = this.utilitiesService.getPathFromUrl(i.url)
                 log.debug("newPath: $newPath")
                 recordsCount += this.findListOfJobsJobs(configInfo, newPath)
             }
@@ -60,10 +60,10 @@ class JenkinsBusiness extends AbstractBusiness implements IJenkinsBusiness {
 
     int findListOfJobsJobs(final Object configInfo, final String jobsJobPath) {
         int recordsCount = 0
-        String path = jobsJobPath + "api/json";
+        final String path = jobsJobPath + "api/json";
         log.debug("2.Path: $path")
-        HttpRequestDto dto = [url: configInfo.url, path: path, query:[start: 0, limit: 300], credentials: configInfo.credentials, proxyDto:this.getProxyDto(configInfo)] as HttpRequestDto
-        def json = this.jenkinsWsRepository.findListOfJobsJobs(dto)
+        final HttpRequestDto dto = [url: configInfo.url, path: path, query:[start: 0, limit: 300], credentials: configInfo.credentials, proxyDto:this.getProxyDto(configInfo)] as HttpRequestDto
+        final def json = this.jenkinsWsRepository.findListOfJobsJobs(dto)
         json.jobs.each { def i ->
             def newPath = this.utilitiesService.getPathFromUrl(i.url)
             recordsCount += this.findListOfJobsJobsJobs(configInfo, newPath)
@@ -73,13 +73,13 @@ class JenkinsBusiness extends AbstractBusiness implements IJenkinsBusiness {
 
     int findListOfJobsJobsJobs(final Object configInfo, final String jobsJobPath) {
         int recordsCount = 0
-        String path = jobsJobPath + "api/json";
+        final String path = jobsJobPath + "api/json";
         log.debug("3.Path: $path")
-        HttpRequestDto dto = [url: configInfo.url, path: path, query:[start: 0, limit: 300], credentials: configInfo.credentials, proxyDto:this.getProxyDto(configInfo)] as HttpRequestDto
-        def json = this.jenkinsWsRepository.findListOfBuilds(dto)
+        final HttpRequestDto dto = [url: configInfo.url, path: path, query:[start: 0, limit: 300], credentials: configInfo.credentials, proxyDto:this.getProxyDto(configInfo)] as HttpRequestDto
+        final def json = this.jenkinsWsRepository.findListOfBuilds(dto)
         if (json && json.jobs) {
             json.jobs.each { def i ->
-                def newPath = this.utilitiesService.getPathFromUrl(i.url)
+                final def newPath = this.utilitiesService.getPathFromUrl(i.url)
 
                 recordsCount += this.findBuildInformation(configInfo, newPath)
             }
@@ -89,14 +89,14 @@ class JenkinsBusiness extends AbstractBusiness implements IJenkinsBusiness {
 
     int findBuildInformation(final Object configInfo, final String finalPath) {
         int recordsCount = 0
-        String path = finalPath + "api/json";
+        final String path = finalPath + "api/json";
         log.debug("4.Path: $path")
         HttpRequestDto dto = [url: configInfo.url, path: path, query:[start: 0, limit: 300], credentials: configInfo.credentials, proxyDto:this.getProxyDto(configInfo)] as HttpRequestDto
 
-        def json = this.jenkinsWsRepository.findBuildInformation(dto)
+        final def json = this.jenkinsWsRepository.findBuildInformation(dto)
         if (json && json.builds) {
             json.builds.each { def b ->
-                def newPath = this.utilitiesService.getPathFromUrl(b.url)
+                final def newPath = this.utilitiesService.getPathFromUrl(b.url)
                 log.debug("5.ewnewNWEPath: $newPath")
                 recordsCount += findAndSaveBuildData(configInfo, newPath)
             }
@@ -106,12 +106,12 @@ class JenkinsBusiness extends AbstractBusiness implements IJenkinsBusiness {
 
     int findAndSaveBuildData(final Object configInfo, final String finalPath) {
         int recordsCount = 0
-        String path = finalPath + "api/json";
+        final String path = finalPath + "api/json";
         log.debug("6.Path: $path")
-        HttpRequestDto dto = [url: configInfo.url, path: path, query:[start: 0, limit: 300], credentials: configInfo.credentials, proxyDto:this.getProxyDto(configInfo)] as HttpRequestDto
-        def json = this.jenkinsWsRepository.findFinalBuildInformation(dto)
+        final HttpRequestDto dto = [url: configInfo.url, path: path, query:[start: 0, limit: 300], credentials: configInfo.credentials, proxyDto:this.getProxyDto(configInfo)] as HttpRequestDto
+        final def json = this.jenkinsWsRepository.findFinalBuildInformation(dto)
         if (json) {
-            def cleanTimestamp = this.utilitiesService.convertTimestampFromString(json.timestamp)
+            final def cleanTimestamp = this.utilitiesService.convertTimestampFromString(json.timestamp)
             def cleanDisplayName = ""
             if (json.fullDisplayName) {
                 cleanDisplayName = this.utilitiesService.cleanFullBuildName(json.fullDisplayName)
@@ -149,7 +149,7 @@ class JenkinsBusiness extends AbstractBusiness implements IJenkinsBusiness {
                 jenkinsData.dataType = "CI"
                 jenkinsData.buildNumber = json.number
             } else {
-                jenkinsData = [
+                jenkinsData = new Jenkins(
                         buildId: json.id,
                         timestamp: cleanTimestamp,
                         jenkinsUrl: json.url,
@@ -160,7 +160,7 @@ class JenkinsBusiness extends AbstractBusiness implements IJenkinsBusiness {
                         causedBy: causedBy,
                         remoteUrl: remoteUrl,
                         lastBuiltRevision: lastBuiltRevision,
-                        dataType: "CI"] as Jenkins
+                        dataType: "CI")
             }
             this.jenkinsEsRepository.save(jenkinsData)
             recordsCount ++

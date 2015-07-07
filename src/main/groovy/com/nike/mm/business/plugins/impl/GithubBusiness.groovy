@@ -14,6 +14,10 @@ import org.springframework.stereotype.Service
 @Service
 class GithubBusiness extends AbstractBusiness implements IGithubBusiness {
 
+    public static final String MISSING_ACCESS_TOKEN = "Missing access token"
+
+    public static final String MISSING_REPOSITORY_OWNER = "Missing repository owner"
+
     @Autowired
     IGithubWsRepository githubWsRepository
 
@@ -30,16 +34,16 @@ class GithubBusiness extends AbstractBusiness implements IGithubBusiness {
     }
 
     @Override
-    String validateConfig(Object config) {
-        List<String> errorMessages = Lists.newArrayList()
+    String validateConfig(final Object config) {
+        final List<String> errorMessages = Lists.newArrayList()
         if (!config.url) {
             errorMessages.add(MISSING_URL)
         }
         if (!config.access_token) {
-            errorMessages.add("Missing access token")
+            errorMessages.add(MISSING_ACCESS_TOKEN)
         }
         if (!config.repository_owner) {
-            errorMessages.add("Missing repository owner")
+            errorMessages.add(MISSING_REPOSITORY_OWNER)
         }
         return buildValidationErrorString(errorMessages)
     }
@@ -61,22 +65,22 @@ class GithubBusiness extends AbstractBusiness implements IGithubBusiness {
     }
 
     private List<String> findAllRepositories(final Object configInfo, final Date fromDate) {
-        String path = "/users/$configInfo.repository_owner/repos";
+        final String path = "/users/$configInfo.repository_owner/repos";
         HttpRequestDto dto = [url: configInfo.url, path: path, query: [access_token: configInfo.access_token, start:
 				start, limit: limit]] as HttpRequestDto;
         return this.githubWsRepository.findAllRepositories(dto);
     }
 
     private List<Github> getAllCommitsForRepo(final Object configInfo, final String repo) {
-        String path = "/repos/$configInfo.repository_owner/$repo/commits";
-        HttpRequestDto dto = [url: configInfo.url, path: path, query: [access_token: configInfo.access_token, start:
+        final String path = "/repos/$configInfo.repository_owner/$repo/commits";
+        final HttpRequestDto dto = [url: configInfo.url, path: path, query: [access_token: configInfo.access_token, start:
 				start, limit: limit]] as HttpRequestDto
         return this.githubWsRepository.findAllCommitsForRepository(dto);
     }
 
     private List<Github> getAllPullRequestsForRepo(final Object configInfo, final String repo) {
-        String path = "/repos/$configInfo.repository_owner/$repo/pulls";
-        HttpRequestDto dto = [url: configInfo.url, path: path, query: [access_token: configInfo.access_token, start: start, limit: limit]] as HttpRequestDto
+        final String path = "/repos/$configInfo.repository_owner/$repo/pulls";
+        final HttpRequestDto dto = [url: configInfo.url, path: path, query: [access_token: configInfo.access_token, start: start, limit: limit]] as HttpRequestDto
         this.githubWsRepository.findAllPullRequests(dto);
     }
 }

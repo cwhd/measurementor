@@ -8,7 +8,7 @@ mm:
         cluster:
             name: elasticsearch
     plugin:
-        defaultStartDate: 06/07/2015
+        defaultStartDate: 07/07/2015
 spring:
     application:
         name: measurementor

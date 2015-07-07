@@ -4,6 +4,8 @@ class JobRunRequestDto {
 
     String jobid
 
+    String jobHistoryId
+
     String pluginType
 
     Object config

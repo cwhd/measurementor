@@ -2,6 +2,7 @@ package com.nike.mm.business.internal;
 
 import com.nike.mm.dto.JobRunRequestDto;
 import com.nike.mm.dto.JobRunResponseDto;
+import com.nike.mm.entity.internal.JobConfigHistory;
 import com.nike.mm.entity.internal.JobHistory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -21,5 +22,9 @@ public interface IJobHistoryBusiness {
 
     Date findLastSuccessfulJobRanForJobidAndPlugin(JobRunRequestDto request);
 
-    void saveJobRunResults(String jobid, Date startDate, Date endDate, List<JobRunResponseDto> responses);
+    JobHistory createJobHistory(String jobid, Date startDate);
+
+    JobConfigHistory createJobPluginHistory(String jobid, String jobHistoryId, String pluginType);
+
+    void saveJobRunResults(String jobid, Date endDate, List<JobRunResponseDto> responses);
 }

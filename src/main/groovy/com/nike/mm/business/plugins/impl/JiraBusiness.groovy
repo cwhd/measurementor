@@ -60,8 +60,8 @@ class JiraBusiness extends AbstractBusiness implements IJiraBusiness {
     }
 
     @Override
-    String validateConfig(Object config) {
-        List<String> validationErrors = Lists.newArrayList()
+    String validateConfig(final Object config) {
+        final List<String> validationErrors = Lists.newArrayList()
         if (!config.url) {
             validationErrors.add(MISSING_URL)
         }
@@ -84,28 +84,28 @@ class JiraBusiness extends AbstractBusiness implements IJiraBusiness {
     @Override
     JobRunResponseDto updateDataWithResponse(Date lastRunDate, Object configInfo) {
         int recordsCount = 0
-        this.getProjects(configInfo).each { def projectName ->
+        this.getProjects(configInfo).each { def final projectName ->
 
-            def path = "/rest/api/2/search"
-            def jiraQuery = "project=$projectName AND updatedDate>" + lastRunDate.getTime() + " order by updatedDate " +
+            def final path = "/rest/api/2/search"
+            def final jiraQuery = "project=$projectName AND updatedDate>" + lastRunDate.getTime() + " order by updatedDate " +
                     "asc"
-            def query = [jql: jiraQuery, expand: "changelog", startAt: 0, maxResults: 100, fields: "*all"]
-            def proxyDto = [url: configInfo.proxyUrl, port: configInfo.proxyPort] as ProxyDto
-            HttpRequestDto dto = [url: configInfo.url, path: path, query: query, credentials: configInfo.credentials,
+            def final query = [jql: jiraQuery, expand: "changelog", startAt: 0, maxResults: 100, fields: "*all"]
+            def final proxyDto = [url: configInfo.proxyUrl, port: configInfo.proxyPort] as ProxyDto
+            final HttpRequestDto dto = [url: configInfo.url, path: path, query: query, credentials: configInfo.credentials,
                                   proxyDto: proxyDto] as HttpRequestDto
 
 
             recordsCount += this.updateProjectData(projectName, dto)
         }
 
-        def jobResponseDto = new JobRunResponseDto(type: type(), status: JobHistory.Status.success, recordsCount:
+        final def jobResponseDto = new JobRunResponseDto(type: type(), status: JobHistory.Status.success, recordsCount:
                 recordsCount)
         return jobResponseDto
     }
 
     List<String> getProjects(final Object configInfo) {
-        def path = "/rest/api/2/project"
-        def proxyDto = [url: configInfo.proxyUrl, port: configInfo.proxyPort] as ProxyDto
+        final def path = "/rest/api/2/project"
+        final def proxyDto = [url: configInfo.proxyUrl, port: configInfo.proxyPort] as ProxyDto
         HttpRequestDto dto = [url: configInfo.url, path: path, query: [start: 0, limit: 300], credentials: configInfo
                 .credentials, proxyDto: proxyDto] as HttpRequestDto
         return this.jiraWsRepository.getProjectsList(dto)
@@ -115,7 +115,7 @@ class JiraBusiness extends AbstractBusiness implements IJiraBusiness {
         boolean keepGoing = false
         int updatedRecordsCount = 0
 
-        def json = this.jiraWsRepository.getDataForProject(dto)
+        final def json = this.jiraWsRepository.getDataForProject(dto)
 
         if (json && json.issues && json.issues?.size() > 0) {
             keepGoing = true
@@ -125,9 +125,9 @@ class JiraBusiness extends AbstractBusiness implements IJiraBusiness {
                 if (i.changelog) {
                     changelogHistoryItemDto = new ChangelogHistoryItemDto(i)
                 }
-                LeadTimeDevTimeDto leadTimeDevTimeDto = new LeadTimeDevTimeDto(i, changelogHistoryItemDto
+                final LeadTimeDevTimeDto leadTimeDevTimeDto = new LeadTimeDevTimeDto(i, changelogHistoryItemDto
                         .movedToDevList.min())
-                OtherItemsDto otherItemsDto = new OtherItemsDto(i)
+                final OtherItemsDto otherItemsDto = new OtherItemsDto(i)
                 this.saveJiraData(projectName, i, changelogHistoryItemDto, leadTimeDevTimeDto, otherItemsDto)
                 updatedRecordsCount++
             }
@@ -137,7 +137,7 @@ class JiraBusiness extends AbstractBusiness implements IJiraBusiness {
         }
 
         if (keepGoing) {
-            JiraBusiness.log.debug("NEXT PAGE starting at $dto.query.startAt")
+            log.debug("NEXT PAGE starting at $dto.query.startAt")
             dto.query.startAt += dto.query.maxResults
             updatedRecordsCount += this.updateProjectData(projectName, dto)
         }
@@ -150,7 +150,7 @@ class JiraBusiness extends AbstractBusiness implements IJiraBusiness {
                      final LeadTimeDevTimeDto leadTimeDevTimeDto,
                      final OtherItemsDto otherItemsDto) {
         //TODO - need a way to figure out estimates based on input
-        def estimateHealth = this.utilitiesService.estimateHealth(otherItemsDto.storyPoints, leadTimeDevTimeDto
+        final def estimateHealth = this.utilitiesService.estimateHealth(otherItemsDto.storyPoints, leadTimeDevTimeDto
                 .devTime, 13, 9, [1, 2, 3, 5, 8, 13])
 
         def jiraData = this.jiraEsRepository.findOne(i.key)
@@ -173,7 +173,7 @@ class JiraBusiness extends AbstractBusiness implements IJiraBusiness {
             jiraData.components = otherItemsDto.components
             jiraData.product = otherItemsDto.product
         } else {
-            jiraData = [
+            jiraData = new Jira(
                     key              : i.key,
                     created          : this.utilitiesService.cleanJiraDate(i.fields.created),
                     createdBy        : this.utilitiesService.cleanEmail(i.fields.creator?.emailAddress),
@@ -192,7 +192,7 @@ class JiraBusiness extends AbstractBusiness implements IJiraBusiness {
                     estimateHealth   : estimateHealth.result,
                     rawEstimateHealth: estimateHealth.raw,
                     components       : otherItemsDto.components,
-                    product          : otherItemsDto.product] as Jira
+                    product          : otherItemsDto.product)
         }
         this.jiraEsRepository.save(jiraData)
     }
@@ -261,13 +261,13 @@ class JiraBusiness extends AbstractBusiness implements IJiraBusiness {
         /**
          * Default constructor in the case that we have no change log information
          */
-        ChangelogHistoryItemDto() {}
+        ChangelogHistoryItemDto() { }
 
         /**
          * In the event that we have changelog infomation.
          * @param i - The json array from the result list.
          */
-        ChangelogHistoryItemDto(def i) {
+        ChangelogHistoryItemDto(final def i) {
 
             for (def h : i.changelog.histories) {
                 for (def t : h.items) {
@@ -289,15 +289,14 @@ class JiraBusiness extends AbstractBusiness implements IJiraBusiness {
 
                     //not sure we care about updates
                     if (history == null) {
-                        history = [
+                        history = new JiraHistory(
                                 dataType   : "PTS",
                                 sourceId   : h.id,
-                                timestamp  : h.created,
+                                timestamp  : JiraBusiness.this.utilitiesService.cleanJiraDate(h.created),
                                 changeField: t.field,
                                 newValue   : t.toString,
                                 changedBy  : h.author.emailAddress,
-                                key        : i.key
-                        ] as JiraHistory
+                                key        : i.key)
                         JiraBusiness.this.jiraHistoryEsRepository.save(history)
                     }
                 }
@@ -309,16 +308,16 @@ class JiraBusiness extends AbstractBusiness implements IJiraBusiness {
         def leadTime = 0
         def devTime = 0
 
-        LeadTimeDevTimeDto(def i, def movedToDev) {
+        LeadTimeDevTimeDto(final def i, final def movedToDev) {
             log.debug("Fields: " + i.fields.created)
-            def createdDate = JiraBusiness.this.utilitiesService.cleanJiraDate(i.fields.created)
-            def fin = JiraBusiness.this.utilitiesService.cleanJiraDate(i.fields.resolutiondate)
+            final def createdDate = JiraBusiness.this.utilitiesService.cleanJiraDate(i.fields.created)
+            final def fin = JiraBusiness.this.utilitiesService.cleanJiraDate(i.fields.resolutiondate)
             if (createdDate) {
                 def endLeadTime = new Date()
                 if (fin) {
                     endLeadTime = fin
                 }
-                long duration = endLeadTime.getTime() - createdDate.getTime()
+                final long duration = endLeadTime.getTime() - createdDate.getTime()
                 leadTime = TimeUnit.MILLISECONDS.toDays(duration)
                 if (leadTime == 0) {
                     leadTime = 1
@@ -330,7 +329,7 @@ class JiraBusiness extends AbstractBusiness implements IJiraBusiness {
                 if (fin) {
                     endLeadTime = fin
                 }
-                long duration = endLeadTime.getTime() - movedToDev.getTime()
+                final long duration = endLeadTime.getTime() - movedToDev.getTime()
                 devTime = TimeUnit.MILLISECONDS.toDays(duration)
                 if (devTime == 0) {
                     devTime = 1
