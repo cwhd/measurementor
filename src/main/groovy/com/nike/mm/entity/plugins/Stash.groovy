@@ -39,7 +39,7 @@ class Stash {
             store = true)
     String author
 
-    @Field(type = FieldType.Object,
+    @Field(type = FieldType.String,
             index = FieldIndex.analyzed,
             searchAnalyzer = "standard",
             indexAnalyzer = "standard",
@@ -74,7 +74,7 @@ class Stash {
             store = true)
     String dataType
 
-    @Field(type = FieldType.Object,
+    @Field(type = FieldType.String,
             index = FieldIndex.analyzed,
             searchAnalyzer = "standard",
             indexAnalyzer = "standard",
@@ -125,4 +125,11 @@ class Stash {
             indexAnalyzer = "standard",
             store = true)
     int commitCount
+
+    @Field(type = FieldType.Date,
+            index = FieldIndex.analyzed,
+            searchAnalyzer = "standard",
+            indexAnalyzer = "standard",
+            store = true)
+    Date referenceDate
 }

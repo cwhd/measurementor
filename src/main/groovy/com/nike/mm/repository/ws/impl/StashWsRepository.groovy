@@ -6,9 +6,7 @@ import com.nike.mm.service.IHttpRequestService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Repository
 
-/**
- * Created by rparr2 on 6/16/15.
- */
+
 @Repository
 class StashWsRepository implements IStashWsRepository {
 

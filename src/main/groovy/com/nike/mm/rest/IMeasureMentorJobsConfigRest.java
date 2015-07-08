@@ -12,7 +12,7 @@ import org.springframework.hateoas.PagedResources;
 public interface IMeasureMentorJobsConfigRest {
 
     /**
-     * Retrieve a paginated list of jobs configuration
+     * Retrieve a paginated list of jobs
      * @param pageable - Pagination parameters
      * @return - Paginated list of job configurations
      */

@@ -1,7 +1,6 @@
 package com.nike.mm.business.internal.impl
 
 import com.nike.mm.business.internal.IJobHistoryBusiness
-import com.nike.mm.dto.JobRunRequestDto
 import com.nike.mm.dto.JobRunResponseDto
 import com.nike.mm.entity.internal.JobConfigHistory
 import com.nike.mm.entity.internal.JobHistory
@@ -10,7 +9,6 @@ import com.nike.mm.repository.es.internal.IJobHistoryRepository
 import groovy.util.logging.Slf4j
 import org.apache.commons.lang3.StringUtils
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
@@ -18,7 +16,6 @@ import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
 
 import java.text.MessageFormat
-import java.text.SimpleDateFormat
 
 @Slf4j
 @Service
@@ -44,9 +41,6 @@ class JobHistoryBusiness implements IJobHistoryBusiness {
 
     @Autowired
     IJobConfigHistoryRepository jobConfigHistoryRepository
-
-    @Value('${mm.plugin.defaultStartDate}')
-    String defaultStartDate
 
     @Override
     JobHistory save(JobHistory jobHistory) {
@@ -80,20 +74,6 @@ class JobHistoryBusiness implements IJobHistoryBusiness {
     }
 
     @Override
-    Date findLastSuccessfulJobRanForJobidAndPlugin(JobRunRequestDto request) {
-        log.debug("Retrieving job history for $request.jobid plugin $request.pluginType")
-
-        Date lastRunDate = new SimpleDateFormat("dd/MM/yyyy").parse(this.defaultStartDate);
-
-        Page<JobConfigHistory> results = this.jobConfigHistoryRepository.findByJobidAndStatusAndType(request.jobid,
-                JobHistory.Status.success, request.pluginType, getDefaultDescEndDatePageRequest())
-        if (0 != results.content.size()) {
-            lastRunDate = results.content[0].endDate
-        }
-        return lastRunDate
-    }
-
-    @Override
     JobHistory createJobHistory(final String jobid, final Date startDate) {
 
         final JobHistory jh = new JobHistory(
@@ -101,20 +81,6 @@ class JobHistoryBusiness implements IJobHistoryBusiness {
                 startDate: startDate)
 
         return this.jobHistoryRepository.save(jh)
-    }
-
-    @Override
-    JobConfigHistory createJobPluginHistory(
-            final String jobid, final String jobHistoryId, final String pluginType) {
-
-        final JobHistory jh = this.jobHistoryRepository.findOne(jobHistoryId)
-
-        JobConfigHistory jch = new JobConfigHistory(
-                jobid: jobid,
-                jobHistoryid: jh.id,
-                type: pluginType,
-                startDate: jh.startDate)
-        return this.jobConfigHistoryRepository.save(jch)
     }
 
     @Override
@@ -130,7 +96,6 @@ class JobHistoryBusiness implements IJobHistoryBusiness {
         }
         final String messages = sb.toString()
 
-        //todo come up with custom method
         final JobHistory jh = this.jobHistoryRepository.findOne(jobid)
 
         jh.endDate = endDate

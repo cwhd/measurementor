@@ -73,14 +73,14 @@ class Jira {
 			store = true)
 	int storyPoints
 
-	@Field(type = FieldType.Object,
+	@Field(type = FieldType.String,
 			index = FieldIndex.analyzed,
 			searchAnalyzer = "standard",
 			indexAnalyzer = "standard",
 			store = true)
 	String[] assignees //this is actually a map of stuff
 
-	@Field(type = FieldType.Object,
+	@Field(type = FieldType.String,
 			index = FieldIndex.analyzed,
 			searchAnalyzer = "standard",
 			indexAnalyzer = "standard",
@@ -143,7 +143,7 @@ class Jira {
 			store = true)
 	long rawEstimateHealth
 
-	@Field(type = FieldType.Object,
+	@Field(type = FieldType.String,
 			index = FieldIndex.analyzed,
 			searchAnalyzer = "standard",
 			indexAnalyzer = "standard",

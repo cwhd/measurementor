@@ -28,7 +28,7 @@ class JenkinsBusiness extends AbstractBusiness implements IJenkinsBusiness {
 	}
 
     @Override
-    String validateConfig(Object config) {
+    String validateConfig(final Object config) {
         String errorMessage = null
         if (!config.url) {
             errorMessage = prefixWithType("Missing url")
@@ -37,74 +37,71 @@ class JenkinsBusiness extends AbstractBusiness implements IJenkinsBusiness {
     }
 
     @Override
-    JobRunResponseDto updateDataWithResponse(Date lastRunDate, Object configInfo) {
-        int recordsCount = this.findJobs(lastRunDate, configInfo)
+    JobRunResponseDto updateDataWithResponse(final Date defaultFromDate, final Object configInfo) {
+        final int recordsCount = this.findJobs(defaultFromDate, configInfo)
         return new JobRunResponseDto(type: type(), status: JobHistory.Status.success, recordsCount: recordsCount)
     }
 
-    int findJobs(final Date lastRunDate, final Object configInfo){
+    int findJobs(final Date defaultFromDate, final Object configInfo){
         int recordsCount = 0
         final String path = "/api/json";
         log.debug("1.Path: $path")
         final HttpRequestDto dto = [url: configInfo.url, path: path, query:[start: 0, limit: 300], credentials: configInfo.credentials, proxyDto: this.getProxyDto(configInfo)] as HttpRequestDto
         final def json = this.jenkinsWsRepository.findListOfJobs(dto)
-        if (json && json.jobs) {
+        if (json?.jobs) {
             json.jobs.each { def i ->
                 final def newPath = this.utilitiesService.getPathFromUrl(i.url)
                 log.debug("newPath: $newPath")
-                recordsCount += this.findListOfJobsJobs(configInfo, newPath)
+                recordsCount += this.findListOfJobsJobs(defaultFromDate, configInfo, newPath)
             }
         }
         return recordsCount
 	}
 
-    int findListOfJobsJobs(final Object configInfo, final String jobsJobPath) {
+    int findListOfJobsJobs(final Date fromDate, final Object configInfo, final String jobsJobPath) {
         int recordsCount = 0
         final String path = jobsJobPath + "api/json";
         log.debug("2.Path: $path")
         final HttpRequestDto dto = [url: configInfo.url, path: path, query:[start: 0, limit: 300], credentials: configInfo.credentials, proxyDto:this.getProxyDto(configInfo)] as HttpRequestDto
         final def json = this.jenkinsWsRepository.findListOfJobsJobs(dto)
-        json.jobs.each { def i ->
+        json?.jobs?.each { def i ->
             def newPath = this.utilitiesService.getPathFromUrl(i.url)
-            recordsCount += this.findListOfJobsJobsJobs(configInfo, newPath)
+            recordsCount += this.findListOfJobsJobsJobs(fromDate, configInfo, newPath)
         }
         return recordsCount
     }
 
-    int findListOfJobsJobsJobs(final Object configInfo, final String jobsJobPath) {
+    int findListOfJobsJobsJobs(final Date fromDate, final Object configInfo, final String jobsJobPath) {
         int recordsCount = 0
         final String path = jobsJobPath + "api/json";
         log.debug("3.Path: $path")
         final HttpRequestDto dto = [url: configInfo.url, path: path, query:[start: 0, limit: 300], credentials: configInfo.credentials, proxyDto:this.getProxyDto(configInfo)] as HttpRequestDto
         final def json = this.jenkinsWsRepository.findListOfBuilds(dto)
-        if (json && json.jobs) {
-            json.jobs.each { def i ->
-                final def newPath = this.utilitiesService.getPathFromUrl(i.url)
-
-                recordsCount += this.findBuildInformation(configInfo, newPath)
-            }
+        json?.jobs?.each { def i ->
+            final def newPath = this.utilitiesService.getPathFromUrl(i.url)
+            recordsCount += this.findBuildInformation(fromDate, configInfo, newPath)
         }
         return recordsCount
     }
 
-    int findBuildInformation(final Object configInfo, final String finalPath) {
+    int findBuildInformation(final Date fromDate, final Object configInfo, final String finalPath) {
         int recordsCount = 0
         final String path = finalPath + "api/json";
         log.debug("4.Path: $path")
         HttpRequestDto dto = [url: configInfo.url, path: path, query:[start: 0, limit: 300], credentials: configInfo.credentials, proxyDto:this.getProxyDto(configInfo)] as HttpRequestDto
 
         final def json = this.jenkinsWsRepository.findBuildInformation(dto)
-        if (json && json.builds) {
+        if (json?.builds) {
             json.builds.each { def b ->
                 final def newPath = this.utilitiesService.getPathFromUrl(b.url)
                 log.debug("5.ewnewNWEPath: $newPath")
-                recordsCount += findAndSaveBuildData(configInfo, newPath)
+                recordsCount += findAndSaveBuildData(fromDate, configInfo, newPath)
             }
         }
         return recordsCount
     }
 
-    int findAndSaveBuildData(final Object configInfo, final String finalPath) {
+    int findAndSaveBuildData(final Date fromDate, final Object configInfo, final String finalPath) {
         int recordsCount = 0
         final String path = finalPath + "api/json";
         log.debug("6.Path: $path")
@@ -112,58 +109,60 @@ class JenkinsBusiness extends AbstractBusiness implements IJenkinsBusiness {
         final def json = this.jenkinsWsRepository.findFinalBuildInformation(dto)
         if (json) {
             final def cleanTimestamp = this.utilitiesService.convertTimestampFromString(json.timestamp)
-            def cleanDisplayName = ""
-            if (json.fullDisplayName) {
-                cleanDisplayName = this.utilitiesService.cleanFullBuildName(json.fullDisplayName)
-            }
-            def causedBy = ""
-            def remoteUrl = ""
-            def lastBuiltRevision = ""
-            for (def a in json.actions) {
-                if (a.causes) {
-                    for (def c in a.causes) {
-                        causedBy = c.userId
+            if (cleanTimestamp >= fromDate) {
+                def cleanDisplayName = ""
+                if (json.fullDisplayName) {
+                    cleanDisplayName = this.utilitiesService.cleanFullBuildName(json.fullDisplayName)
+                }
+                def causedBy = ""
+                def remoteUrl = ""
+                def lastBuiltRevision = ""
+                for (def a in json.actions) {
+                    if (a.causes) {
+                        for (def c in a.causes) {
+                            causedBy = c.userId
+                        }
+                    }
+                    if (a.remoteUrls) {
+                        for (def r in a.remoteUrls) { //TODO i should make sure to comma separate these...
+                            remoteUrl += r
+                        }
+                    }
+                    if (a.lastBuildRevision) {    //TODO not sure why this doesn't work yet...
+                        lastBuiltRevision = a.lastBuiltRevision.SHA1
                     }
                 }
-                if (a.remoteUrls) {
-                    for (def r in a.remoteUrls) { //TODO i should make sure to comma separate these...
-                        remoteUrl += r
-                    }
-                }
-                if (a.lastBuildRevision) {    //TODO not sure why this doesn't work yet...
-                    lastBuiltRevision = a.lastBuiltRevision.SHA1
-                }
-            }
 
-            def jenkinsData = this.jenkinsEsRepository.findOne(json.id)
+                def jenkinsData = this.jenkinsEsRepository.findOne(json.id)
 
-            if (jenkinsData) {
-                jenkinsData.timestamp = cleanTimestamp
-                jenkinsData.jenkinsUrl = json.url
-                jenkinsData.buildName = cleanDisplayName
-                jenkinsData.result = json.result
-                jenkinsData.duration = json.duration
-                jenkinsData.causedBy = causedBy
-                jenkinsData.remoteUrl = remoteUrl
-                jenkinsData.lastBuiltRevision = lastBuiltRevision
-                jenkinsData.dataType = "CI"
-                jenkinsData.buildNumber = json.number
-            } else {
-                jenkinsData = new Jenkins(
-                        buildId: json.id,
-                        timestamp: cleanTimestamp,
-                        jenkinsUrl: json.url,
-                        buildName: cleanDisplayName,
-                        result: json.result,
-                        buildNumber: json.number,
-                        duration: json.duration,
-                        causedBy: causedBy,
-                        remoteUrl: remoteUrl,
-                        lastBuiltRevision: lastBuiltRevision,
-                        dataType: "CI")
+                if (jenkinsData) {
+                    jenkinsData.timestamp = cleanTimestamp
+                    jenkinsData.jenkinsUrl = json.url
+                    jenkinsData.buildName = cleanDisplayName
+                    jenkinsData.result = json.result
+                    jenkinsData.duration = json.duration
+                    jenkinsData.causedBy = causedBy
+                    jenkinsData.remoteUrl = remoteUrl
+                    jenkinsData.lastBuiltRevision = lastBuiltRevision
+                    jenkinsData.dataType = "CI"
+                    jenkinsData.buildNumber = json.number
+                } else {
+                    jenkinsData = new Jenkins(
+                            buildId: json.id,
+                            timestamp: cleanTimestamp,
+                            jenkinsUrl: json.url,
+                            buildName: cleanDisplayName,
+                            result: json.result,
+                            buildNumber: json.number,
+                            duration: json.duration,
+                            causedBy: causedBy,
+                            remoteUrl: remoteUrl,
+                            lastBuiltRevision: lastBuiltRevision,
+                            dataType: "CI")
+                }
+                this.jenkinsEsRepository.save(jenkinsData)
+                recordsCount++
             }
-            this.jenkinsEsRepository.save(jenkinsData)
-            recordsCount ++
         }
         return recordsCount
     }

@@ -1,9 +1,8 @@
-package com.nike.mm.repository.es
+package com.nike.mm.repository.es.internal
 
 import com.nike.mm.MeasurementorApplication
 import com.nike.mm.entity.internal.JobConfigHistory
 import com.nike.mm.entity.internal.JobHistory
-import com.nike.mm.repository.es.internal.IJobConfigHistoryRepository
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired

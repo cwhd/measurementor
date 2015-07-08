@@ -9,8 +9,8 @@ import com.nike.mm.repository.ws.IJiraWsRepository
 import com.nike.mm.service.IUtilitiesService
 import com.nike.mm.service.impl.UtilitiesService
 import org.apache.commons.lang3.StringUtils
+import org.springframework.data.domain.PageImpl
 import spock.lang.Specification
-
 
 class JiraBusinessUnitSpec extends Specification {
 
@@ -146,12 +146,14 @@ class JiraBusinessUnitSpec extends Specification {
         setup:
         def config = [url:"http://made.up", credentials:"credentials"]
         def fromDate = Date.parse( 'dd-MM-yyyy', "01-01-2001" )
+        def jiraPage = new PageImpl<String>([])
 
         when:
         this.jiraBusiness.updateDataWithResponse(fromDate, config);
 
         then:
         1 * this.jiraWsRepository.getProjectsList(_)        >> ['PROJECTA']
+        1 * this.jiraEsRepository.findByJiraProject(_,_)    >> jiraPage
         2 * this.jiraWsRepository.getDataForProject(_)      >>> [IJiraDataForTests.JIRA_DATA, IJiraDataForTests.JIRA_DATA_NO_ISSUES]
         1 * this.jiraHistoryEsRepository.findOne(_)         >> null
         1 * this.jiraEsRepository.findOne(_)                >> null
@@ -162,12 +164,14 @@ class JiraBusinessUnitSpec extends Specification {
         setup:
         def config = [url:"http://made.up", credentials:"credentials"]
         def fromDate = Date.parse( 'dd-MM-yyyy', "01-01-2001" )
+        def jiraPage = new PageImpl<String>([])
 
         when:
         this.jiraBusiness.updateDataWithResponse(fromDate, config);
 
         then:
         1 * this.jiraWsRepository.getProjectsList(_)        >> ['PROJECTA']
+        1 * this.jiraEsRepository.findByJiraProject(_,_)    >> jiraPage
         2 * this.jiraWsRepository.getDataForProject(_)      >>> [IJiraDataForTests.JIRA_DATA, IJiraDataForTests.JIRA_DATA_NO_ISSUES]
         1 * this.jiraHistoryEsRepository.findOne(_)         >> null
         1 * this.jiraEsRepository.findOne(_)                >> [:]

@@ -36,6 +36,7 @@ class MeasureMentorRunFacadeUnitSpec extends Specification {
         this.textEncryptor = new BasicTextEncryptor()
         this.textEncryptor.setPassword(PASSWORD)
         this.dateService = Mock(IDateService)
+        this.measureMentorRunFacade.defaultFromDateString = "07/07/2015"
         this.measureMentorRunFacade.measureMentorRunBusiness = this.measureMentorRunBusiness
         this.measureMentorRunFacade.jobHistoryBusiness = this.jobHistoryBusiness
         this.measureMentorRunFacade.measureMentorConfigBusiness = this.measureMentorConfigBusiness
@@ -43,50 +44,7 @@ class MeasureMentorRunFacadeUnitSpec extends Specification {
         this.measureMentorRunFacade.textEncryptor = this.textEncryptor
     }
 
-    def "run the job no previous job history and has no config so it should go right through"() {
-
-        setup:
-        def entity = [id: 'testId', name: 'SomeBuild', encryptedConfig: Base64.getEncoder().encodeToString(this
-                .textEncryptor.encrypt("{}").bytes)] as MeasureMentorJobsConfig
-        this.measureMentorRunFacade.measureMentorBusinesses = [];
-        def jobHistory = new JobHistory(id: "123")
-
-        when:
-        this.measureMentorRunFacade.runJobId("anyid")
-
-        then:
-        2 * this.dateService.getCurrentDateTime()
-        1 * this.measureMentorRunBusiness.startJob(_)
-        1 * this.measureMentorConfigBusiness.findById(_)                         >> entity
-        1 * this.jobHistoryBusiness.createJobHistory(_,_)                        >> jobHistory
-        1 * this.jobHistoryBusiness.findLastSuccessfulJobRanForJobidAndPlugin(_) >> null
-        0 * this.jobHistoryBusiness.saveJobRunResults(_)
-        1 * this.measureMentorRunBusiness.stopJob(_)
-    }
-
-    def "run the job which has previous job history and has no config so it should go right through"() {
-
-        setup:
-        def entity = [id: 'testId', name: 'SomeBuild', encryptedConfig: Base64.getEncoder().encodeToString(this
-                .textEncryptor.encrypt("{\"type\":\"test\"}").bytes)] as MeasureMentorJobsConfig
-        def lastRunDate = new Date()
-        this.measureMentorRunFacade.measureMentorBusinesses = [];
-        def jobHistory = new JobHistory(id: "123")
-
-        when:
-        this.measureMentorRunFacade.runJobId("anyid")
-
-        then:
-        2 * this.dateService.getCurrentDateTime()
-        1 * this.measureMentorRunBusiness.startJob(_)
-        1 * this.measureMentorConfigBusiness.findById(_)                         >> entity
-        1 * this.jobHistoryBusiness.createJobHistory(_,_)                        >> jobHistory
-        1 * this.jobHistoryBusiness.findLastSuccessfulJobRanForJobidAndPlugin(_) >> lastRunDate
-        0 * this.jobHistoryBusiness.saveJobRunResults(_)
-        1 * this.measureMentorRunBusiness.stopJob(_)
-    }
-
-    def "run the job without history and find a plugin"() {
+    def "run the job with a single plugin"() {
 
         setup:
         IMeasureMentorBusiness measureMentorBusiness = Mock(IMeasureMentorBusiness)
@@ -103,7 +61,6 @@ class MeasureMentorRunFacadeUnitSpec extends Specification {
         1 * this.measureMentorRunBusiness.startJob(_)
         1 * this.measureMentorConfigBusiness.findById(_)                         >> entity
         1 * this.jobHistoryBusiness.createJobHistory(_,_)                        >> jobHistory
-        1 * this.jobHistoryBusiness.findLastSuccessfulJobRanForJobidAndPlugin(_) >> null
         1 * measureMentorBusiness.type() >> 'available'
         0 * measureMentorBusiness.validateConfig(_)                              >> false
         0 * measureMentorBusiness.updateDataWithResponse(_)
