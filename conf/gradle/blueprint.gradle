@@ -41,10 +41,7 @@ dependencies {
     compile("org.springframework.boot:spring-boot-starter-data-rest")
     compile("org.springframework.boot:spring-boot-starter-web")
     compile("org.springframework.boot:spring-boot-starter-jetty")
-    compile('org.springframework.cloud:spring-cloud-starter-eureka')
-    compile('org.springframework.cloud:spring-cloud-starter-eureka-server:1.0.0.RELEASE') {
-        exclude(module: 'servlet-api')
-    }
+    compile("org.springframework.cloud:spring-cloud-starter-eureka:1.0.3.RELEASE")
     compile("org.codehaus.groovy:groovy-all")
     compile("org.codehaus.groovy.modules.http-builder:http-builder:0.7.1")
     compile("org.jasypt:jasypt:1.9.2")
