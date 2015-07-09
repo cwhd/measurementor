@@ -12,11 +12,11 @@ Vagrant.configure(2) do |config|
   # config.vm.network "private_network", ip: "192.168.33.10"
 
   config.vm.synced_folder "../measurementor", "/home/vagrant/measurementor"
-  config.vm.synced_folder "../data", "/home/vagrant/data"
+  #config.vm.synced_folder "../data", "/home/vagrant/data"
 
-  config.vm.provision "shell", path: "conf/vagrant/java.sh"
-  config.vm.provision "shell", path: "conf/vagrant/node.sh"
-  config.vm.provision "shell", path: "conf/vagrant/docker.sh"
-  config.vm.provision "shell", path: "conf/vagrant/kibana.sh"
+  #config.vm.provision "shell", path: "conf/vagrant/java.sh"
+  #config.vm.provision "shell", path: "conf/vagrant/node.sh"
+  #config.vm.provision "shell", path: "conf/vagrant/docker.sh"
+  #config.vm.provision "shell", path: "conf/vagrant/kibana.sh"
   # config.vm.provision "shell", path: "conf/vagrant/ntp_install.sh"
 end

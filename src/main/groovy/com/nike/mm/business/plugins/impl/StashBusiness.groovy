@@ -24,8 +24,6 @@ class StashBusiness extends AbstractBusiness implements IStashBusiness {
 
     static final String STASH_PLUGIN_NAME = "Stash"
 
-    static final String MISSING_URL = "Missing url"
-
     static final String INVALID_URL = "Invalid url"
 
     @Autowired

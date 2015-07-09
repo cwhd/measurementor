@@ -1,10 +1,12 @@
 package com.nike.mm
 
+import com.netflix.appinfo.AmazonInfo
 import org.dozer.DozerBeanMapper
 import org.dozer.Mapper
 import org.jasypt.util.text.BasicTextEncryptor
 import org.jasypt.util.text.TextEncryptor
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.cloud.netflix.eureka.EurekaInstanceConfigBean
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.data.elasticsearch.repository.config.EnableElasticsearchRepositories
@@ -35,7 +37,7 @@ class AppConfig {
 
     @Bean
     protected static ThreadPoolTaskExecutor serviceTaskExecutor() {
-        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        final ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         executor.setThreadNamePrefix("service-task-executor-");
         executor.setCorePoolSize(5);
         executor.setMaxPoolSize(10);
@@ -44,8 +46,15 @@ class AppConfig {
 
     @Bean
     protected static ThreadPoolTaskScheduler threadPoolTaskScheduler() {
-        ThreadPoolTaskScheduler scheduler = new ThreadPoolTaskScheduler();
+        final ThreadPoolTaskScheduler scheduler = new ThreadPoolTaskScheduler();
         scheduler.setPoolSize(5);
         return scheduler;
+    }
+
+    @Bean
+    EurekaInstanceConfigBean eurekaInstanceConfigBean() {
+        final EurekaInstanceConfigBean eurekaInstanceConfigBean = new EurekaInstanceConfigBean();
+        eurekaInstanceConfigBean.dataCenterInfo = AmazonInfo.Builder.newBuilder().autoBuild("eureka.");
+        return eurekaInstanceConfigBean
     }
 }
