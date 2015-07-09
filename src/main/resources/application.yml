@@ -12,7 +12,7 @@ mm:
 
 eureka:
     client:
-        registerWithEureka: false
+        enabled: false
 
 spring:
     application:
