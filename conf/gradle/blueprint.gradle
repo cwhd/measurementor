@@ -49,6 +49,7 @@ dependencies {
     compile("joda-time:joda-time:2.8.1")
     compile('net.logstash.logback:logstash-logback-encoder:4.2')
     compile('org.codehaus.gpars:gpars:1.2.1')
+    compile('org.projectlombok:lombok:1.16.4')
 
     testCompile("org.springframework.boot:spring-boot-starter-test")
     testCompile("cglib:cglib-nodep:3.1")
