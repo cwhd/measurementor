@@ -15,7 +15,7 @@ class Github {
 			searchAnalyzer = "standard",
 			indexAnalyzer = "standard",
 			store = true)
-	private String id;
+	String id
 
 	@Field(type = FieldType.String,
 			index = FieldIndex.analyzed,

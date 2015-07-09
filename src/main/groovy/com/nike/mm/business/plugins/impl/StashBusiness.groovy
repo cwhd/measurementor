@@ -220,7 +220,7 @@ class StashBusiness extends AbstractBusiness implements IStashBusiness {
     private Stash createStashDataObject(final Expando expando, final HttpRequestDto dto, final def i) {
         final Date createdDate = new Date(i.createdDate)
         log.debug("Key: $createdDate.time-$i.author.user.id")
-        final def commitCount = this.getCommitCount(dto, i.id)
+        final def commitCount = this.getCommitCount(dto)
         log.debug("CommitCount: $commitCount")
         Stash stashData = this.stashEsRepository.findOne("$createdDate.time-$i.author.user.id")
         if (stashData) {
@@ -261,10 +261,9 @@ class StashBusiness extends AbstractBusiness implements IStashBusiness {
     /**
      * this will return the number of commits for this PR.  the way the stash API works you have to make another
      * call to get it
-     * @param prNumber the ID from the request to the PR
      * @return the count of commits on this PR
      */
-    def getCommitCount(final HttpRequestDto dto, prNumber) {
+    def getCommitCount(final HttpRequestDto dto) {
 //        final HttpRequestDto countdto = new HttpRequestDto(url: dto.url, path: "$dto.path/$prNumber/commits",
 //                query: [state: "all", start: 0, limit: 300], credentials: dto.credentials, proxyDto: dto.proxyDto)
         final def json = this.stashWsRepository.findCommitCount(dto)
@@ -286,7 +285,6 @@ class StashBusiness extends AbstractBusiness implements IStashBusiness {
             if (json.diffs.hunks) {
                 for (def e in json.diffs.hunks) {
                     for (def s in e?.segments) {
-                        String e1 = ""
                         if ("ADDED" == s.type) {
                             addedLOC += s.lines.size()
                         } else if ("REMOVED" == s.type) {
