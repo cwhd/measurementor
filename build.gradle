@@ -1,4 +1,5 @@
 #!groovy    
+import org.apache.tools.ant.taskdefs.condition.Os
 
 apply from: file('conf/gradle/blueprint.gradle')
 apply from: file('conf/gradle/check.gradle')
@@ -58,19 +59,31 @@ task wrapper(type: Wrapper) {
 task installNpm(type: Exec) {
     description = 'Install NPM, the Node Package Manager'
     workingDir 'ui'
-    commandLine 'npm', 'install'
+    if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+        commandLine 'cmd', '/c', 'npm', 'install'
+    } else {
+        commandLine 'npm', 'install'
+    }
 }
 
 task installBower(type: Exec) {
     description = 'Install Bower, the Package Manager'
     workingDir 'ui'
-    commandLine 'bower', 'install'
+    if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+        commandLine 'cmd', '/c', 'bower', 'install'
+    } else {
+        commandLine 'bower', 'install'
+    }
 }
 
 task buildWebApp(type: Exec) {
     description = 'Builds the web application'
     workingDir 'ui'
-    commandLine 'grunt', 'build'
+    if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+        commandLine 'cmd', '/c', 'grunt', 'build'
+    } else {
+        commandLine 'grunt', 'build'
+    }
 }
 
 task copyWebApp(type: Copy) {

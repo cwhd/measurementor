@@ -121,7 +121,7 @@ class JiraBusiness extends AbstractBusiness implements IJiraBusiness {
         return this.jiraWsRepository.getProjectsList(dto)
     }
 
-    int updateProjectData(final String projectName, final HttpRequestDto dto) {
+    int updateProjectData(final String projectName, final HttpRequestDto dto, final Object projectConfig) {
         boolean keepGoing = false
         int updatedRecordsCount = 0
 
@@ -133,7 +133,7 @@ class JiraBusiness extends AbstractBusiness implements IJiraBusiness {
 
                 ChangelogHistoryItemDto changelogHistoryItemDto = new ChangelogHistoryItemDto()
                 if (i.changelog) {
-                    changelogHistoryItemDto = new ChangelogHistoryItemDto(i)
+                    changelogHistoryItemDto = new ChangelogHistoryItemDto(i, projectConfig.taskStatusMap)
                 }
                 final LeadTimeDevTimeDto leadTimeDevTimeDto = new LeadTimeDevTimeDto(i, changelogHistoryItemDto
                         .movedToDevList.min())
@@ -149,7 +149,7 @@ class JiraBusiness extends AbstractBusiness implements IJiraBusiness {
         if (keepGoing) {
             log.debug("NEXT PAGE starting at $dto.query.startAt")
             dto.query.startAt += dto.query.maxResults
-            updatedRecordsCount += this.updateProjectData(projectName, dto)
+            updatedRecordsCount += this.updateProjectData(projectName, dto, projectConfig)
         }
         return updatedRecordsCount
     }
@@ -262,12 +262,6 @@ class JiraBusiness extends AbstractBusiness implements IJiraBusiness {
         def assignees = []
         def movedToDevList = []
 
-        //NOTE we need to set the map so we know what direction things are moving in; this relates to the moveForward
-        // & moveBackward stuff
-        //TODO this needs to be a parameter that gets passed in based on the project
-        def taskStatusMap = ["In Definition": 1, "Dev Ready": 2, "Dev": 3, "QA Ready": 4, "QA": 5, "Deploy Ready": 6,
-                             "Done": 7]
-
         /**
          * Default constructor in the case that we have no change log information
          */
@@ -277,7 +271,7 @@ class JiraBusiness extends AbstractBusiness implements IJiraBusiness {
          * In the event that we have changelog infomation.
          * @param i - The json array from the result list.
          */
-        ChangelogHistoryItemDto(final def i) {
+        ChangelogHistoryItemDto(final def i, final def taskStatusMap) {
 
             for (def h : i.changelog.histories) {
                 for (def t : h.items) {
