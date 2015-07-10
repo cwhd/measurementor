@@ -25,11 +25,11 @@ import java.util.concurrent.TimeUnit
 @Service
 class JiraBusiness extends AbstractBusiness implements IJiraBusiness {
 
-    /**
-     * Error message when proxy url is missing
-     */
-    static final String MISSING_PROXY_URL = "Missing proxy url"
-
+//    /**
+//     * Error message when proxy url is missing
+//     */
+//    static final String MISSING_PROXY_URL = "Missing proxy url"
+//
     /**
      * Error message when proxy port is missing
      */
@@ -71,14 +71,16 @@ class JiraBusiness extends AbstractBusiness implements IJiraBusiness {
         if (!config.credentials) {
             validationErrors.add(MISSING_CREDENTIALS)
         }
-        if (!config.proxyUrl) {
-            validationErrors.add(MISSING_PROXY_URL)
-        }
-        if (!config.proxyPort) {
-            validationErrors.add(MISSING_PROXY_PORT)
-        } else {
-            if (!config.proxyPort.toString().isInteger() || (0 >= config.proxyPort.toString().toInteger())) {
-                validationErrors.add(INVALID_PROXY_PORT)
+        if (config.proxyUrl) {
+//            validationErrors.add(MISSING_PROXY_URL)
+//        }
+            if (!config.proxyPort) {
+                validationErrors.add(MISSING_PROXY_PORT)
+            } else {
+//        if (config.proxyPort) {
+                if (!config.proxyPort.toString().isInteger() || (0 >= config.proxyPort.toString().toInteger())) {
+                    validationErrors.add(INVALID_PROXY_PORT)
+                }
             }
         }
         return buildValidationErrorString(validationErrors)
@@ -139,9 +141,9 @@ class JiraBusiness extends AbstractBusiness implements IJiraBusiness {
                 this.saveJiraData(projectName, i, changelogHistoryItemDto, leadTimeDevTimeDto, otherItemsDto)
                 updatedRecordsCount++
             }
-            log.error("Retrieved $updatedRecordsCount records for Project $projectName ")
+            log.debug("Retrieved $updatedRecordsCount records for Project $projectName ")
         } else {
-            log.error("Skipping project $projectName as no updated records where found")
+            log.debug("Skipping project $projectName as no updated records where found")
         }
 
         if (keepGoing) {
@@ -227,7 +229,7 @@ class JiraBusiness extends AbstractBusiness implements IJiraBusiness {
         }
 
         List getComponentsList(final def i) {
-            List components = []
+            final List components = []
             for (def c : i.fields.components) {
                 components.add(c.name)
             }

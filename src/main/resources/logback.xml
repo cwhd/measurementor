@@ -1,6 +1,6 @@
 <configuration scan="true" scanPeriod="3 seconds" >
 
-    <logger name="com.nike.mm" level="DEBUG"/>
+    <logger name="com.nike.mm" level="WARN"/>
     <!--
     <logger name="org.apache.http.headers" level="DEBUG"/>
     <logger name="org.apache.http.wire" level="DEBUG"/>
@@ -21,7 +21,7 @@
             <!-- daily rollover -->
             <fileNamePattern>logFile.%d{yyyy-MM-dd}.log</fileNamePattern>
             <!-- keep 2 days' worth of history -->
-            <maxHistory>2</maxHistory>
+            <maxHistory>1</maxHistory>
         </rollingPolicy>
         <encoder>
             <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>

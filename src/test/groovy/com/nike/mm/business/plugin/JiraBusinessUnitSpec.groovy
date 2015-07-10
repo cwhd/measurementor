@@ -66,10 +66,10 @@ class JiraBusinessUnitSpec extends Specification {
         String errorMessage = this.jiraBusiness.validateConfig([])
 
         then:
-        errorMessage  == "Jira: Missing url, Jira: Missing credentials, Jira: Missing proxy url, Jira: Missing proxy port"
+        errorMessage  == "Jira: Missing url, Jira: Missing credentials"
     }
 
-    def "invalid config - no credentials, proxy url or proxy port"() {
+    def "invalid config - no credentials"() {
 
         setup:
         def config = [url:"http://google.com"]
@@ -78,10 +78,10 @@ class JiraBusinessUnitSpec extends Specification {
         String errorMessage = this.jiraBusiness.validateConfig(config)
 
         then:
-        errorMessage  == "Jira: Missing credentials, Jira: Missing proxy url, Jira: Missing proxy port"
+        errorMessage  == "Jira: Missing credentials"
     }
 
-    def "invalid config - no proxy url or proxy port"() {
+    def "valid config - no proxy url or proxy port"() {
 
         setup:
         def config = [url:"http://google.com", credentials: "credentials"]
@@ -90,7 +90,7 @@ class JiraBusinessUnitSpec extends Specification {
         String errorMessage = this.jiraBusiness.validateConfig(config)
 
         then:
-        errorMessage  == "Jira: Missing proxy url, Jira: Missing proxy port"
+        StringUtils.isEmpty(errorMessage)
     }
 
     def "invalid config - no proxy port"() {
