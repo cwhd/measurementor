@@ -9,3 +9,5 @@ sudo add-apt-repository ppa:cwchien/gradle
 sudo apt-get update
 
 sudo apt-get -y install gradle
+
+# touch ~/.gradle/gradle.properties && echo "org.gradle.daemon=true" >> ~/.gradle/gradle.properties
