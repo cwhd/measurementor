@@ -1,31 +1,3 @@
-# Minimalist Markdown Editor
-
-This is the **simplest** and **slickest** Markdown editor.  
-Just write Markdown and see what it looks like as you type. And convert it to HTML in one click.
-
-## Getting started
-
-### How?
-
-Just start typing in the left panel.
-
-### Buttons you might want to use
-
-- **Quick Reference**: that's a reminder of the most basic rules of Markdown
-- **HTML | Preview**: *HTML* to see the markup generated from your Markdown text, *Preview* to see how it looks like
-
-### Most useful shortcuts
-
-- `CTRL + O` to open files
-- `CTRL + T` to open a new tab
-- `CTRL + S` to save the current file or tab
-
-### Privacy
-
-- No data is sent to any server – everything you type stays inside your application
-- The editor automatically saves what you write locally for future use.  
-  If using a public computer, close all tabs before leaving the editor
-
 # Measurementor
 measurementor helps you visualize data from your development cycle to help you be a better team.  This code is
 used as an example data collection system in the book [Agile Metrics In Action](http://manning.com/davis2/).
@@ -58,7 +30,53 @@ This is a new development branch for measurementor.  There are a bunch of change
 	- [Groovy](http://groovy.codehaus.org/) : because Groovy is fun!
 
 
-## Building the application
+## Building
+
+### Vagrant
+The simplest way to get the program started and poke around is to leverage vagrant. You will need the following installed on your machine:
+
+- [Vagrant](https://www.vagrantup.com/downloads.html)
+- [VirtualBox](https://www.virtualbox.org/wiki/Downloads)
+
+1. From the root folder, type the following on the command line.
+
+```
+vagrant up
+```
+
+2. SSH into the VM:
+
+```
+vagrant ssh
+```
+
+3. Setup a gradle Daemon (Optional):
+
+```
+touch ~/.gradle/gradle.properties && echo "org.gradle.daemon=true" >> ~/.gradle/gradle.properties
+```
+
+4. Build the application. Note that the -Dspring.profile.active=vagrant is required or your build will break due to some issues with VM's writting to the host machine.
+
+```
+gradle -Dspring.profiles.active=vagrant build
+```
+
+5. Run the application:
+
+```
+gradle -Dspring.profiles.active=vagrant bootRun
+```
+
+6. Look at the app. Note you will need to use 127.0.0.1 for now rather than localhost.... we will fix this later.
+
+- Open the browser
+- 127.0.0.1:8080
+
+7. 
+
+
+
 + Run the following command:
     >gradle clean bootRepackage
 
