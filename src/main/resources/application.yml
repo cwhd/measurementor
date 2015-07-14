@@ -17,3 +17,9 @@ eureka:
 spring:
     application:
         name: measurementor
+---
+spring:
+    profiles: vagrant
+mm:
+    elasticsearch:
+        embedded: false

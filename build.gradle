@@ -6,6 +6,15 @@ apply from: file('conf/gradle/check.gradle')
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
 
+
+test {
+    systemProperties System.properties
+}
+
+bootRun {
+    systemProperties System.properties
+}
+
 buildscript {
     ext {
         springBootVersion = '1.2.3.RELEASE'
