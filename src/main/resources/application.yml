@@ -9,11 +9,9 @@ mm:
             name: elasticsearch
     plugin:
         defaultStartDate: 08/07/2015
-
 eureka:
     client:
         enabled: false
-
 spring:
     application:
         name: measurementor

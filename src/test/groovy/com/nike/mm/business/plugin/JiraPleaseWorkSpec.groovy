@@ -27,11 +27,12 @@ class JiraPleaseWorkSpec extends Specification {
     def "lets see if we can get some data"() {
 
         setup:
-        def config = [url:"https://jpt5.teksystems.com", credentials: "cnBhcnJ5Ol5QaWNlczE5NzE="] as HttpRequestDto
+        //def config = [url:"", credentials: ""] as HttpRequestDto
+        1 == 1
 
         when:
-        this.jiraBusiness.updateDataWithResponse(new SimpleDateFormat("dd/MM/yyyy").parse("01/07/2015"), config);
-
+        //this.jiraBusiness.updateDataWithResponse(new SimpleDateFormat("dd/MM/yyyy").parse("01/07/2015"), config);
+        1 == 1
         then:
         1 == 1
     }
