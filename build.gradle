@@ -17,7 +17,8 @@ bootRun {
 
 buildscript {
     ext {
-        springBootVersion = '1.2.3.RELEASE'
+        springBootVersion   = '1.2.3.RELEASE'
+        dockerPluginVersion = '1.2'
     }
     repositories {
         maven  {
@@ -26,10 +27,26 @@ buildscript {
     }
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+        classpath("se.transmode.gradle:gradle-docker:${dockerPluginVersion}")
     }
 }
 
+group = 'measurementor'
+
 apply plugin: 'spring-boot'
+apply plugin: 'docker'
+
+task buildDocker(type: Docker) {
+  push = false
+  applicationName = jar.baseName
+  dockerfile = file('src/main/docker/Dockerfile')
+  doFirst {
+    copy {
+      from jar
+      into stageDir
+    }
+  }
+}
 
 springBoot {
     mainClass = 'com.nike.mm.MeasurementorApplication'
