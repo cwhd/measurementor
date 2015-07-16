@@ -222,7 +222,7 @@ class StashBusiness extends AbstractBusiness implements IStashBusiness {
         log.debug("Key: $createdDate.time-$i.author.user.id")
         final def commitCount = this.getCommitCount(dto)
         log.debug("CommitCount: $commitCount")
-        Stash stashData = this.stashEsRepository.findOne("$createdDate.time-$i.author.user.id")
+        Stash stashData = this.stashEsRepository.findOne("$createdDate.time-$i.author.user.id".toString())
         if (stashData) {
             stashData.created = createdDate
             stashData.updated = new Date(i.updatedDate)
@@ -235,11 +235,11 @@ class StashBusiness extends AbstractBusiness implements IStashBusiness {
             stashData.dataType = "SCM"
             stashData.state = i.state
             stashData.timeOpen = this.utilitiesService.getDifferenceBetweenDatesInHours(i.createdDate, i.updatedDate)
-//                            stashData.commitCount = commitCount
+            stashData.commitCount = commitCount
             stashData.referenceDate = createdDate
         } else {
             stashData = new Stash(
-                    id: "$createdDate.time-$i.author.user.id",
+                    id: "$createdDate.time-$i.author.user.id".toString(),
                     created: createdDate,
                     updated: new Date(i.updatedDate),
                     author: this.utilitiesService.cleanEmail(i.author.user.emailAddress),
@@ -251,7 +251,7 @@ class StashBusiness extends AbstractBusiness implements IStashBusiness {
                     dataType: "SCM",
                     state: i.state,
                     timeOpen: this.utilitiesService.getDifferenceBetweenDatesInHours(i.createdDate, i.updatedDate),
-//                                    commitCount : commitCount
+                    commitCount : commitCount,
                     referenceDate: createdDate
             )
         }
