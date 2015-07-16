@@ -217,4 +217,19 @@ class StashBusinessUnitSpec extends Specification {
         2 * this.stashEsRepository.findOne(_)                       >> null
         2 * this.stashEsRepository.save(_)
     }
+
+    def "test null on comments"() {
+
+        setup:
+        def three   = [attributes:[]]
+        def four    = StashDataForTests.PULL_REQUESTS.values[0]
+
+        when:
+        int rthree  = this.stashBusiness.getCommentCount(three);
+        int rfour   = this.stashBusiness.getCommentCount(four);
+
+        then:
+        rthree  == 0
+        rfour   == 1
+    }
 }

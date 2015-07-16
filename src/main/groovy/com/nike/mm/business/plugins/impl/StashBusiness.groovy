@@ -222,6 +222,7 @@ class StashBusiness extends AbstractBusiness implements IStashBusiness {
         log.debug("Key: $createdDate.time-$i.author.user.id")
         final def commitCount = this.getCommitCount(dto)
         log.debug("CommitCount: $commitCount")
+        log.debug("CommentCount: " + this.getCommentCount(i))
         Stash stashData = this.stashEsRepository.findOne("$createdDate.time-$i.author.user.id".toString())
         if (stashData) {
             stashData.created = createdDate
@@ -230,7 +231,7 @@ class StashBusiness extends AbstractBusiness implements IStashBusiness {
             stashData.reviewers = this.getListOfReviewers(i)
             stashData.stashProject = this.utilitiesService.makeNonTokenFriendly(expando.projectKey)
             stashData.repo = this.utilitiesService.makeNonTokenFriendly(expando.repo)
-            stashData.commentCount = Integer.parseInt(i.attributes.commentCount[0])
+            stashData.commentCount = this.getCommentCount(i)
             stashData.scmAction = "pull-request"
             stashData.dataType = "SCM"
             stashData.state = i.state
@@ -247,7 +248,7 @@ class StashBusiness extends AbstractBusiness implements IStashBusiness {
                     stashProject: this.utilitiesService.makeNonTokenFriendly(expando.projectKey),
                     repo: this.utilitiesService.makeNonTokenFriendly(expando.repo),
                     scmAction: "pull-request",
-                    commentCount: Integer.parseInt(i.attributes.commentCount[0]),
+                    commentCount: this.getCommentCount(i),
                     dataType: "SCM",
                     state: i.state,
                     timeOpen: this.utilitiesService.getDifferenceBetweenDatesInHours(i.createdDate, i.updatedDate),
@@ -257,6 +258,15 @@ class StashBusiness extends AbstractBusiness implements IStashBusiness {
         }
         return stashData
     }
+
+    private int getCommentCount(def i) {
+        int rint = 0;
+        if (i.attributes.commentCount?.size() > 0 ) {
+            rint = Integer.parseInt(i.attributes.commentCount[0])
+        }
+        return rint
+    }
+
 
     /**
      * this will return the number of commits for this PR.  the way the stash API works you have to make another
