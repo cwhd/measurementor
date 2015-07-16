@@ -84,19 +84,19 @@ task wrapper(type: Wrapper) {
 task installNpm(type: Exec) {
     description = 'Install NPM, the Node Package Manager'
     workingDir 'ui'
-    commandLine 'npm.cmd', 'install'
+    commandLine 'npm', 'install'
 }
 
 task installBower(type: Exec) {
     description = 'Install Bower, the Package Manager'
     workingDir 'ui'
-    commandLine 'bower.cmd', 'install'
+    commandLine 'bower', 'install'
 }
 
 task buildWebApp(type: Exec) {
     description = 'Builds the web application'
     workingDir 'ui'
-    commandLine 'grunt.cmd', 'build'
+    commandLine 'grunt', 'build'
 }
 
 task copyWebApp(type: Copy) {
