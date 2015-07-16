@@ -84,24 +84,57 @@ task wrapper(type: Wrapper) {
 task installNpm(type: Exec) {
     description = 'Install NPM, the Node Package Manager'
     workingDir 'ui'
-    commandLine 'npm', 'install'
+    commandLine 'npm.cmd', 'install'
 }
 
 task installBower(type: Exec) {
     description = 'Install Bower, the Package Manager'
     workingDir 'ui'
-    commandLine 'bower', 'install'
+    commandLine 'bower.cmd', 'install'
 }
 
 task buildWebApp(type: Exec) {
     description = 'Builds the web application'
     workingDir 'ui'
-    commandLine 'grunt', 'build'
+    commandLine 'grunt.cmd', 'build'
 }
 
 task copyWebApp(type: Copy) {
     from 'ui/dist'
     into 'src/main/webapp'
+}
+
+/*
+ * Gets the version name from the Git
+ */
+def getVersionName = { ->
+    def command = "git rev-parse HEAD"
+    def stdout = new ByteArrayOutputStream()
+    def os = System.getProperty("os.name").toLowerCase()
+    if (!os.contains("windows")) {
+        exec {
+            executable "/bin/sh"
+            args "-c", command
+            standardOutput = stdout
+        }
+    } else {
+        exec {
+            executable "cmd"
+            args "/c", command
+            standardOutput = stdout;
+        }
+    }
+    return stdout.toString().trim()
+}
+
+task buildVersion << {
+    def revision = getVersionName()
+    file('src/main/webapp').mkdirs()
+    file('src/main/webapp/version.js').text = """var versionSettings = {
+    version: '${version}',
+    revision: '${revision}'
+}"""
+    println 'Git Revision: ' + revision
 }
 
 task cleanOutputFolders(type: Delete) {
@@ -110,7 +143,7 @@ task cleanOutputFolders(type: Delete) {
 
 tasks.buildWebApp.dependsOn installNpm, installBower
 tasks.copyWebApp.dependsOn buildWebApp
-tasks.war.dependsOn copyWebApp
+tasks.war.dependsOn copyWebApp, buildVersion
 tasks.run.dependsOn copyWebApp
 tasks.bootRun.dependsOn copyWebApp
 tasks.clean.dependsOn cleanOutputFolders
