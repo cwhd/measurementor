@@ -12,7 +12,10 @@
 					<i class="fa fa-power-off awesomeFontIconWhite"></i>&nbsp;&nbsp;&nbsp;Log Out
 				</md-button>           
 			</div>  
-		</div>	     
+		</div>	
+		<div layout="row" layout-align="end center">
+			<div style="font-size: 8pt; margin-right: 1rem;">version: {{version.version}} revision: {{version.revision}}</div>
+		</div>
 	</md-toolbar>
-	<div ui-view style="height: calc(100% - 64px);"></div>	
+	<div ui-view style="height: calc(100% - 80px);"></div>	
 </div>
