@@ -12,5 +12,4 @@ angular.module("generalLayout").controller("GeneralWrapperCtrl", function($scope
     $scope.generalLayoutData = generalLayout.data;
     
     $scope.version = versionSettings;
-    alert(versionSettings.revision);
 });

@@ -30,6 +30,7 @@
         "element": true,
         "browser": true,
         "by": true,
-        "exports": true
+        "exports": true,
+        "versionSettings": true
     }
 }
