@@ -176,4 +176,41 @@ class JiraBusinessUnitSpec extends Specification {
         1 * this.jiraHistoryEsRepository.findOne(_)         >> null
         1 * this.jiraEsRepository.findOne(_)                >> [:]
     }
+
+    def "bug fix when author address is null"() {
+
+        setup:
+        def config = [url:"http://made.up", credentials:"credentials"]
+        def fromDate = Date.parse( 'dd-MM-yyyy', "01-01-2001" )
+        def jiraPage = new PageImpl<String>([])
+
+        when:
+        this.jiraBusiness.updateDataWithResponse(fromDate, config);
+
+        then:
+        1 * this.jiraWsRepository.getProjectsList(_)        >> ['PROJECTA']
+        1 * this.jiraEsRepository.findByJiraProject(_,_)    >> jiraPage
+        2 * this.jiraWsRepository.getDataForProject(_)      >>> [IJiraDataForTests.JIRA_DATA_AUTHOR_NULL, IJiraDataForTests.JIRA_DATA_NO_ISSUES]
+        1 * this.jiraHistoryEsRepository.findOne(_)         >> null
+        1 * this.jiraEsRepository.findOne(_)                >> null
+    }
+
+    def "bug fix when email address is null"() {
+
+        setup:
+        def config = [url:"http://made.up", credentials:"credentials"]
+        def fromDate = Date.parse( 'dd-MM-yyyy', "01-01-2001" )
+        def jiraPage = new PageImpl<String>([])
+
+        when:
+        this.jiraBusiness.updateDataWithResponse(fromDate, config);
+
+        then:
+        1 * this.jiraWsRepository.getProjectsList(_)        >> ['PROJECTA']
+        1 * this.jiraEsRepository.findByJiraProject(_,_)    >> jiraPage
+        2 * this.jiraWsRepository.getDataForProject(_)      >>> [IJiraDataForTests.JIRA_DATA_EMAIL_NULL, IJiraDataForTests.JIRA_DATA_NO_ISSUES]
+        1 * this.jiraHistoryEsRepository.findOne(_)         >> null
+        1 * this.jiraEsRepository.findOne(_)                >> null
+    }
+
 }

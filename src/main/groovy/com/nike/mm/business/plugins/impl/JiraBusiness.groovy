@@ -305,13 +305,17 @@ class JiraBusiness extends AbstractBusiness implements IJiraBusiness {
 
                     //not sure we care about updates
                     if (history == null) {
+                        String emailAddress = "noemail@noemail.com"
+                        if (h.author?.emailAddress) {
+                            emailAddress = h.author.emailAddress
+                        }
                         history = new JiraHistory(
                                 dataType   : "PTS",
                                 sourceId   : h.id,
                                 timestamp  : JiraBusiness.this.utilitiesService.cleanJiraDate(h.created),
                                 changeField: t.field,
                                 newValue   : t.toString,
-                                changedBy  : h.author.emailAddress,
+                                changedBy  : emailAddress,
                                 key        : i.key)
                         JiraBusiness.this.jiraHistoryEsRepository.save(history)
                     }
