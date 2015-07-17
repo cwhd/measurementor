@@ -1,4 +1,4 @@
-package com.nike.mm.business.plugin
+    package com.nike.mm.business.plugin
 
 import com.nike.mm.MeasurementorApplication
 import com.nike.mm.business.plugins.IJiraBusiness

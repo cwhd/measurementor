@@ -74,33 +74,33 @@ configurations {
 }
 
 war {
-    from 'ui/dist'
+    from 'ui_dist'
 }
 
 task wrapper(type: Wrapper) {
     gradleVersion = '2.4'
 }
 
-task installNpm(type: Exec) {
-    description = 'Install NPM, the Node Package Manager'
-    workingDir 'ui'
-    commandLine 'npm', 'install'
-}
-
-task installBower(type: Exec) {
-    description = 'Install Bower, the Package Manager'
-    workingDir 'ui'
-    commandLine 'bower', 'install'
-}
-
-task buildWebApp(type: Exec) {
-    description = 'Builds the web application'
-    workingDir 'ui'
-    commandLine 'grunt', 'build'
-}
+//task installNpm(type: Exec) {
+//    description = 'Install NPM, the Node Package Manager'
+//    workingDir 'ui'
+//    commandLine 'npm', 'install'
+//}
+//
+//task installBower(type: Exec) {
+//    description = 'Install Bower, the Package Manager'
+//    workingDir 'ui'
+//    commandLine 'bower', 'install'
+//}
+//
+//task buildWebApp(type: Exec) {
+//    description = 'Builds the web application'
+//    workingDir 'ui'
+//    commandLine 'grunt', 'build'
+//}
 
 task copyWebApp(type: Copy) {
-    from 'ui/dist'
+    from 'ui_dist'
     into 'src/main/webapp'
 }
 
@@ -108,8 +108,8 @@ task cleanOutputFolders(type: Delete) {
     delete 'public', 'build', 'ui/dist', 'src/main/webapp'
 }
 
-tasks.buildWebApp.dependsOn installNpm, installBower
-tasks.copyWebApp.dependsOn buildWebApp
+//tasks.buildWebApp.dependsOn installNpm, installBower
+//tasks.copyWebApp.dependsOn buildWebApp
 tasks.war.dependsOn copyWebApp
 tasks.run.dependsOn copyWebApp
 tasks.bootRun.dependsOn copyWebApp
