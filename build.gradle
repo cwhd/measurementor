@@ -104,13 +104,46 @@ task copyWebApp(type: Copy) {
     into 'src/main/webapp'
 }
 
+/*
+ * Gets the version name from the Git
+ */
+def getVersionName = { ->
+    def command = "git rev-parse HEAD"
+    def stdout = new ByteArrayOutputStream()
+    def os = System.getProperty("os.name").toLowerCase()
+    if (!os.contains("windows")) {
+        exec {
+            executable "/bin/sh"
+            args "-c", command
+            standardOutput = stdout
+        }
+    } else {
+        exec {
+            executable "cmd"
+            args "/c", command
+            standardOutput = stdout;
+        }
+    }
+    return stdout.toString().trim()
+}
+
+task buildVersion << {
+    def revision = getVersionName()
+    file('src/main/webapp').mkdirs()
+    file('src/main/webapp/version.js').text = """var versionSettings = {
+    version: '${version}',
+    revision: '${revision}'
+}"""
+    println 'Git Revision: ' + revision
+}
+
 task cleanOutputFolders(type: Delete) {
     delete 'public', 'build', 'ui/dist', 'src/main/webapp'
 }
 
 //tasks.buildWebApp.dependsOn installNpm, installBower
 //tasks.copyWebApp.dependsOn buildWebApp
-tasks.war.dependsOn copyWebApp
+tasks.war.dependsOn copyWebApp, buildVersion
 tasks.run.dependsOn copyWebApp
 tasks.bootRun.dependsOn copyWebApp
 tasks.clean.dependsOn cleanOutputFolders
