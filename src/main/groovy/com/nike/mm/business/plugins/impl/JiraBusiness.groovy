@@ -305,10 +305,11 @@ class JiraBusiness extends AbstractBusiness implements IJiraBusiness {
 
                     //not sure we care about updates
                     if (history == null) {
-                        String emailAddress = "noemail@noemail.com"
+                        String emailAddress = null
                         if (h.author?.emailAddress) {
                             emailAddress = h.author.emailAddress
                         }
+                        emailAddress = JiraBusiness.this.utilitiesService.cleanEmail(emailAddress)
                         history = new JiraHistory(
                                 dataType   : "PTS",
                                 sourceId   : h.id,
