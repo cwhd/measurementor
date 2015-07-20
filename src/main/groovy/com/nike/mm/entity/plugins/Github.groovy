@@ -6,7 +6,7 @@ import org.springframework.data.elasticsearch.annotations.Field
 import org.springframework.data.elasticsearch.annotations.FieldIndex
 import org.springframework.data.elasticsearch.annotations.FieldType
 
-@Document(indexName = "measurementor", type = "github")
+@Document(indexName = "measurementor-github", type = "github")
 class Github {
 	
 	@Id

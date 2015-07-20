@@ -7,7 +7,7 @@ import org.springframework.data.elasticsearch.annotations.FieldIndex
 import org.springframework.data.elasticsearch.annotations.FieldType
 
 
-@Document(indexName = "measurementor", type = "jirahistory")
+@Document(indexName = "measurementor-jira-history", type = "jirahistory")
 class JiraHistory {
 
     @Id

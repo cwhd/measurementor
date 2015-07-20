@@ -7,7 +7,7 @@ import org.springframework.data.elasticsearch.annotations.FieldIndex
 import org.springframework.data.elasticsearch.annotations.FieldType
 
 
-@Document(indexName = "measurementor", type = "jenkins")
+@Document(indexName = "measurementor-jenkins", type = "jenkins")
 class Jenkins {
 
     @Id
