@@ -54,6 +54,8 @@ Thumbs.db
 /src/main/webapp
 /.vagrant/
 /node_modules
+/bin
+*/bin
 
 #
 # # IntelliJ specific files/directories
