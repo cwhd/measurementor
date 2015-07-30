@@ -23,6 +23,7 @@ interface IUtilitiesService {
      * take the @ out of emails so elasticsearch doesn't index everyone's email domain
      * @param author string representing the original email
      * @return string with the clean, EC index friendly email
+     * @deprecated
      */
     String cleanEmail(author)
 
@@ -33,6 +34,13 @@ interface IUtilitiesService {
      * @return
      */
     String makeNonTokenFriendly(userName)
+
+    /**
+     * make all names follow the same pattern so we can search them across indexes
+     * @param name
+     * @return
+     */
+    String cleanPersonName(name)
 
     /**
      * get a data from a JIRA REST response and turn it into a real date

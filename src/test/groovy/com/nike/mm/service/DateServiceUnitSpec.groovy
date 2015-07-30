@@ -1,14 +1,17 @@
 package com.nike.mm.service
 
 import com.nike.mm.service.impl.DateService
+import com.nike.mm.service.impl.UtilitiesService
 import spock.lang.Specification
 
 class DateServiceUnitSpec extends Specification {
 
     IDateService dateService
+    IUtilitiesService utilitiesService
 
     def setup() {
         this.dateService = new DateService()
+        this.utilitiesService = new UtilitiesService()
     }
 
     def "Get the current date"() {
@@ -18,6 +21,17 @@ class DateServiceUnitSpec extends Specification {
 
         then:
         currentDate != null
+    }
+
+    def "Make sure names get scrubbed"() {
+        expect: finalName == utilitiesService.cleanPersonName(name)
+        where:
+            name | finalName
+            "chris_davis" | "chris_davis"
+            "chris.davis@whatever.com" | "chris_davis"
+            "davis, chris" | "chris_davis"
+            //"davis, chris (FTE)" | "chris_davis"
+            //"chris davis (ETW)" | "chris_davis"
     }
 
 

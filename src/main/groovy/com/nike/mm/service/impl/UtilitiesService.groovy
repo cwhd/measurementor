@@ -32,6 +32,19 @@ class UtilitiesService implements IUtilitiesService {
     }
 
     @Override
+    String cleanPersonName(name) {
+        def result
+        if(name ==~ /[a-zA-Z0-9]+.[a-zA-Z0-9]+@[a-z]+.com/) { //this would be an email
+            result = name.split('@')[0].replace('.', '_')
+        } else if(name ==~ /[A-Za-z]+,\s[A-Za-z]+/) { //this would be last name, first name
+            result = name.split(" ")[1] + "_" + name.split(" ")[0].replace(',', '')
+        } else {
+            result = name
+        }
+        return result
+    }
+
+    @Override
     String makeNonTokenFriendly(userName) {
         def result
         if (userName) {
