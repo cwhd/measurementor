@@ -33,13 +33,19 @@ class UtilitiesService implements IUtilitiesService {
 
     @Override
     String cleanPersonName(name) {
-        def result
-        if(name ==~ /[a-zA-Z0-9]+.[a-zA-Z0-9]+@[a-z]+.com/) { //this would be an email
-            result = name.split('@')[0].replace('.', '_')
-        } else if(name ==~ /[A-Za-z]+,\s[A-Za-z]+/) { //this would be last name, first name
-            result = name.split(" ")[1] + "_" + name.split(" ")[0].replace(',', '')
-        } else {
-            result = name
+        def result = "system_ghost"
+        if(name) {
+            name = name.replaceAll(~/\((ETW|etw)\)/, '').trim()
+            if (name ==~ /[a-zA-Z0-9]+.[a-zA-Z0-9]+@[a-z]+.com/) { //this would be an email
+                result = name.split('@')[0].replace('.', '_')
+            } else if (name ==~ /[A-Za-z]+,\s[A-Za-z]+/) { //this would be last name, first name
+                result = name.split(" ")[1] + "_" + name.split(" ")[0].replace(',', '')
+            } else if (name ==~ /[A-Za-z]+\s[A-Za-z]+/) {
+                result = name.split(" ")[0] + "_" + name.split(" ")[1]
+            } else {
+                result = name
+            }
+            result = result.replaceAll(~/[-\(\)\,\s]/, '_')
         }
         return result
     }

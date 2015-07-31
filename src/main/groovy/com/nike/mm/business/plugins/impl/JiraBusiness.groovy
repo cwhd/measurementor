@@ -171,7 +171,7 @@ class JiraBusiness extends AbstractBusiness implements IJiraBusiness {
 
         def jiraData = this.jiraEsRepository.findOne(i.key)
         if (jiraData) {
-            jiraData.createdBy = this.utilitiesService.cleanEmail(i.fields.creator?.emailAddress)
+            jiraData.createdBy = this.utilitiesService.cleanPersonName(i.fields.creator?.emailAddress)
             jiraData.issuetype = otherItemsDto.issueType
             jiraData.movedForward = changelogHistoryItemDto.moveForward
             jiraData.movedBackward = changelogHistoryItemDto.moveBackward
@@ -192,7 +192,7 @@ class JiraBusiness extends AbstractBusiness implements IJiraBusiness {
             jiraData = new Jira(
                     key              : i.key,
                     created          : this.utilitiesService.cleanJiraDate(i.fields.created),
-                    createdBy        : this.utilitiesService.cleanEmail(i.fields.creator?.emailAddress),
+                    createdBy        : this.utilitiesService.cleanPersonName(i.fields.creator?.emailAddress),
                     issuetype        : otherItemsDto.issueType,
                     movedForward     : changelogHistoryItemDto.moveForward,
                     movedBackward    : changelogHistoryItemDto.moveBackward,
@@ -298,7 +298,7 @@ class JiraBusiness extends AbstractBusiness implements IJiraBusiness {
                     } else if (t.field == "assignee") {
                         //NOTE get everyone that worked on this issue, or at least was assigned to it
                         if (t.toString) {
-                            this.assignees.add(JiraBusiness.this.utilitiesService.makeNonTokenFriendly(t.toString))
+                            this.assignees.add(JiraBusiness.this.utilitiesService.cleanPersonName(t.toString))
                         }
                     }
                     def history = JiraBusiness.this.jiraHistoryEsRepository.findOne(h.id)
@@ -309,7 +309,7 @@ class JiraBusiness extends AbstractBusiness implements IJiraBusiness {
                         if (h.author?.emailAddress) {
                             emailAddress = h.author.emailAddress
                         }
-                        emailAddress = JiraBusiness.this.utilitiesService.cleanEmail(emailAddress)
+                        emailAddress = JiraBusiness.this.utilitiesService.cleanPersonName(emailAddress)
                         history = new JiraHistory(
                                 dataType   : "PTS",
                                 sourceId   : h.id,

@@ -141,7 +141,7 @@ class StashBusiness extends AbstractBusiness implements IStashBusiness {
                         stashData = new Stash(
                                 id: i.id,
                                 created: new Date(i.authorTimestamp), //comes back as epoch time, which sucks
-                                author: this.utilitiesService.cleanEmail(i.author.emailAddress),
+                                author: this.utilitiesService.cleanPersonName(i.author.emailAddress),
                                 stashProject: this.utilitiesService.makeNonTokenFriendly(expando.projectKey),
                                 repo: this.utilitiesService.makeNonTokenFriendly(expando.repo),
                                 scmAction: "commit",
@@ -212,7 +212,7 @@ class StashBusiness extends AbstractBusiness implements IStashBusiness {
         final def reviewers = []
         i.reviewers.each { def r ->
             //TODO would be great to get WHAT they did here...
-            reviewers.add(this.utilitiesService.cleanEmail(r.user.emailAddress))
+            reviewers.add(this.utilitiesService.cleanPersonName(r.user.emailAddress))
         }
         return reviewers
     }
@@ -227,7 +227,7 @@ class StashBusiness extends AbstractBusiness implements IStashBusiness {
         if (stashData) {
             stashData.created = createdDate
             stashData.updated = new Date(i.updatedDate)
-            stashData.author = this.utilitiesService.cleanEmail(i.author.user.emailAddress)
+            stashData.author = this.utilitiesService.cleanPersonName(i.author.user.emailAddress)
             stashData.reviewers = this.getListOfReviewers(i)
             stashData.stashProject = this.utilitiesService.makeNonTokenFriendly(expando.projectKey)
             stashData.repo = this.utilitiesService.makeNonTokenFriendly(expando.repo)
@@ -243,7 +243,7 @@ class StashBusiness extends AbstractBusiness implements IStashBusiness {
                     id: "$createdDate.time-$i.author.user.id".toString(),
                     created: createdDate,
                     updated: new Date(i.updatedDate),
-                    author: this.utilitiesService.cleanEmail(i.author.user.emailAddress),
+                    author: this.utilitiesService.cleanPersonName(i.author.user.emailAddress),
                     reviewers: this.getListOfReviewers(i),
                     stashProject: this.utilitiesService.makeNonTokenFriendly(expando.projectKey),
                     repo: this.utilitiesService.makeNonTokenFriendly(expando.repo),

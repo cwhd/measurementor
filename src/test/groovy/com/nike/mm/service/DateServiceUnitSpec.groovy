@@ -30,8 +30,11 @@ class DateServiceUnitSpec extends Specification {
             "chris_davis" | "chris_davis"
             "chris.davis@whatever.com" | "chris_davis"
             "davis, chris" | "chris_davis"
-            //"davis, chris (FTE)" | "chris_davis"
-            //"chris davis (ETW)" | "chris_davis"
+            "davis, chris (ETW)" | "chris_davis"
+            "davis, chris (etw)" | "chris_davis"
+            "chris davis (ETW)" | "chris_davis"
+            null | "system_ghost"
+            "" | "system_ghost"
     }
 
 
