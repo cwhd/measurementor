@@ -142,6 +142,7 @@ class StashBusiness extends AbstractBusiness implements IStashBusiness {
                                 id: i.id,
                                 created: new Date(i.authorTimestamp), //comes back as epoch time, which sucks
                                 author: this.utilitiesService.cleanPersonName(i.author.emailAddress),
+                                people: this.utilitiesService.cleanPersonName(i.author.emailAddress),
                                 stashProject: this.utilitiesService.makeNonTokenFriendly(expando.projectKey),
                                 repo: this.utilitiesService.makeNonTokenFriendly(expando.repo),
                                 scmAction: "commit",
@@ -217,6 +218,12 @@ class StashBusiness extends AbstractBusiness implements IStashBusiness {
         return reviewers
     }
 
+    private List allPeople(def author, def reviewers) {
+        reviewers.add(author)
+        return reviewers
+    }
+
+
     private Stash createStashDataObject(final Expando expando, final HttpRequestDto dto, final def i) {
         final Date createdDate = new Date(i.createdDate)
         log.debug("Key: $createdDate.time-$i.author.user.id")
@@ -229,6 +236,7 @@ class StashBusiness extends AbstractBusiness implements IStashBusiness {
             stashData.updated = new Date(i.updatedDate)
             stashData.author = this.utilitiesService.cleanPersonName(i.author.user.emailAddress)
             stashData.reviewers = this.getListOfReviewers(i)
+            stashData.people = this.allPeople(this.utilitiesService.cleanPersonName(i.author.user.emailAddress), this.getListOfReviewers(i))
             stashData.stashProject = this.utilitiesService.makeNonTokenFriendly(expando.projectKey)
             stashData.repo = this.utilitiesService.makeNonTokenFriendly(expando.repo)
             stashData.commentCount = this.getCommentCount(i)
@@ -245,6 +253,7 @@ class StashBusiness extends AbstractBusiness implements IStashBusiness {
                     updated: new Date(i.updatedDate),
                     author: this.utilitiesService.cleanPersonName(i.author.user.emailAddress),
                     reviewers: this.getListOfReviewers(i),
+                    people: this.allPeople(this.utilitiesService.cleanPersonName(i.author.user.emailAddress), this.getListOfReviewers(i)),
                     stashProject: this.utilitiesService.makeNonTokenFriendly(expando.projectKey),
                     repo: this.utilitiesService.makeNonTokenFriendly(expando.repo),
                     scmAction: "pull-request",

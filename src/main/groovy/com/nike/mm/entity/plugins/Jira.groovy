@@ -80,6 +80,13 @@ class Jira {
 			store = true)
 	String[] assignees //this is actually a map of stuff
 
+    @Field(type = FieldType.String,
+            index = FieldIndex.analyzed,
+            searchAnalyzer = "standard",
+            indexAnalyzer = "standard",
+            store = true)
+    String[] people
+
 	@Field(type = FieldType.String,
 			index = FieldIndex.analyzed,
 			searchAnalyzer = "standard",

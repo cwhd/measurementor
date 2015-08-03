@@ -51,6 +51,13 @@ class Stash {
             searchAnalyzer = "standard",
             indexAnalyzer = "standard",
             store = true)
+    String[] people
+
+    @Field(type = FieldType.String,
+            index = FieldIndex.analyzed,
+            searchAnalyzer = "standard",
+            indexAnalyzer = "standard",
+            store = true)
     String stashProject
 
     @Field(type = FieldType.String,

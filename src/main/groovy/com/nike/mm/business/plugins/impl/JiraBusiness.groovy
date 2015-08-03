@@ -177,6 +177,7 @@ class JiraBusiness extends AbstractBusiness implements IJiraBusiness {
             jiraData.movedBackward = changelogHistoryItemDto.moveBackward
             jiraData.storyPoints = otherItemsDto.storyPoints
             jiraData.finished = this.utilitiesService.cleanJiraDate(i.fields.resolutiondate)
+            jiraData.people = changelogHistoryItemDto.assignees
             jiraData.assignees = changelogHistoryItemDto.assignees
             jiraData.tags = i.fields.labels
             jiraData.dataType = "PTS"
@@ -199,6 +200,7 @@ class JiraBusiness extends AbstractBusiness implements IJiraBusiness {
                     storyPoints      : otherItemsDto.storyPoints,
                     finished         : this.utilitiesService.cleanJiraDate(i.fields.resolutiondate),
                     assignees        : changelogHistoryItemDto.assignees,
+                    people           : changelogHistoryItemDto.assignees,
                     tags             : i.fields.labels,
                     dataType         : "PTS",
                     leadTime         : leadTimeDevTimeDto.leadTime,
