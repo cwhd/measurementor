@@ -142,7 +142,7 @@ class StashBusiness extends AbstractBusiness implements IStashBusiness {
                                 id: i.id,
                                 created: new Date(i.authorTimestamp), //comes back as epoch time, which sucks
                                 author: this.utilitiesService.cleanPersonName(i.author.emailAddress),
-                                people: this.utilitiesService.cleanPersonName(i.author.emailAddress),
+                                people: this.allPeople(this.utilitiesService.cleanPersonName(i.author.emailAddress)),
                                 stashProject: this.utilitiesService.makeNonTokenFriendly(expando.projectKey),
                                 repo: this.utilitiesService.makeNonTokenFriendly(expando.repo),
                                 scmAction: "commit",
@@ -221,6 +221,12 @@ class StashBusiness extends AbstractBusiness implements IStashBusiness {
     private List allPeople(def author, def reviewers) {
         reviewers.add(author)
         return reviewers
+    }
+
+    private List allPeople(def author) {
+        def peeps = []
+        peeps.add(author)
+        return peeps
     }
 
 

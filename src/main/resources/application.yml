@@ -1,12 +1,12 @@
 mm:
     encrypt:
-        password: Password123
+        password: ChangeMe
     elasticsearch:
-        embedded: true
-        address: localhost
+        embedded: false
+        address: apollo-elasticsearch.tools.nikecloud.com
         port: 9300
         cluster:
-            name: elasticsearch
+            name: apolloelasticsearch
     plugin:
         defaultStartDate: 08/07/2015
 eureka:
