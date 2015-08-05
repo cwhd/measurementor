@@ -2,6 +2,8 @@ package com.nike.mm.facade.impl
 
 import com.nike.mm.entity.plugins.CompoundKey
 import com.nike.mm.facade.ICompoundKeyFacade
+import com.nike.mm.repository.ws.ICompositeKeyWsRepository
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
@@ -12,14 +14,13 @@ import org.springframework.stereotype.Service
 @Service
 class CompoundKeyFacade implements ICompoundKeyFacade {
 
-    List<CompoundKey> findAllByPeople(String person, Pageable pageable) {
-        final List<CompoundKey> dtos = []
-        for(int i=0;i<5;i++) {
-            dtos.add(
-                    new CompoundKey(people: "chris_davis", jiraProject: "ACOE", repo: "doohiggy", key: i)
-            )
-        }
+    @Autowired ICompositeKeyWsRepository compositeKeyWsRepository
 
-        return dtos
+    List<CompoundKey> findAllByPeople(String person, Pageable pageable) {
+        println "in the f..."
+
+        List<CompoundKey> keys = compositeKeyWsRepository.getAllPeople()
+
+        return keys
     }
 }
